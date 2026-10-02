@@ -10,33 +10,285 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AulasRouteImport } from './routes/aulas'
+import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as ConcursosRouteImport } from './routes/concursos'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as EnsinoMedioRouteImport } from './routes/ensino-medio'
+import { Route as FundamentalRouteImport } from './routes/fundamental'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as PesquisaRouteImport } from './routes/pesquisa'
+import { Route as PreVestibularRouteImport } from './routes/pre-vestibular'
+import { Route as ProfessorRouteImport } from './routes/professor'
+import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as SuperiorRouteImport } from './routes/superior'
+import { Route as AulasIndexRouteImport } from './routes/aulas.index'
+import { Route as AulasIdRouteImport } from './routes/aulas.$id'
+import { Route as ConcursosIndexRouteImport } from './routes/concursos.index'
+import { Route as ConcursosSlugRouteImport } from './routes/concursos.$slug'
+import { Route as ProfessorIndexRouteImport } from './routes/professor.index'
+import { Route as ProfessorAulasRouteImport } from './routes/professor.aulas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AulasRoute = AulasRouteImport.update({
+  id: '/aulas',
+  path: '/aulas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CadastroRoute = CadastroRouteImport.update({
+  id: '/cadastro',
+  path: '/cadastro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConcursosRoute = ConcursosRouteImport.update({
+  id: '/concursos',
+  path: '/concursos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContatoRoute = ContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnsinoMedioRoute = EnsinoMedioRouteImport.update({
+  id: '/ensino-medio',
+  path: '/ensino-medio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundamentalRoute = FundamentalRouteImport.update({
+  id: '/fundamental',
+  path: '/fundamental',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PesquisaRoute = PesquisaRouteImport.update({
+  id: '/pesquisa',
+  path: '/pesquisa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreVestibularRoute = PreVestibularRouteImport.update({
+  id: '/pre-vestibular',
+  path: '/pre-vestibular',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfessorRoute = ProfessorRouteImport.update({
+  id: '/professor',
+  path: '/professor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuperiorRoute = SuperiorRouteImport.update({
+  id: '/superior',
+  path: '/superior',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AulasIndexRoute = AulasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AulasRoute,
+} as any)
+const AulasIdRoute = AulasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AulasRoute,
+} as any)
+const ConcursosIndexRoute = ConcursosIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConcursosRoute,
+} as any)
+const ConcursosSlugRoute = ConcursosSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ConcursosRoute,
+} as any)
+const ProfessorIndexRoute = ProfessorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProfessorRoute,
+} as any)
+const ProfessorAulasRoute = ProfessorAulasRouteImport.update({
+  id: '/aulas',
+  path: '/aulas',
+  getParentRoute: () => ProfessorRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aulas': typeof AulasRouteWithChildren
+  '/cadastro': typeof CadastroRoute
+  '/concursos': typeof ConcursosRouteWithChildren
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/contato': typeof ContatoRoute
+  '/ensino-medio': typeof EnsinoMedioRoute
+  '/fundamental': typeof FundamentalRoute
+  '/login': typeof LoginRoute
+  '/perfil': typeof PerfilRoute
+  '/pesquisa': typeof PesquisaRoute
+  '/pre-vestibular': typeof PreVestibularRoute
+  '/professor': typeof ProfessorRouteWithChildren
+  '/sobre': typeof SobreRoute
+  '/superior': typeof SuperiorRoute
+  '/aulas/$id': typeof AulasIdRoute
+  '/concursos/$slug': typeof ConcursosSlugRoute
+  '/professor/aulas': typeof ProfessorAulasRoute
+  '/aulas/': typeof AulasIndexRoute
+  '/concursos/': typeof ConcursosIndexRoute
+  '/professor/': typeof ProfessorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/contato': typeof ContatoRoute
+  '/ensino-medio': typeof EnsinoMedioRoute
+  '/fundamental': typeof FundamentalRoute
+  '/login': typeof LoginRoute
+  '/perfil': typeof PerfilRoute
+  '/pesquisa': typeof PesquisaRoute
+  '/pre-vestibular': typeof PreVestibularRoute
+  '/sobre': typeof SobreRoute
+  '/superior': typeof SuperiorRoute
+  '/aulas/$id': typeof AulasIdRoute
+  '/concursos/$slug': typeof ConcursosSlugRoute
+  '/professor/aulas': typeof ProfessorAulasRoute
+  '/aulas': typeof AulasIndexRoute
+  '/concursos': typeof ConcursosIndexRoute
+  '/professor': typeof ProfessorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/aulas': typeof AulasRouteWithChildren
+  '/cadastro': typeof CadastroRoute
+  '/concursos': typeof ConcursosRouteWithChildren
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/contato': typeof ContatoRoute
+  '/ensino-medio': typeof EnsinoMedioRoute
+  '/fundamental': typeof FundamentalRoute
+  '/login': typeof LoginRoute
+  '/perfil': typeof PerfilRoute
+  '/pesquisa': typeof PesquisaRoute
+  '/pre-vestibular': typeof PreVestibularRoute
+  '/professor': typeof ProfessorRouteWithChildren
+  '/sobre': typeof SobreRoute
+  '/superior': typeof SuperiorRoute
+  '/aulas/$id': typeof AulasIdRoute
+  '/concursos/$slug': typeof ConcursosSlugRoute
+  '/professor/aulas': typeof ProfessorAulasRoute
+  '/aulas/': typeof AulasIndexRoute
+  '/concursos/': typeof ConcursosIndexRoute
+  '/professor/': typeof ProfessorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/aulas'
+    | '/cadastro'
+    | '/concursos'
+    | '/configuracoes'
+    | '/contato'
+    | '/ensino-medio'
+    | '/fundamental'
+    | '/login'
+    | '/perfil'
+    | '/pesquisa'
+    | '/pre-vestibular'
+    | '/professor'
+    | '/sobre'
+    | '/superior'
+    | '/aulas/$id'
+    | '/concursos/$slug'
+    | '/professor/aulas'
+    | '/aulas/'
+    | '/concursos/'
+    | '/professor/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/cadastro'
+    | '/configuracoes'
+    | '/contato'
+    | '/ensino-medio'
+    | '/fundamental'
+    | '/login'
+    | '/perfil'
+    | '/pesquisa'
+    | '/pre-vestibular'
+    | '/sobre'
+    | '/superior'
+    | '/aulas/$id'
+    | '/concursos/$slug'
+    | '/professor/aulas'
+    | '/aulas'
+    | '/concursos'
+    | '/professor'
+  id:
+    | '__root__'
+    | '/'
+    | '/aulas'
+    | '/cadastro'
+    | '/concursos'
+    | '/configuracoes'
+    | '/contato'
+    | '/ensino-medio'
+    | '/fundamental'
+    | '/login'
+    | '/perfil'
+    | '/pesquisa'
+    | '/pre-vestibular'
+    | '/professor'
+    | '/sobre'
+    | '/superior'
+    | '/aulas/$id'
+    | '/concursos/$slug'
+    | '/professor/aulas'
+    | '/aulas/'
+    | '/concursos/'
+    | '/professor/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AulasRoute: typeof AulasRouteWithChildren
+  CadastroRoute: typeof CadastroRoute
+  ConcursosRoute: typeof ConcursosRouteWithChildren
+  ConfiguracoesRoute: typeof ConfiguracoesRoute
+  ContatoRoute: typeof ContatoRoute
+  EnsinoMedioRoute: typeof EnsinoMedioRoute
+  FundamentalRoute: typeof FundamentalRoute
+  LoginRoute: typeof LoginRoute
+  PerfilRoute: typeof PerfilRoute
+  PesquisaRoute: typeof PesquisaRoute
+  PreVestibularRoute: typeof PreVestibularRoute
+  ProfessorRoute: typeof ProfessorRouteWithChildren
+  SobreRoute: typeof SobreRoute
+  SuperiorRoute: typeof SuperiorRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +300,205 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aulas': {
+      id: '/aulas'
+      path: '/aulas'
+      fullPath: '/aulas'
+      preLoaderRoute: typeof AulasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cadastro': {
+      id: '/cadastro'
+      path: '/cadastro'
+      fullPath: '/cadastro'
+      preLoaderRoute: typeof CadastroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/concursos': {
+      id: '/concursos'
+      path: '/concursos'
+      fullPath: '/concursos'
+      preLoaderRoute: typeof ConcursosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ensino-medio': {
+      id: '/ensino-medio'
+      path: '/ensino-medio'
+      fullPath: '/ensino-medio'
+      preLoaderRoute: typeof EnsinoMedioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fundamental': {
+      id: '/fundamental'
+      path: '/fundamental'
+      fullPath: '/fundamental'
+      preLoaderRoute: typeof FundamentalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pesquisa': {
+      id: '/pesquisa'
+      path: '/pesquisa'
+      fullPath: '/pesquisa'
+      preLoaderRoute: typeof PesquisaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pre-vestibular': {
+      id: '/pre-vestibular'
+      path: '/pre-vestibular'
+      fullPath: '/pre-vestibular'
+      preLoaderRoute: typeof PreVestibularRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/professor': {
+      id: '/professor'
+      path: '/professor'
+      fullPath: '/professor'
+      preLoaderRoute: typeof ProfessorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/superior': {
+      id: '/superior'
+      path: '/superior'
+      fullPath: '/superior'
+      preLoaderRoute: typeof SuperiorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aulas/': {
+      id: '/aulas/'
+      path: '/'
+      fullPath: '/aulas/'
+      preLoaderRoute: typeof AulasIndexRouteImport
+      parentRoute: typeof AulasRoute
+    }
+    '/aulas/$id': {
+      id: '/aulas/$id'
+      path: '/$id'
+      fullPath: '/aulas/$id'
+      preLoaderRoute: typeof AulasIdRouteImport
+      parentRoute: typeof AulasRoute
+    }
+    '/concursos/': {
+      id: '/concursos/'
+      path: '/'
+      fullPath: '/concursos/'
+      preLoaderRoute: typeof ConcursosIndexRouteImport
+      parentRoute: typeof ConcursosRoute
+    }
+    '/concursos/$slug': {
+      id: '/concursos/$slug'
+      path: '/$slug'
+      fullPath: '/concursos/$slug'
+      preLoaderRoute: typeof ConcursosSlugRouteImport
+      parentRoute: typeof ConcursosRoute
+    }
+    '/professor/': {
+      id: '/professor/'
+      path: '/'
+      fullPath: '/professor/'
+      preLoaderRoute: typeof ProfessorIndexRouteImport
+      parentRoute: typeof ProfessorRoute
+    }
+    '/professor/aulas': {
+      id: '/professor/aulas'
+      path: '/aulas'
+      fullPath: '/professor/aulas'
+      preLoaderRoute: typeof ProfessorAulasRouteImport
+      parentRoute: typeof ProfessorRoute
+    }
   }
 }
 
+interface AulasRouteChildren {
+  AulasIdRoute: typeof AulasIdRoute
+  AulasIndexRoute: typeof AulasIndexRoute
+}
+
+const AulasRouteChildren: AulasRouteChildren = {
+  AulasIdRoute: AulasIdRoute,
+  AulasIndexRoute: AulasIndexRoute,
+}
+
+const AulasRouteWithChildren = AulasRoute._addFileChildren(AulasRouteChildren)
+
+interface ConcursosRouteChildren {
+  ConcursosSlugRoute: typeof ConcursosSlugRoute
+  ConcursosIndexRoute: typeof ConcursosIndexRoute
+}
+
+const ConcursosRouteChildren: ConcursosRouteChildren = {
+  ConcursosSlugRoute: ConcursosSlugRoute,
+  ConcursosIndexRoute: ConcursosIndexRoute,
+}
+
+const ConcursosRouteWithChildren = ConcursosRoute._addFileChildren(
+  ConcursosRouteChildren,
+)
+
+interface ProfessorRouteChildren {
+  ProfessorAulasRoute: typeof ProfessorAulasRoute
+  ProfessorIndexRoute: typeof ProfessorIndexRoute
+}
+
+const ProfessorRouteChildren: ProfessorRouteChildren = {
+  ProfessorAulasRoute: ProfessorAulasRoute,
+  ProfessorIndexRoute: ProfessorIndexRoute,
+}
+
+const ProfessorRouteWithChildren = ProfessorRoute._addFileChildren(
+  ProfessorRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AulasRoute: AulasRouteWithChildren,
+  CadastroRoute: CadastroRoute,
+  ConcursosRoute: ConcursosRouteWithChildren,
+  ConfiguracoesRoute: ConfiguracoesRoute,
+  ContatoRoute: ContatoRoute,
+  EnsinoMedioRoute: EnsinoMedioRoute,
+  FundamentalRoute: FundamentalRoute,
+  LoginRoute: LoginRoute,
+  PerfilRoute: PerfilRoute,
+  PesquisaRoute: PesquisaRoute,
+  PreVestibularRoute: PreVestibularRoute,
+  ProfessorRoute: ProfessorRouteWithChildren,
+  SobreRoute: SobreRoute,
+  SuperiorRoute: SuperiorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

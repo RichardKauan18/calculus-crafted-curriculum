@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep all prototype content in centralized mock-data modules so future backend replacement does not alter presentation components.
+- Public pages share the root site shell; teacher management uses a dedicated responsive dashboard shell.
