@@ -1,1 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router'; import { ExamsPage } from '@/components/pages'; export const Route=createFileRoute('/concursos')({head:()=>({meta:[{title:'Concursos Militares — Matris'},{name:'description',content:'Preparação para nove concursos militares.'},{property:'og:title',content:'Concursos Militares — Matris'},{property:'og:description',content:'Trilhas por edital para concursos militares.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}),component:ExamsPage})
+import { createFileRoute, Outlet } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/concursos')({ component: Outlet })

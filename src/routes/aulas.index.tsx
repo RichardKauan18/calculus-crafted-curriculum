@@ -1,0 +1,16 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { LessonsPage } from '@/components/pages'
+
+export const Route = createFileRoute('/aulas/')({
+  head: () => ({
+    meta: [
+      { title: 'Aulas — Matris' },
+      { name: 'description', content: 'Biblioteca de aulas gravadas de Matemática.' },
+      { property: 'og:title', content: 'Aulas — Matris' },
+      { property: 'og:description', content: 'Encontre a aula de Matemática ideal.' },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+    ],
+  }),
+  component: LessonsPage,
+})
