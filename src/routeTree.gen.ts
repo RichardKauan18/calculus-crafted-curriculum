@@ -24,7 +24,9 @@ import { Route as PreVestibularRouteImport } from './routes/pre-vestibular'
 import { Route as ProfessorRouteImport } from './routes/professor'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SuperiorRouteImport } from './routes/superior'
+import { Route as AulasIndexRouteImport } from './routes/aulas.index'
 import { Route as AulasIdRouteImport } from './routes/aulas.$id'
+import { Route as ConcursosIndexRouteImport } from './routes/concursos.index'
 import { Route as ConcursosSlugRouteImport } from './routes/concursos.$slug'
 import { Route as ProfessorAulasRouteImport } from './routes/professor.aulas'
 
@@ -103,10 +105,20 @@ const SuperiorRoute = SuperiorRouteImport.update({
   path: '/superior',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AulasIndexRoute = AulasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AulasRoute,
+} as any)
 const AulasIdRoute = AulasIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AulasRoute,
+} as any)
+const ConcursosIndexRoute = ConcursosIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConcursosRoute,
 } as any)
 const ConcursosSlugRoute = ConcursosSlugRouteImport.update({
   id: '/$slug',
@@ -138,12 +150,12 @@ export interface FileRoutesByFullPath {
   '/aulas/$id': typeof AulasIdRoute
   '/concursos/$slug': typeof ConcursosSlugRoute
   '/professor/aulas': typeof ProfessorAulasRoute
+  '/aulas/': typeof AulasIndexRoute
+  '/concursos/': typeof ConcursosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/aulas': typeof AulasRouteWithChildren
   '/cadastro': typeof CadastroRoute
-  '/concursos': typeof ConcursosRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRoute
   '/contato': typeof ContatoRoute
   '/ensino-medio': typeof EnsinoMedioRoute
@@ -158,6 +170,8 @@ export interface FileRoutesByTo {
   '/aulas/$id': typeof AulasIdRoute
   '/concursos/$slug': typeof ConcursosSlugRoute
   '/professor/aulas': typeof ProfessorAulasRoute
+  '/aulas': typeof AulasIndexRoute
+  '/concursos': typeof ConcursosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -179,6 +193,8 @@ export interface FileRoutesById {
   '/aulas/$id': typeof AulasIdRoute
   '/concursos/$slug': typeof ConcursosSlugRoute
   '/professor/aulas': typeof ProfessorAulasRoute
+  '/aulas/': typeof AulasIndexRoute
+  '/concursos/': typeof ConcursosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -201,12 +217,12 @@ export interface FileRouteTypes {
     | '/aulas/$id'
     | '/concursos/$slug'
     | '/professor/aulas'
+    | '/aulas/'
+    | '/concursos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/aulas'
     | '/cadastro'
-    | '/concursos'
     | '/configuracoes'
     | '/contato'
     | '/ensino-medio'
@@ -221,6 +237,8 @@ export interface FileRouteTypes {
     | '/aulas/$id'
     | '/concursos/$slug'
     | '/professor/aulas'
+    | '/aulas'
+    | '/concursos'
   id:
     | '__root__'
     | '/'
@@ -241,6 +259,8 @@ export interface FileRouteTypes {
     | '/aulas/$id'
     | '/concursos/$slug'
     | '/professor/aulas'
+    | '/aulas/'
+    | '/concursos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -368,12 +388,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperiorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aulas/': {
+      id: '/aulas/'
+      path: '/'
+      fullPath: '/aulas/'
+      preLoaderRoute: typeof AulasIndexRouteImport
+      parentRoute: typeof AulasRoute
+    }
     '/aulas/$id': {
       id: '/aulas/$id'
       path: '/$id'
       fullPath: '/aulas/$id'
       preLoaderRoute: typeof AulasIdRouteImport
       parentRoute: typeof AulasRoute
+    }
+    '/concursos/': {
+      id: '/concursos/'
+      path: '/'
+      fullPath: '/concursos/'
+      preLoaderRoute: typeof ConcursosIndexRouteImport
+      parentRoute: typeof ConcursosRoute
     }
     '/concursos/$slug': {
       id: '/concursos/$slug'
@@ -394,20 +428,24 @@ declare module '@tanstack/react-router' {
 
 interface AulasRouteChildren {
   AulasIdRoute: typeof AulasIdRoute
+  AulasIndexRoute: typeof AulasIndexRoute
 }
 
 const AulasRouteChildren: AulasRouteChildren = {
   AulasIdRoute: AulasIdRoute,
+  AulasIndexRoute: AulasIndexRoute,
 }
 
 const AulasRouteWithChildren = AulasRoute._addFileChildren(AulasRouteChildren)
 
 interface ConcursosRouteChildren {
   ConcursosSlugRoute: typeof ConcursosSlugRoute
+  ConcursosIndexRoute: typeof ConcursosIndexRoute
 }
 
 const ConcursosRouteChildren: ConcursosRouteChildren = {
   ConcursosSlugRoute: ConcursosSlugRoute,
+  ConcursosIndexRoute: ConcursosIndexRoute,
 }
 
 const ConcursosRouteWithChildren = ConcursosRoute._addFileChildren(
