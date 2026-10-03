@@ -11,3 +11,4 @@
 
 - Keep all prototype content in centralized mock-data modules so future backend replacement does not alter presentation components.
 - Public pages share the root site shell; teacher management uses a dedicated responsive dashboard shell.
+- Model study content as trail, discipline, module, topic, lesson, and exercise relationships; keep progress aggregation in shared data utilities so presentation never invents or recalculates it.
