@@ -1,0 +1,20 @@
+name: Validate Matris fusion
+
+on:
+  push:
+    branches: ["fusion/matematicando-best-of"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bun run build
+      - run: bun run lint
+      - run: bun run test

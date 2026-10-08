@@ -1,1 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router'; import { AdminLessons } from '@/components/admin-pages'; export const Route=createFileRoute('/professor/aulas')({head:()=>({meta:[{title:'Gerenciar aulas — Matris'},{name:'description',content:'Gerenciamento visual de aulas.'},{property:'og:title',content:'Gerenciar aulas — Matris'},{property:'og:description',content:'Gerenciamento visual de aulas.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}),component:()=> <AdminLessons/>})
+import { createFileRoute } from '@tanstack/react-router'
+import { LiveTeacherPage } from '@/components/platform'
+export const Route=createFileRoute('/professor/aulas')({head:()=>({meta:[{title:'Gerenciar aulas — Matris'},{name:'description',content:'Gerenciamento de aulas.'}]}),component:LiveTeacherPage})
