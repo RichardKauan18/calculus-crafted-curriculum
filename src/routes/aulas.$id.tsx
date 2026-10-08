@@ -1,1 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router'; import { LessonPage } from '@/components/pages'; export const Route=createFileRoute('/aulas/$id')({head:()=>({meta:[{title:'Videoaula — Matris'},{name:'description',content:'Assista à aula e acompanhe seu progresso.'},{property:'og:title',content:'Videoaula — Matris'},{property:'og:description',content:'Aula gravada de Matemática.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}),component:LessonPage})
+import { createFileRoute } from '@tanstack/react-router'
+import { LiveLessonPage } from '@/components/platform'
+export const Route=createFileRoute('/aulas/$id')({head:()=>({meta:[{title:'Videoaula — Matris'},{name:'description',content:'Assista à aula e acompanhe seu progresso.'}]}),component:LiveLessonPage})
