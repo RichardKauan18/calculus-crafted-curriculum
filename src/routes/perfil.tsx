@@ -1,1 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router'; import { ProfilePage } from '@/components/account-pages'; export const Route=createFileRoute('/perfil')({head:()=>({meta:[{title:'Perfil — Matris'},{name:'description',content:'Acompanhe seu progresso de estudos.'},{property:'og:title',content:'Perfil — Matris'},{property:'og:description',content:'Acompanhe seu progresso de estudos.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}),component:()=> <ProfilePage/>})
+import { createFileRoute } from '@tanstack/react-router'
+import { LiveProfilePage } from '@/components/platform'
+export const Route=createFileRoute('/perfil')({head:()=>({meta:[{title:'Perfil — Matris'},{name:'description',content:'Acompanhe seu progresso de estudos.'}]}),component:LiveProfilePage})
