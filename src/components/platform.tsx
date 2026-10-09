@@ -34,6 +34,7 @@ import {
   type PlatformLesson,
 } from "@/hooks/usePlatformData";
 import { hasSupabaseConfig, supabase } from "@/lib/supabase";
+import { lessons as demoLessons } from "@/lib/mock-data";
 import parabola from "@/assets/parabola.jpg";
 import geometry from "@/assets/geometry.jpg";
 import trigonometry from "@/assets/trigonometry.jpg";
@@ -54,7 +55,39 @@ const levelName = (level: string) =>
   })[level] ?? level;
 const isValidYouTubeId = (id: string | undefined) => Boolean(id && /^[a-zA-Z0-9_-]{11}$/.test(id));
 
-function LiveLessonCard({ lesson }: { lesson: PlatformLesson }) {
+const demoPlatformLessons: PlatformLesson[] = demoLessons.map((lesson) => ({
+  id: lesson.id,
+  title: lesson.title,
+  subject: lesson.subject,
+  duration: lesson.duration,
+  video_id: "",
+  level:
+    lesson.categorySlug === "ensino-medio"
+      ? "medio"
+      : lesson.categorySlug === "concursos"
+        ? "concursos"
+        : lesson.categorySlug,
+  concurso_id: null,
+  description: `${lesson.topic}. Conteúdo ilustrativo para demonstrar a experiência da plataforma.`,
+  created_at: "",
+  updated_at: "",
+}));
+
+function getDemoLessons(level?: string, search = "") {
+  const term = search.trim().toLocaleLowerCase("pt-BR");
+  return demoPlatformLessons.filter((lesson) => {
+    const matchesLevel = !level || lesson.level === level;
+    const matchesSearch =
+      !term ||
+      [lesson.title, lesson.subject, lesson.description]
+        .join(" ")
+        .toLocaleLowerCase("pt-BR")
+        .includes(term);
+    return matchesLevel && matchesSearch;
+  });
+}
+
+function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo?: boolean }) {
   const { user } = useAuth();
   const { progress } = useMyProgress(lesson.id, user?.id);
   const value =
@@ -80,7 +113,13 @@ function LiveLessonCard({ lesson }: { lesson: PlatformLesson }) {
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           />
           <span className="absolute left-3 top-3 rounded-full bg-background/90 px-2.5 py-1 font-mono text-xs">
-            {value === 100 ? "Concluída" : value ? "Em andamento" : "Não iniciada"}
+            {demo
+              ? "Demonstração"
+              : value === 100
+                ? "Concluída"
+                : value
+                  ? "Em andamento"
+                  : "Não iniciada"}
           </span>
           <span className="absolute bottom-3 right-3 grid size-10 place-items-center rounded-full bg-primary text-primary-foreground">
             <Play className="size-4" fill="currentColor" />
@@ -91,13 +130,21 @@ function LiveLessonCard({ lesson }: { lesson: PlatformLesson }) {
             {lesson.subject} · {levelName(lesson.level)}
           </p>
           <h3 className="mt-1 font-medium">{lesson.title}</h3>
-          <div className="mt-4">
-            <ProgressBar value={value} />
-          </div>
-          <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-            <span>{value}% concluído</span>
-            <span>{lesson.duration}</span>
-          </div>
+          {demo ? (
+            <p className="mt-4 text-xs text-muted-foreground">
+              Prévia ilustrativa · progresso não é salvo
+            </p>
+          ) : (
+            <>
+              <div className="mt-4">
+                <ProgressBar value={value} />
+              </div>
+              <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                <span>{value}% concluído</span>
+                <span>{lesson.duration}</span>
+              </div>
+            </>
+          )}
         </div>
       </Link>
     </article>
@@ -107,6 +154,7 @@ function LiveLessonCard({ lesson }: { lesson: PlatformLesson }) {
 export function LiveHomePage() {
   const { lessons, loading, error, refetch } = useLessons();
   const { profile } = useAuth();
+  const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons() : [];
   return (
     <SiteLayout>
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
@@ -175,10 +223,10 @@ export function LiveHomePage() {
               Tentar novamente
             </Button>
           </div>
-        ) : lessons.length ? (
+        ) : displayedLessons.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {lessons.slice(0, 6).map((l) => (
-              <LiveLessonCard key={l.id} lesson={l} />
+            {displayedLessons.slice(0, 6).map((l) => (
+              <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
           </div>
         ) : (
@@ -196,12 +244,17 @@ export function LiveHomePage() {
 export function LiveLessonsPage() {
   const [search, setSearch] = useState("");
   const { lessons, loading, error, refetch } = useLessons(undefined, search);
+  const displayedLessons = lessons.length
+    ? lessons
+    : !hasSupabaseConfig
+      ? getDemoLessons(undefined, search)
+      : [];
   return (
     <SiteLayout>
       <PageHeader
         eyebrow="Biblioteca"
         title="Todas as aulas"
-        description="Conteúdo real vindo do Supabase, com busca por título, assunto e descrição."
+        description="Explore as aulas disponíveis por título, assunto ou descrição."
       />
       <section className="mx-auto max-w-7xl px-5 sm:px-6">
         <Input
@@ -221,10 +274,10 @@ export function LiveLessonsPage() {
               Tentar novamente
             </Button>
           </div>
-        ) : lessons.length ? (
+        ) : displayedLessons.length ? (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {lessons.map((l) => (
-              <LiveLessonCard key={l.id} lesson={l} />
+            {displayedLessons.map((l) => (
+              <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
           </div>
         ) : (
@@ -242,6 +295,11 @@ export function LiveLessonsPage() {
 export function LiveSearchPage() {
   const [search, setSearch] = useState("");
   const { lessons, loading, error, refetch } = useLessons(undefined, search);
+  const displayedLessons = lessons.length
+    ? lessons
+    : !hasSupabaseConfig
+      ? getDemoLessons(undefined, search)
+      : [];
   return (
     <SiteLayout>
       <PageHeader
@@ -276,19 +334,21 @@ export function LiveSearchPage() {
         ) : (
           <>
             <p aria-live="polite" className="my-6 font-mono text-xs text-muted-foreground">
-              {lessons.length}{" "}
-              {lessons.length === 1 ? "resultado encontrado" : "resultados encontrados"}
+              {displayedLessons.length}{" "}
+              {displayedLessons.length === 1 ? "resultado encontrado" : "resultados encontrados"}
             </p>
-            {lessons.length ? (
+            {displayedLessons.length ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {lessons.map((l) => (
-                  <LiveLessonCard key={l.id} lesson={l} />
+                {displayedLessons.map((l) => (
+                  <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
                 ))}
               </div>
             ) : (
               <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
                 {!hasSupabaseConfig
-                  ? "Configure a conexão com o Supabase para disponibilizar a pesquisa de aulas."
+                  ? search.trim()
+                    ? "Nenhuma aula demonstrativa corresponde à busca."
+                    : "Configure o catálogo real para disponibilizar mais aulas."
                   : search.trim()
                     ? "Nenhuma aula encontrada. Tente outro termo."
                     : "Nenhuma aula publicada está disponível para pesquisa no momento."}
@@ -303,7 +363,16 @@ export function LiveSearchPage() {
 
 export function LiveLessonPage() {
   const { id } = useParams({ strict: false }) as { id?: string };
-  const { lesson, loading, error: lessonError, refetch: refetchLesson } = useLesson(id);
+  const {
+    lesson: loadedLesson,
+    loading,
+    error: lessonError,
+    refetch: refetchLesson,
+  } = useLesson(id);
+  const lesson =
+    loadedLesson ??
+    (!hasSupabaseConfig ? (demoPlatformLessons.find((item) => item.id === id) ?? null) : null);
+  const isDemoLesson = !hasSupabaseConfig && Boolean(lesson);
   const { user, profile } = useAuth();
   const {
     avg,
@@ -371,6 +440,12 @@ export function LiveLessonPage() {
     status === "completed" ? 100 : status === "half" ? 50 : status === "watching" ? 10 : 0;
   const videoIsValid = isValidYouTubeId(lesson.video_id);
   const setStatus = async (next: "watching" | "half" | "completed") => {
+    if (isDemoLesson) {
+      setMessage(
+        "Esta é uma aula demonstrativa. O progresso será salvo quando o catálogo real estiver conectado.",
+      );
+      return;
+    }
     if (!user) {
       setMessage("Entre na sua conta para salvar seu progresso.");
       return;
@@ -382,6 +457,10 @@ export function LiveLessonPage() {
     if (!error) await refetchProgress();
   };
   const rate = async (value: number) => {
+    if (isDemoLesson) {
+      setMessage("As avaliações não ficam disponíveis na prévia demonstrativa.");
+      return;
+    }
     if (!user) {
       setMessage("Entre na sua conta para avaliar.");
       return;
@@ -396,6 +475,10 @@ export function LiveLessonPage() {
     }
   };
   const sendComment = async () => {
+    if (isDemoLesson) {
+      setMessage("Os comentários não ficam disponíveis na prévia demonstrativa.");
+      return;
+    }
     if (!user || !profile) {
       setMessage("Entre na sua conta para comentar.");
       return;
@@ -426,6 +509,12 @@ export function LiveLessonPage() {
         </p>
       </section>
       <section className="mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        {isDemoLesson && (
+          <div className="rounded-lg border border-amber/30 bg-amber/5 p-4 text-sm text-muted-foreground lg:col-span-2">
+            <strong className="text-foreground">Aula demonstrativa.</strong> O vídeo, o progresso,
+            as avaliações e os comentários não são dados reais nem serão salvos nesta prévia.
+          </div>
+        )}
         <div>
           <div className="aspect-video overflow-hidden rounded-lg bg-black">
             {videoIsValid ? (
@@ -448,40 +537,42 @@ export function LiveLessonPage() {
               </div>
             )}
           </div>
-          <div className="mt-4 rounded-lg border border-border bg-card p-4">
-            <div className="flex flex-wrap gap-2">
-              <Button
-                disabled={busy}
-                aria-pressed={status === "completed"}
-                onClick={() => setStatus("completed")}
-              >
-                <CheckCircle2 aria-hidden="true" />
-                Concluída
-              </Button>
-              <Button
-                disabled={busy}
-                aria-pressed={status === "half"}
-                variant="outline"
-                onClick={() => setStatus("half")}
-              >
-                <Clock3 aria-hidden="true" />
-                Parei na metade
-              </Button>
-              <Button
-                disabled={busy}
-                aria-pressed={status === "watching"}
-                variant="outline"
-                onClick={() => setStatus("watching")}
-              >
-                <Play aria-hidden="true" />
-                Assistindo
-              </Button>
+          {!isDemoLesson && (
+            <div className="mt-4 rounded-lg border border-border bg-card p-4">
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  disabled={busy}
+                  aria-pressed={status === "completed"}
+                  onClick={() => setStatus("completed")}
+                >
+                  <CheckCircle2 aria-hidden="true" />
+                  Concluída
+                </Button>
+                <Button
+                  disabled={busy}
+                  aria-pressed={status === "half"}
+                  variant="outline"
+                  onClick={() => setStatus("half")}
+                >
+                  <Clock3 aria-hidden="true" />
+                  Parei na metade
+                </Button>
+                <Button
+                  disabled={busy}
+                  aria-pressed={status === "watching"}
+                  variant="outline"
+                  onClick={() => setStatus("watching")}
+                >
+                  <Play aria-hidden="true" />
+                  Assistindo
+                </Button>
+              </div>
+              <div className="mt-4">
+                <ProgressBar value={progressValue} label="Progresso da aula" />
+                <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
+              </div>
             </div>
-            <div className="mt-4">
-              <ProgressBar value={progressValue} label="Progresso da aula" />
-              <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
-            </div>
-          </div>
+          )}
           {message && (
             <p role="status" className="mt-3 text-sm text-muted-foreground">
               {message}
@@ -517,7 +608,11 @@ export function LiveLessonPage() {
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Professor, poderia explicar novamente esta parte?"
                 />
-                <Button className="mt-3" disabled={busy || !comment.trim()} onClick={sendComment}>
+                <Button
+                  className="mt-3"
+                  disabled={busy || isDemoLesson || !comment.trim()}
+                  onClick={sendComment}
+                >
                   <Send aria-hidden="true" />
                   Enviar comentário
                 </Button>
@@ -586,7 +681,7 @@ export function LiveLessonPage() {
                     <button
                       key={n}
                       type="button"
-                      disabled={busy}
+                      disabled={busy || isDemoLesson}
                       onClick={() => rate(n)}
                       aria-label={`Avaliar com ${n} ${n === 1 ? "estrela" : "estrelas"}`}
                       aria-pressed={n === myRating}
@@ -1178,6 +1273,11 @@ export function LiveTeacherPage() {
 
 export function LiveLevelPage({ level }: { level: string }) {
   const { lessons, loading, error, refetch } = useLessons(level);
+  const displayedLessons = lessons.length
+    ? lessons
+    : !hasSupabaseConfig
+      ? getDemoLessons(level)
+      : [];
   return (
     <SiteLayout>
       <PageHeader
@@ -1197,10 +1297,10 @@ export function LiveLevelPage({ level }: { level: string }) {
               Tentar novamente
             </Button>
           </div>
-        ) : lessons.length ? (
+        ) : displayedLessons.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {lessons.map((l) => (
-              <LiveLessonCard key={l.id} lesson={l} />
+            {displayedLessons.map((l) => (
+              <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
           </div>
         ) : (
