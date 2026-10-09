@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.session)
         supabase
           .from("profiles")
-          .select("id,name,role,created_at")
+          .select("id,name:full_name,role,created_at")
           .eq("id", data.session.user.id)
           .maybeSingle()
           .then(({ data: p }) => {
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (next)
         supabase
           .from("profiles")
-          .select("id,name,role,created_at")
+          .select("id,name:full_name,role,created_at")
           .eq("id", next.user.id)
           .maybeSingle()
           .then(({ data: p }) => setProfile(p as Profile | null));
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
   const signUp = async (email: string, password: string, name: string) => {
     if (!hasSupabaseConfig) return "Supabase ainda não foi configurado.";
-    const { error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+    const { error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
     return error ? mapAuthError(error.message) : null;
   };
   const signOut = async () => {
