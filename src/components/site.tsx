@@ -63,8 +63,8 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-xl">
-      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:flex">
+    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 backdrop-blur-xl">
+      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 sm:px-6 lg:flex">
         <Link
           to="/"
           className="flex min-w-0 items-baseline gap-2"
@@ -78,7 +78,7 @@ export function Navbar() {
             <Link
               key={item.to}
               to={item.to}
-              className="rounded-full px-3 py-2 text-sm text-muted-foreground transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               activeProps={{ className: "bg-primary/10 text-primary" }}
             >
               {item.label}
@@ -139,7 +139,7 @@ export function Navbar() {
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
-              className="block min-h-11 rounded-md px-3 py-3 text-sm text-muted-foreground"
+              className="block min-h-11 rounded-lg px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-accent/70 hover:text-foreground"
             >
               {item.label}
             </Link>
