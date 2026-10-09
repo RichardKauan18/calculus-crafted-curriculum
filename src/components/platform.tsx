@@ -158,20 +158,38 @@ export function LiveHomePage() {
   const { lessons, loading, error, refetch } = useLessons();
   const { profile } = useAuth();
   const [studentFeedback, setStudentFeedback] = useState<Array<{ id: string; title: string; message: string; created_at: string }>>([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackError, setFeedbackError] = useState("");
   useEffect(() => {
     let active = true;
     if (!profile || profile.role !== "student" || !hasSupabaseConfig) {
       setStudentFeedback([]);
+      setFeedbackLoading(false);
+      setFeedbackError("");
       return () => { active = false; };
     }
+    setFeedbackLoading(true);
+    setFeedbackError("");
     supabase
       .from("teacher_feedback")
       .select("id,title,message,created_at")
       .eq("is_published", true)
       .order("created_at", { ascending: false })
       .limit(3)
-      .then(({ data, error: feedbackError }) => {
-        if (active) setStudentFeedback(feedbackError ? [] : (data ?? []) as Array<{ id: string; title: string; message: string; created_at: string }>);
+      .then(({ data, error: queryError }) => {
+        if (!active) return;
+        if (queryError) {
+          setStudentFeedback([]);
+          setFeedbackError("Não foi possível carregar os recados do professor.");
+        } else {
+          setStudentFeedback((data ?? []) as Array<{ id: string; title: string; message: string; created_at: string }>);
+        }
+      })
+      .catch(() => {
+        if (active) setFeedbackError("Ocorreu uma falha ao carregar os recados do professor.");
+      })
+      .finally(() => {
+        if (active) setFeedbackLoading(false);
       });
     return () => { active = false; };
   }, [profile?.id, profile?.role]);
@@ -292,24 +310,31 @@ export function LiveHomePage() {
           </div>
         )}
       </section>
-      {profile?.role === "student" && studentFeedback.length > 0 && (
+      {profile?.role === "student" && (feedbackLoading || feedbackError || studentFeedback.length > 0) && (
         <section aria-labelledby="teacher-feedback-title" className="mx-auto max-w-7xl px-5 pb-12 sm:px-6">
-          <div className="mb-5 flex items-end justify-between gap-4">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[.14em] text-primary">Recados do professor</p>
-              <h2 id="teacher-feedback-title" className="mt-2 font-display text-2xl font-semibold sm:text-3xl">Avisos e orientações para seus estudos</h2>
+          <div className="mb-5">
+            <p className="font-mono text-xs uppercase tracking-[.14em] text-primary">Recados do professor</p>
+            <h2 id="teacher-feedback-title" className="mt-2 font-display text-2xl font-semibold sm:text-3xl">Avisos e orientações para seus estudos</h2>
+          </div>
+          {feedbackLoading ? (
+            <p role="status" className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">Carregando recados…</p>
+          ) : feedbackError ? (
+            <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
+              <p className="text-sm text-muted-foreground">{feedbackError}</p>
+              <Button variant="outline" className="mt-3" onClick={() => window.location.reload()}>Tentar novamente</Button>
             </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {studentFeedback.map((item) => (
-              <article key={item.id} className="rounded-2xl border border-primary/15 bg-card p-5 shadow-sm">
-                <span className="inline-flex items-center gap-2 text-xs font-medium text-primary"><MessageSquare className="size-4" aria-hidden="true" /> Mensagem do professor</span>
-                <h3 className="mt-3 font-display text-lg font-semibold">{item.title}</h3>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{item.message}</p>
-                <p className="mt-4 text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}</p>
-              </article>
-            ))}
-          </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {studentFeedback.map((item) => (
+                <article key={item.id} className="rounded-2xl border border-primary/15 bg-card p-5 shadow-sm">
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-primary"><MessageSquare className="size-4" aria-hidden="true" /> Mensagem do professor</span>
+                  <h3 className="mt-3 font-display text-lg font-semibold">{item.title}</h3>
+                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{item.message}</p>
+                  <p className="mt-4 text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}</p>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       )}
     </SiteLayout>
@@ -1324,6 +1349,8 @@ function TeacherSupportPanel() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadingMoreQuestions, setLoadingMoreQuestions] = useState(false);
+  const [hasMoreQuestions, setHasMoreQuestions] = useState(false);
   const userId = user?.id;
 
   const loadPanel = useCallback(async () => {
@@ -1332,32 +1359,65 @@ function TeacherSupportPanel() {
       return;
     }
     setLoading(true);
-    const [questionsResult, feedbackResult] = await Promise.all([
-      supabase.from("comments")
+    try {
+      const [questionsResult, feedbackResult] = await Promise.all([
+        supabase.from("comments")
+          .select("id,lesson_id,user_id,user_name,text,reply,created_at,lessons!inner(title,teacher_id)")
+          .eq("lessons.teacher_id", userId)
+          .order("created_at", { ascending: false })
+          .range(0, 99),
+        supabase.from("teacher_feedback")
+          .select("id,title,message,is_published,created_at")
+          .eq("teacher_id", userId)
+          .order("created_at", { ascending: false }),
+      ]);
+      if (questionsResult.error) {
+        setNotice("Não foi possível carregar as dúvidas. Tente atualizar a página.");
+      } else {
+        const rows = (questionsResult.data ?? []) as Array<{
+          id: string; lesson_id: string; user_id: string; user_name: string; text: string;
+          reply: string | null; created_at: string; lessons?: { title: string; teacher_id: string } | null;
+        }>;
+        setQuestions(rows.map((q) => ({ ...q, lesson_title: q.lessons?.title ?? "Aula sem título" })));
+        setHasMoreQuestions(rows.length === 100);
+      }
+      if (feedbackResult.error) {
+        setNotice("Não foi possível carregar as mensagens da página inicial.");
+      } else {
+        setFeedback((feedbackResult.data ?? []) as typeof feedback);
+      }
+    } catch {
+      setNotice("Ocorreu uma falha de conexão ao carregar o painel do professor.");
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+
+  const loadMoreQuestions = async () => {
+    if (!userId || loadingMoreQuestions || !hasMoreQuestions) return;
+    setLoadingMoreQuestions(true);
+    try {
+      const result = await supabase.from("comments")
         .select("id,lesson_id,user_id,user_name,text,reply,created_at,lessons!inner(title,teacher_id)")
         .eq("lessons.teacher_id", userId)
         .order("created_at", { ascending: false })
-        .limit(100),
-      supabase.from("teacher_feedback")
-        .select("id,title,message,is_published,created_at")
-        .eq("teacher_id", userId)
-        .order("created_at", { ascending: false }),
-    ]);
-    if (questionsResult.error) {
-      setNotice("Não foi possível carregar as dúvidas. Tente atualizar a página.");
-    } else {
-      setQuestions(((questionsResult.data ?? []) as Array<{
+        .range(questions.length, questions.length + 99);
+      if (result.error) {
+        setNotice("Não foi possível carregar mais dúvidas.");
+        return;
+      }
+      const rows = (result.data ?? []) as Array<{
         id: string; lesson_id: string; user_id: string; user_name: string; text: string;
         reply: string | null; created_at: string; lessons?: { title: string; teacher_id: string } | null;
-      }>).map((q) => ({ ...q, lesson_title: q.lessons?.title ?? "Aula sem título" })));
+      }>;
+      setQuestions((current) => [...current, ...rows.map((q) => ({ ...q, lesson_title: q.lessons?.title ?? "Aula sem título" }))]);
+      setHasMoreQuestions(rows.length === 100);
+    } catch {
+      setNotice("Ocorreu uma falha ao carregar mais dúvidas.");
+    } finally {
+      setLoadingMoreQuestions(false);
     }
-    if (feedbackResult.error) {
-      setNotice("Não foi possível carregar as mensagens da página inicial.");
-    } else {
-      setFeedback((feedbackResult.data ?? []) as typeof feedback);
-    }
-    setLoading(false);
-  }, [userId]);
+  };
 
   useEffect(() => { void loadPanel(); }, [loadPanel]);
 
@@ -1463,6 +1523,13 @@ function TeacherSupportPanel() {
               </article>
             ))}
           </div>
+          {hasMoreQuestions && (
+            <div className="flex justify-center pt-2">
+              <Button type="button" variant="outline" onClick={() => void loadMoreQuestions()} disabled={loadingMoreQuestions}>
+                {loadingMoreQuestions ? "Carregando dúvidas…" : "Carregar mais dúvidas"}
+              </Button>
+            </div>
+          )}
         ) : (
           <p className="mt-5 rounded-xl bg-muted/50 p-5 text-sm text-muted-foreground">Ainda não há dúvidas registradas nas aulas.</p>
         )}
