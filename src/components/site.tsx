@@ -228,7 +228,9 @@ export function PageHeader({
   return (
     <section className="mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6 sm:pt-14">
       {eyebrow && (
-        <p className="inline-flex rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-primary">{eyebrow}</p>
+        <p className="inline-flex rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-primary">
+          {eyebrow}
+        </p>
       )}
       <h1 className="mt-4 max-w-4xl font-display text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
         {title}
