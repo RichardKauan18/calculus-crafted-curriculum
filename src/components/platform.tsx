@@ -810,7 +810,7 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
           <h1 className="mt-5 font-display text-4xl font-semibold leading-tight xl:text-5xl">
             Sua evolução começa com uma aula.
           </h1>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-5 leading-relaxed text-primary-foreground/80">
             Conta real com progresso, avaliações, comentários e metas sincronizados.
           </p>
         </div>
