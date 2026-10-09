@@ -91,14 +91,12 @@ function getDemoLessons(level?: string, search = "") {
 function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo?: boolean }) {
   const { user } = useAuth();
   const { progress } = useMyProgress(lesson.id, user?.id);
-  const value =
+  const statusLabel =
     progress?.status === "completed"
-      ? 100
-      : progress?.status === "half"
-        ? 50
-        : progress?.status === "watching"
-          ? 10
-          : 0;
+      ? "Concluída"
+      : progress?.status === "watching" || progress?.status === "half"
+        ? "Em andamento"
+        : "Não iniciada";
   return (
     <article className="group overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5">
       <Link
@@ -114,13 +112,7 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           />
           <span className="absolute left-3 top-3 rounded-full border border-border/70 bg-background/95 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider shadow-sm backdrop-blur">
-            {demo
-              ? "Demonstração"
-              : value === 100
-                ? "Concluída"
-                : value
-                  ? "Em andamento"
-                  : "Não iniciada"}
+            {demo ? "Demonstração" : statusLabel}
           </span>
           <span className="absolute bottom-3 right-3 grid size-11 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform group-hover:scale-105">
             <Play className="size-4" fill="currentColor" />
@@ -139,12 +131,9 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
             </p>
           ) : (
             <>
-              <div className="mt-5">
-                <ProgressBar value={value} />
-              </div>
-              <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-                <span>{value}% concluído</span>
-                <span>{lesson.duration}</span>
+              <div className="mt-5 flex justify-between gap-3 text-xs text-muted-foreground">
+                <span>Status: {statusLabel}</span>
+                <span className="shrink-0">{lesson.duration}</span>
               </div>
             </>
           )}
