@@ -176,7 +176,8 @@ export function SettingsPage() {
         <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm sm:p-7">
           <h2 className="font-display text-2xl">Idioma</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            A interface está disponível em Português (Brasil). Outros idiomas serão liberados quando a tradução estiver completa.
+            A interface está disponível em Português (Brasil). Outros idiomas serão liberados
+            quando a tradução estiver completa.
           </p>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {(
@@ -197,7 +198,9 @@ export function SettingsPage() {
               >
                 <Flag country={country} />
                 <span>{name}</span>
-                {code !== "pt" && <span className="ml-auto text-xs text-muted-foreground">Em breve</span>}
+                {code !== "pt" && (
+                  <span className="ml-auto text-xs text-muted-foreground">Em breve</span>
+                )}
                 {lang === code && (
                   <Check aria-hidden="true" className="ml-auto size-4 text-primary" />
                 )}
@@ -299,12 +302,13 @@ export function AboutPage() {
           <div>
             <h2 className="font-display text-2xl">Aprender com organização e método</h2>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              O Matris reúne aulas, trilhas de estudo e ferramentas para acompanhar o progresso.
-              O catálogo e algumas experiências ainda estão em preparação; os conteúdos disponíveis
+              O Matris reúne aulas, trilhas de estudo e ferramentas para acompanhar o progresso. O
+              catálogo e algumas experiências ainda estão em preparação; os conteúdos disponíveis
               são identificados na própria plataforma.
             </p>
             <p className="mt-4 text-sm text-muted-foreground">
-              Informações sobre professores e equipe serão publicadas aqui quando forem confirmadas.
+              Informações sobre professores e equipe serão publicadas aqui quando forem
+              confirmadas.
             </p>
           </div>
         </div>
@@ -318,7 +322,8 @@ export function ContactPage() {
       <PageHeader
         eyebrow="Contato"
         title="Fale com a equipe do Matris"
-        description="Os canais oficiais serão publicados assim que forem configurados. Não exibimos endereços ou perfis fictícios."
+        description="Os canais oficiais serão publicados assim que forem configurados. Não exibimos
+        endereços ou perfis fictícios."
       />
       <section className="mx-auto max-w-4xl px-5 pb-16 sm:px-6">
         <div className="matris-surface flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center sm:p-8">
