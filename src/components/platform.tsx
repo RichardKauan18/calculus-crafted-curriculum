@@ -148,6 +148,7 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
 export function LiveHomePage() {
   const { lessons, loading, error, refetch } = useLessons();
   const { profile } = useAuth();
+  const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons() : [];
   return (
     <SiteLayout>
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
@@ -216,10 +217,10 @@ export function LiveHomePage() {
               Tentar novamente
             </Button>
           </div>
-        ) : lessons.length ? (
+        ) : displayedLessons.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {lessons.slice(0, 6).map((l) => (
-              <LiveLessonCard key={l.id} lesson={l} />
+            {displayedLessons.slice(0, 6).map((l) => (
+              <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
           </div>
         ) : (
@@ -237,6 +238,7 @@ export function LiveHomePage() {
 export function LiveLessonsPage() {
   const [search, setSearch] = useState("");
   const { lessons, loading, error, refetch } = useLessons(undefined, search);
+  const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons(undefined, search) : [];
   return (
     <SiteLayout>
       <PageHeader
@@ -262,10 +264,10 @@ export function LiveLessonsPage() {
               Tentar novamente
             </Button>
           </div>
-        ) : lessons.length ? (
+        ) : displayedLessons.length ? (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {lessons.map((l) => (
-              <LiveLessonCard key={l.id} lesson={l} />
+            {displayedLessons.map((l) => (
+              <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
           </div>
         ) : (
@@ -283,6 +285,7 @@ export function LiveLessonsPage() {
 export function LiveSearchPage() {
   const [search, setSearch] = useState("");
   const { lessons, loading, error, refetch } = useLessons(undefined, search);
+  const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons(undefined, search) : [];
   return (
     <SiteLayout>
       <PageHeader
@@ -317,13 +320,13 @@ export function LiveSearchPage() {
         ) : (
           <>
             <p aria-live="polite" className="my-6 font-mono text-xs text-muted-foreground">
-              {lessons.length}{" "}
-              {lessons.length === 1 ? "resultado encontrado" : "resultados encontrados"}
+              {displayedLessons.length}{" "}
+              {displayedLessons.length === 1 ? "resultado encontrado" : "resultados encontrados"}
             </p>
-            {lessons.length ? (
+            {displayedLessons.length ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {lessons.map((l) => (
-                  <LiveLessonCard key={l.id} lesson={l} />
+                {displayedLessons.map((l) => (
+                  <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
                 ))}
               </div>
             ) : (
@@ -1219,6 +1222,7 @@ export function LiveTeacherPage() {
 
 export function LiveLevelPage({ level }: { level: string }) {
   const { lessons, loading, error, refetch } = useLessons(level);
+  const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons(level) : [];
   return (
     <SiteLayout>
       <PageHeader
@@ -1238,10 +1242,10 @@ export function LiveLevelPage({ level }: { level: string }) {
               Tentar novamente
             </Button>
           </div>
-        ) : lessons.length ? (
+        ) : displayedLessons.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {lessons.map((l) => (
-              <LiveLessonCard key={l.id} lesson={l} />
+            {displayedLessons.map((l) => (
+              <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
           </div>
         ) : (
