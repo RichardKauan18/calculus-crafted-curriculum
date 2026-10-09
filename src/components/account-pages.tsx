@@ -176,8 +176,8 @@ export function SettingsPage() {
         <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm sm:p-7">
           <h2 className="font-display text-2xl">Idioma</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            A interface está disponível em Português (Brasil). Outros idiomas serão liberados
-            quando a tradução estiver completa.
+            A interface está disponível em Português (Brasil). Outros idiomas serão liberados quando
+            a tradução estiver completa.
           </p>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {(
