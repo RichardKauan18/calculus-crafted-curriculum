@@ -151,6 +151,7 @@ export function TeacherTestimonialsManager() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState<TestimonialForm>(emptyForm);
 
   const load = useCallback(async () => {
@@ -184,12 +185,14 @@ export function TeacherTestimonialsManager() {
   const resetForm = () => {
     setForm(emptyForm);
     setEditingId(null);
+    setFormOpen(false);
     setError("");
     setNotice("");
   };
 
   const edit = (item: Testimonial) => {
     setEditingId(item.id);
+    setFormOpen(true);
     setForm({
       name: item.name,
       exam_name: item.exam_name ?? "",
@@ -225,6 +228,7 @@ export function TeacherTestimonialsManager() {
       setNotice(form.is_published ? "Depoimento salvo e publicado na página inicial." : "Depoimento salvo como rascunho.");
       setForm(emptyForm);
       setEditingId(null);
+      setFormOpen(false);
       await load();
     } catch {
       setError("Não foi possível salvar. Confira os campos e tente novamente.");
@@ -280,7 +284,7 @@ export function TeacherTestimonialsManager() {
           </p>
         </div>
         {!editingId && (
-          <Button type="button" onClick={() => { setForm(emptyForm); setError(""); setNotice(""); }} className="shrink-0 rounded-full">
+          <Button type="button" onClick={() => { setForm(emptyForm); setFormOpen(true); setError(""); setNotice(""); }} className="shrink-0 rounded-full">
             <Plus aria-hidden="true" className="mr-2 size-4" /> Novo depoimento
           </Button>
         )}
@@ -292,7 +296,7 @@ export function TeacherTestimonialsManager() {
         </p>
       )}
 
-      {(editingId || form.name || form.exam_name || form.content) && (
+      {formOpen && (
         <form onSubmit={submit} className="mt-6 grid gap-4 rounded-2xl border border-border bg-background/60 p-4 sm:grid-cols-2 sm:p-5">
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium">Nome do aluno *</span>
