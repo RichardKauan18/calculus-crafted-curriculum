@@ -1,1 +1,45 @@
-# Matris + Supabase\n\nA fusão mantém a arquitetura TanStack Start/Lovable do calculus-crafted-curriculum e incorpora as funcionalidades maduras do site-matematicando.\n\n## Configuração\n1. Crie um projeto no Supabase.\n2. Execute supabase/migrations/20261008170000_matris_platform.sql no SQL Editor.\n3. Configure VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY.\n4. Crie a primeira conta normalmente. Novos usuários entram como student.\n5. Para promover o primeiro professor, altere profiles.role no SQL Editor. Depois disso, professores podem usar set_user_role().\n\n## Funcionalidades incorporadas\n- autenticação real e perfil\n- catálogo de aulas no Supabase\n- player YouTube\n- progresso por aula\n- avaliações de 1–5 estrelas\n- comentários e respostas do professor\n- metas semanais\n- painel do professor com CRUD de aulas\n- trilhas por nível\n- concursos militares e aulas vinculadas\n- RLS e funções de autorização\n- arquitetura visual, responsiva e acessível do projeto Lovable/TanStack\n\n## Segurança\nA role não é aceita do cliente no cadastro. O trigger sempre cria novos usuários como student. A promoção para teacher é protegida por is_teacher()/set_user_role().\n\nNunca coloque service_role no frontend. Use apenas a chave publishable.
+# Matris + Supabase
+
+A plataforma usa React/Vite/TanStack e Supabase para autenticação e dados.
+
+## Configuração local
+
+1. Crie ou selecione o projeto Supabase.
+2. Aplique as migrations em `supabase/migrations/` na ordem cronológica. Se estiver configurando o banco do zero, confira também o SQL base indicado pelo histórico do projeto antes de aplicar as migrations incrementais.
+3. Configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`. Nunca use a chave `service_role` no frontend.
+4. Crie a primeira conta normalmente. Novos usuários devem entrar como `student`.
+5. Para promover o primeiro professor, faça a alteração de função por um procedimento administrativo seguro no Supabase, usando uma sessão administrativa autorizada. Não exponha credenciais administrativas no navegador.
+
+## Funcionalidades
+
+- autenticação e perfil
+- catálogo de aulas e player do YouTube
+- progresso por aula, avaliações e comentários
+- respostas de professores a comentários das próprias aulas
+- metas semanais
+- painel do professor com criação, edição e exclusão das próprias aulas
+- avisos publicados por professores
+- trilhas por nível e concursos
+- políticas RLS e funções de autorização
+
+## Recuperação de senha
+
+No painel do Supabase, abra **Authentication → URL Configuration** e inclua as URLs usadas pelo projeto na lista de redirect URLs, incluindo:
+
+- `https://calculus-crafted-curriculum.lovable.app/redefinir-senha`
+- `http://localhost:5173/redefinir-senha` (desenvolvimento local, se aplicável)
+
+Confirme também o Site URL configurado para o ambiente publicado.
+
+## Segurança recomendada
+
+- Mantenha RLS habilitado nas tabelas expostas.
+- Nunca coloque a chave `service_role` no frontend ou em variáveis `VITE_*`.
+- A função `set_user_role(uuid,text)` está restrita a `service_role`; não a chame diretamente a partir do navegador.
+- O trigger de perfil impede que um usuário altere a própria função.
+- Em **Authentication → Settings / Security and Protection**, ative a proteção contra senhas vazadas, se disponível no plano do projeto.
+- Revise periodicamente os avisos do Security Advisor. Funções `SECURITY DEFINER` como `is_teacher()` e `reply_to_comment()` precisam permanecer estritamente limitadas e validar permissões internamente.
+
+## Qualidade do frontend
+
+O workflow do GitHub Actions executa build, lint e testes. Ele formata os quatro arquivos principais que foram alterados e grava a formatação no branch `main` antes de executar as verificações.
