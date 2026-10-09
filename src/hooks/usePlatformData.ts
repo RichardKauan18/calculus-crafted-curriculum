@@ -65,7 +65,7 @@ export function useLessons(level?: string, search = "") {
     setLoading(true);
     setError(null);
     try {
-      const q = supabase.from("lessons").select("*").order("created_at", { ascending: true });
+      const q = supabase.from("lessons").select("*").order("created_at", { ascending: false });
       const result = level ? await q.eq("level", level) : await q;
       if (result.error) {
         setLessons([]);
