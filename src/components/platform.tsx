@@ -99,7 +99,7 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
           ? 10
           : 0;
   return (
-    <article className="group overflow-hidden rounded-lg border border-border bg-card transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl">
+    <article className="group overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5">
       <Link
         to="/aulas/$id"
         params={{ id: lesson.id }}
@@ -112,7 +112,7 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
             loading="lazy"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           />
-          <span className="absolute left-3 top-3 rounded-full bg-background/90 px-2.5 py-1 font-mono text-xs">
+          <span className="absolute left-3 top-3 rounded-full border border-border/70 bg-background/95 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider shadow-sm backdrop-blur">
             {demo
               ? "Demonstração"
               : value === 100
@@ -121,7 +121,7 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
                   ? "Em andamento"
                   : "Não iniciada"}
           </span>
-          <span className="absolute bottom-3 right-3 grid size-10 place-items-center rounded-full bg-primary text-primary-foreground">
+          <span className="absolute bottom-3 right-3 grid size-11 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform group-hover:scale-105">
             <Play className="size-4" fill="currentColor" />
           </span>
         </div>
@@ -129,7 +129,7 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
           <p className="font-mono text-xs text-muted-foreground">
             {lesson.subject} · {levelName(lesson.level)}
           </p>
-          <h3 className="mt-1 font-medium">{lesson.title}</h3>
+          <h3 className="mt-2 font-display text-lg font-semibold leading-snug tracking-tight">{lesson.title}</h3>
           {demo ? (
             <p className="mt-4 text-xs text-muted-foreground">
               Prévia ilustrativa · progresso não é salvo
@@ -378,7 +378,7 @@ export function LiveSearchPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
+              <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
                 {!hasSupabaseConfig
                   ? search.trim()
                     ? "Nenhuma aula demonstrativa corresponde à busca."
@@ -1466,7 +1466,7 @@ export function LiveLevelPage({ level }: { level: string }) {
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
             {hasSupabaseConfig
               ? "Ainda não há aulas publicadas nesta trilha."
               : "Ainda não há aulas demonstrativas para esta trilha."}
@@ -1511,16 +1511,16 @@ export function LiveConcursosPage() {
                     key={exam.slug}
                     to="/concursos/$slug"
                     params={{ slug: exam.slug }}
-                    className="rounded-lg border border-border bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <span className="inline-flex rounded-full border border-amber/30 bg-amber/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
                       Demonstração
                     </span>
-                    <span className="mt-3 block font-display text-3xl font-semibold text-primary">
+                    <span className="mt-4 block font-display text-3xl font-semibold tracking-tight text-primary">
                       {exam.name}
                     </span>
                     <p className="mt-3 text-sm text-muted-foreground">{exam.description}</p>
-                    <p className="mt-4 font-mono text-xs text-muted-foreground">
+                    <p className="mt-5 border-t border-border/70 pt-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                       {exam.subjects} disciplinas previstas · conteúdo ilustrativo
                     </p>
                   </Link>
@@ -1530,20 +1530,20 @@ export function LiveConcursosPage() {
                     key={c.id}
                     to="/concursos/$slug"
                     params={{ slug: c.id }}
-                    className="rounded-lg border border-border bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <span className="font-display text-3xl font-semibold text-primary">
+                    <span className="font-display text-3xl font-semibold tracking-tight text-primary">
                       {c.name}
                     </span>
                     <p className="mt-3 text-sm text-muted-foreground">{c.description}</p>
-                    <p className="mt-4 font-mono text-xs text-muted-foreground">
+                    <p className="mt-5 border-t border-border/70 pt-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                       {c.category} · {c.subjects?.length ?? 0} disciplinas
                     </p>
                   </Link>
                 ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
             {hasSupabaseConfig
               ? "Os concursos ainda não foram cadastrados."
               : "Configure a conexão com o Supabase para disponibilizar os concursos."}
@@ -1678,7 +1678,7 @@ export function LiveConcursoPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
+            <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
               Ainda não há aulas publicadas para este concurso.
             </div>
           )}
