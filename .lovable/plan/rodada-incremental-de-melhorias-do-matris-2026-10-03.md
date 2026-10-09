@@ -1,9 +1,11 @@
 # Rodada incremental de melhorias do Matris
 
 ## Objetivo
+
 Evoluir o protótipo atual sem reescrever a aplicação, sem backend novo e sem remover fluxos existentes. Esta rodada prioriza inconsistências reais, navegação de estudo e apresentação honesta dos dados demonstrativos.
 
 ## Escopo desta rodada
+
 1. **Dados e progresso consistentes**
    - Ampliar o módulo central de dados demonstrativos com trilhas, hierarquia de conhecimento e relações entre aulas.
    - Criar utilitários únicos para normalizar e agregar progresso, evitando percentuais contraditórios.
@@ -36,10 +38,12 @@ Evoluir o protótipo atual sem reescrever a aplicação, sem backend novo e sem 
    - Confirmar build limpo, ausência de regressões e ausência de alterações no banco.
 
 ## Fora desta rodada
+
 - Backend, autenticação real, migrations, pagamentos, IA, simulados funcionais, motor completo de exercícios e internacionalização integral.
 - Páginas administrativas ainda sem destino serão apenas identificadas como indisponíveis nesta demonstração; não serão transformadas em módulos completos.
 
 ## Decisões técnicas
+
 - Continuar com TanStack Start, React, Tailwind e os componentes atuais.
 - Manter todo conteúdo demonstrativo no módulo central de dados, separado da apresentação.
 - Não alterar banco: o projeto atual não possui conexão de dados configurada.

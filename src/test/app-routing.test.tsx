@@ -26,7 +26,6 @@ describe("App routing", () => {
     expect(router.state.matches.length).toBeGreaterThan(0);
   });
 
-
   it.each([
     ["/pesquisa", "/pesquisa"],
     ["/login", "/login"],
