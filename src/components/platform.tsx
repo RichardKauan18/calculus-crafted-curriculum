@@ -199,7 +199,12 @@ export function LiveHomePage() {
                   <Link to="/perfil">Meu progresso</Link>
                 </Button>
               ) : (
-                <Button asChild variant="outline" size="lg" className="rounded-full border-primary-foreground/35 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="rounded-full border-primary-foreground/35 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                >
                   <Link to="/cadastro">Criar conta</Link>
                 </Button>
               )}
