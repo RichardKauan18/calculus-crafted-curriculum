@@ -1121,8 +1121,7 @@ export function LiveProfilePage() {
     .filter((lesson) => !progressItems.some((item) => item.lesson_id === lesson.id))
     .slice(0, 4);
   const weeklyGoal = goal?.lessons_per_week ?? 3;
-  // A tabela atual guarda updated_at, não um completed_at imutável.
-  // Por isso, a métrica semanal conta conclusões cujo registro foi atualizado nesta semana.
+  // A data de conclusão é registrada separadamente de updated_at para medir a meta semanal.
   const weekStart = new Date();
   weekStart.setHours(0, 0, 0, 0);
   const mondayOffset = (weekStart.getDay() + 6) % 7;
@@ -1491,10 +1490,11 @@ function TeacherSupportPanel() {
           </div>
           <div className="rounded-xl bg-muted px-4 py-3 text-center">
             <strong className="block font-display text-2xl">{unanswered.length}</strong>
-            <span className="text-xs text-muted-foreground">Sem resposta</span>
+            <span className="text-xs text-muted-foreground">Sem resposta na lista</span>
           </div>
         </div>
         {loading ? <p role="status" className="mt-5 text-sm text-muted-foreground">Carregando dúvidas…</p> : questions.length ? (
+          <>
           <div className="mt-5 space-y-4">
             {questions.map((question) => (
               <article key={question.id} className="rounded-2xl border border-border bg-background p-4 sm:p-5">
@@ -1530,6 +1530,7 @@ function TeacherSupportPanel() {
               </Button>
             </div>
           )}
+          </>
         ) : (
           <p className="mt-5 rounded-xl bg-muted/50 p-5 text-sm text-muted-foreground">Ainda não há dúvidas registradas nas aulas.</p>
         )}
