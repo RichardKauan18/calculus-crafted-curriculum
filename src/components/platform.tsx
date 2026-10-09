@@ -1083,6 +1083,7 @@ export function LiveProfilePage() {
     );
 
   const isTeacher = profile.role === "teacher";
+  const teacherLessons = lessons.filter((lesson) => lesson.teacher_id === user.id);
   const displayName = profile.name?.trim() || (isTeacher ? "Professor" : "Estudante");
   const initials = displayName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toLocaleUpperCase("pt-BR");
   const createdLabel = profile.created_at
@@ -1102,9 +1103,9 @@ export function LiveProfilePage() {
   const mondayOffset = (weekStart.getDay() + 6) % 7;
   weekStart.setDate(weekStart.getDate() - mondayOffset);
   const weeklyCompleted = progressItems.filter((item) => {
-    if (item.status !== "completed") return false;
-    const updatedAt = new Date(item.updated_at);
-    return !Number.isNaN(updatedAt.getTime()) && updatedAt >= weekStart;
+    if (item.status !== "completed" || !item.completed_at) return false;
+    const completedAt = new Date(item.completed_at);
+    return !Number.isNaN(completedAt.getTime()) && completedAt >= weekStart;
   }).length;
   const weeklyProgress = Math.min(100, Math.round((weeklyCompleted / Math.max(1, weeklyGoal)) * 100));
   const recentActivity = [...progressItems]
@@ -1169,9 +1170,9 @@ export function LiveProfilePage() {
             ) : (
               <>
                 <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <Metric icon={<BookOpen aria-hidden="true" />} value={String(lessons.length)} label="Aulas cadastradas" />
-                  <Metric icon={<CheckCircle2 aria-hidden="true" />} value={String(lessons.filter((lesson) => lesson.level === "medio").length)} label="Aulas de Ensino Médio" />
-                  <Metric icon={<Target aria-hidden="true" />} value={String(lessons.filter((lesson) => lesson.level === "concursos").length)} label="Aulas para concursos" />
+                  <Metric icon={<BookOpen aria-hidden="true" />} value={String(teacherLessons.length)} label="Aulas cadastradas" />
+                  <Metric icon={<CheckCircle2 aria-hidden="true" />} value={String(teacherLessons.filter((lesson) => lesson.level === "medio").length)} label="Aulas de Ensino Médio" />
+                  <Metric icon={<Target aria-hidden="true" />} value={String(teacherLessons.filter((lesson) => lesson.level === "concursos").length)} label="Aulas para concursos" />
                 </div>
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <Link to="/professor/aulas" className="group rounded-2xl border border-border/80 bg-card p-6 transition hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -1524,8 +1525,9 @@ function Metric({ icon, value, label }: { icon: React.ReactNode; value: string; 
 }
 
 export function LiveTeacherDashboard() {
-  const { isTeacher, loading: authLoading } = useAuth();
+  const { user, isTeacher, loading: authLoading } = useAuth();
   const { lessons, loading, error, refetch } = useLessons();
+  const teacherLessons = lessons.filter((lesson) => lesson.teacher_id === user?.id);
 
   if (authLoading)
     return (
@@ -1587,22 +1589,22 @@ export function LiveTeacherDashboard() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <Metric
                 icon={<BookOpen aria-hidden="true" />}
-                value={String(lessons.length)}
+                value={String(teacherLessons.length)}
                 label="Aulas cadastradas"
               />
               <Metric
                 icon={<Target aria-hidden="true" />}
-                value={String(lessons.filter((lesson) => lesson.level === "medio").length)}
+                value={String(teacherLessons.filter((lesson) => lesson.level === "medio").length)}
                 label="Ensino Médio"
               />
               <Metric
                 icon={<Target aria-hidden="true" />}
-                value={String(lessons.filter((lesson) => lesson.level === "pre-vestibular").length)}
+                value={String(teacherLessons.filter((lesson) => lesson.level === "pre-vestibular").length)}
                 label="Pré-vestibular"
               />
               <Metric
                 icon={<Target aria-hidden="true" />}
-                value={String(lessons.filter((lesson) => lesson.level === "concursos").length)}
+                value={String(teacherLessons.filter((lesson) => lesson.level === "concursos").length)}
                 label="Concursos"
               />
             </div>
@@ -1630,7 +1632,7 @@ export function LiveTeacherDashboard() {
                 <span className="mt-4 inline-block text-sm font-medium">Abrir biblioteca →</span>
               </Link>
             </div>
-            {!lessons.length && (
+            {!teacherLessons.length && (
               <div className="mt-6 rounded-lg border border-dashed border-border p-6 text-center">
                 <p className="text-muted-foreground">
                   Ainda não há aulas cadastradas no catálogo real.
