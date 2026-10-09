@@ -1068,10 +1068,26 @@ export function LiveTeacherDashboard() {
         ) : (
           <>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Metric icon={<BookOpen aria-hidden="true" />} value={String(lessons.length)} label="Aulas cadastradas" />
-              <Metric icon={<Target aria-hidden="true" />} value={String(lessons.filter((lesson) => lesson.level === "medio").length)} label="Ensino Médio" />
-              <Metric icon={<Target aria-hidden="true" />} value={String(lessons.filter((lesson) => lesson.level === "pre-vestibular").length)} label="Pré-vestibular" />
-              <Metric icon={<Target aria-hidden="true" />} value={String(lessons.filter((lesson) => lesson.level === "concursos").length)} label="Concursos" />
+              <Metric
+                icon={<BookOpen aria-hidden="true" />}
+                value={String(lessons.length)}
+                label="Aulas cadastradas"
+              />
+              <Metric
+                icon={<Target aria-hidden="true" />}
+                value={String(lessons.filter((lesson) => lesson.level === "medio").length)}
+                label="Ensino Médio"
+              />
+              <Metric
+                icon={<Target aria-hidden="true" />}
+                value={String(lessons.filter((lesson) => lesson.level === "pre-vestibular").length)}
+                label="Pré-vestibular"
+              />
+              <Metric
+                icon={<Target aria-hidden="true" />}
+                value={String(lessons.filter((lesson) => lesson.level === "concursos").length)}
+                label="Concursos"
+              />
             </div>
             <div className="mt-8 grid gap-4 md:grid-cols-2">
               <Link
@@ -1099,7 +1115,9 @@ export function LiveTeacherDashboard() {
             </div>
             {!lessons.length && (
               <div className="mt-6 rounded-lg border border-dashed border-border p-6 text-center">
-                <p className="text-muted-foreground">Ainda não há aulas cadastradas no catálogo real.</p>
+                <p className="text-muted-foreground">
+                  Ainda não há aulas cadastradas no catálogo real.
+                </p>
                 <Button asChild className="mt-4">
                   <Link to="/professor/aulas">Cadastrar a primeira aula</Link>
                 </Button>
