@@ -244,7 +244,7 @@ export function LiveLessonsPage() {
       <PageHeader
         eyebrow="Biblioteca"
         title="Todas as aulas"
-        description="Conteúdo real vindo do Supabase, com busca por título, assunto e descrição."
+        description="Explore as aulas disponíveis por título, assunto ou descrição."
       />
       <section className="mx-auto max-w-7xl px-5 sm:px-6">
         <Input
@@ -347,7 +347,9 @@ export function LiveSearchPage() {
 
 export function LiveLessonPage() {
   const { id } = useParams({ strict: false }) as { id?: string };
-  const { lesson, loading, error: lessonError, refetch: refetchLesson } = useLesson(id);
+  const { lesson: loadedLesson, loading, error: lessonError, refetch: refetchLesson } = useLesson(id);
+  const lesson = loadedLesson ?? (!hasSupabaseConfig ? demoPlatformLessons.find((item) => item.id === id) ?? null : null);
+  const isDemoLesson = !hasSupabaseConfig && Boolean(lesson);
   const { user, profile } = useAuth();
   const {
     avg,
@@ -415,6 +417,10 @@ export function LiveLessonPage() {
     status === "completed" ? 100 : status === "half" ? 50 : status === "watching" ? 10 : 0;
   const videoIsValid = isValidYouTubeId(lesson.video_id);
   const setStatus = async (next: "watching" | "half" | "completed") => {
+    if (isDemoLesson) {
+      setMessage("Esta é uma aula demonstrativa. O progresso será salvo quando o catálogo real estiver conectado.");
+      return;
+    }
     if (!user) {
       setMessage("Entre na sua conta para salvar seu progresso.");
       return;
@@ -470,6 +476,11 @@ export function LiveLessonPage() {
         </p>
       </section>
       <section className="mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        {isDemoLesson && (
+          <div className="lg:col-span-2 rounded-lg border border-amber/30 bg-amber/5 p-4 text-sm text-muted-foreground">
+            <strong className="text-foreground">Aula demonstrativa.</strong> O vídeo, o progresso, as avaliações e os comentários não são dados reais nem serão salvos nesta prévia.
+          </div>
+        )}
         <div>
           <div className="aspect-video overflow-hidden rounded-lg bg-black">
             {videoIsValid ? (
@@ -495,7 +506,7 @@ export function LiveLessonPage() {
           <div className="mt-4 rounded-lg border border-border bg-card p-4">
             <div className="flex flex-wrap gap-2">
               <Button
-                disabled={busy}
+                disabled={busy || isDemoLesson}
                 aria-pressed={status === "completed"}
                 onClick={() => setStatus("completed")}
               >
