@@ -32,10 +32,11 @@ export function LiveLessonsPage(){
 }
 
 export function LiveLessonPage(){
- const {id}=useParams({strict:false}) as {id?:string}; const {lesson,loading}=useLesson(id); const {user,profile}=useAuth(); const {avg,count,refetch:refetchRatings}=useRatings(id); const {comments,loading:commentsLoading,refetch:refetchComments}=useComments(id); const {progress,refetch:refetchProgress}=useMyProgress(id,user?.id); const [comment,setComment]=useState(''); const [busy,setBusy]=useState(false); const [message,setMessage]=useState('')
+ const {id}=useParams({strict:false}) as {id?:string}; const {lesson,loading,error:lessonError,refetch:refetchLesson}=useLesson(id); const {user,profile}=useAuth(); const {avg,count,refetch:refetchRatings}=useRatings(id); const {comments,loading:commentsLoading,refetch:refetchComments}=useComments(id); const {progress,refetch:refetchProgress}=useMyProgress(id,user?.id); const [comment,setComment]=useState(''); const [busy,setBusy]=useState(false); const [message,setMessage]=useState('')
  const [myRating,setMyRating]=useState(0)
  useEffect(()=>{if(!id||!user||!hasSupabaseConfig)return;supabase.from('ratings').select('rating').eq('lesson_id',id).eq('user_id',user.id).maybeSingle().then(({data})=>setMyRating((data as {rating:number}|null)?.rating??0))},[id,user])
- if(loading)return <SiteLayout><div className="mx-auto max-w-7xl px-5 py-20">Carregando aula…</div></SiteLayout>
+ if(loading)return <SiteLayout><div role="status" className="mx-auto max-w-7xl px-5 py-20 text-muted-foreground">Carregando aula…</div></SiteLayout>
+ if(lessonError)return <SiteLayout><PageHeader title="Não foi possível carregar esta aula"/><section className="mx-auto max-w-7xl px-5"><p role="alert" className="text-sm text-muted-foreground">{lessonError}</p><Button className="mt-4" onClick={()=>void refetchLesson()}>Tentar novamente</Button></section></SiteLayout>
  if(!lesson)return <SiteLayout><PageHeader title="Aula não encontrada"/><section className="mx-auto max-w-7xl px-5"><Button asChild><Link to="/aulas">Voltar às aulas</Link></Button></section></SiteLayout>
  const status=progress?.status; const progressValue=status==='completed'?100:status==='half'?50:status==='watching'?10:0; const videoIsValid=isValidYouTubeId(lesson.video_id)
  const setStatus=async(next:'watching'|'half'|'completed')=>{if(!user){setMessage('Entre na sua conta para salvar seu progresso.');return}setBusy(true);const{error}=await saveProgress(lesson.id,next);setBusy(false);setMessage(error?'Não foi possível salvar o progresso.':'Progresso salvo.');if(!error)await refetchProgress()}
