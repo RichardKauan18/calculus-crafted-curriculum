@@ -16,5 +16,8 @@ jobs:
           bun-version: latest
       - run: bun install
       - run: bun run build
-      - run: bun run lint
-      - run: bun run test
+      - id: lint
+        run: bun run lint
+      # Run tests even when lint fails so both quality signals remain visible.
+      - if: success() || steps.lint.outcome == 'failure'
+        run: bun run test
