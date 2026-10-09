@@ -40,6 +40,7 @@ import parabola from "@/assets/parabola.jpg";
 import geometry from "@/assets/geometry.jpg";
 import trigonometry from "@/assets/trigonometry.jpg";
 import { TeacherTestimonialsManager, TestimonialsSection } from "@/components/testimonials";
+import { TeacherConcursosManager } from "@/components/teacher-concursos";
 
 const imageFor = (lesson: PlatformLesson) =>
   lesson.level === "pre-vestibular"
@@ -1432,6 +1433,7 @@ export function LiveProfilePage() {
               </>
             )}
             <TeacherTestimonialsManager />
+            <TeacherConcursosManager />
             <TeacherSupportPanel />
           </>
         ) : (
@@ -2243,6 +2245,7 @@ export function LiveTeacherDashboard() {
 export function LiveTeacherPage() {
   const { user, isTeacher, loading: authLoading } = useAuth();
   const { lessons, loading: lessonsLoading, error: lessonsError, refetch } = useLessons();
+  const { concursos } = useConcursos();
   const teacherLessons = lessons.filter((lesson) => lesson.teacher_id === user?.id);
   const [editing, setEditing] = useState<PlatformLesson | null>(null);
   const [title, setTitle] = useState("");
@@ -2250,6 +2253,7 @@ export function LiveTeacherPage() {
   const [duration, setDuration] = useState("");
   const [video, setVideo] = useState("");
   const [level, setLevel] = useState("medio");
+  const [concursoId, setConcursoId] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
@@ -2260,6 +2264,7 @@ export function LiveTeacherPage() {
     setDuration(lesson?.duration ?? "");
     setVideo(lesson?.video_id ?? "");
     setLevel(lesson?.level ?? "medio");
+    setConcursoId(lesson?.concurso_id ?? "");
     setDescription(lesson?.description ?? "");
     setStatus("");
   };
@@ -2270,6 +2275,7 @@ export function LiveTeacherPage() {
     setDuration("");
     setVideo("");
     setLevel("medio");
+    setConcursoId("");
     setDescription("");
   };
   if (authLoading)
@@ -2316,6 +2322,7 @@ export function LiveTeacherPage() {
         duration: duration.trim(),
         video_id: video.trim(),
         level,
+        concurso_id: level === "concursos" ? concursoId || null : null,
         description: description.trim(),
         teacher_id: user.id,
         updated_at: new Date().toISOString(),
@@ -2497,6 +2504,26 @@ export function LiveTeacherPage() {
                   <option value="concursos">Concursos</option>
                 </select>
               </label>
+              {level === "concursos" && (
+                <label className="block text-sm font-medium">
+                  Pasta do concurso
+                  <select
+                    value={concursoId}
+                    onChange={(e) => setConcursoId(e.target.value)}
+                    className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                  >
+                    <option value="">Sem pasta específica</option>
+                    {concursos.map((contest) => (
+                      <option key={contest.id} value={contest.id}>
+                        {contest.name} · {contest.category}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="mt-1 block text-xs font-normal text-muted-foreground">
+                    As pastas são criadas no seu perfil, em “Pastas de concursos”.
+                  </span>
+                </label>
+              )}
               <label className="block text-sm font-medium">
                 Descrição
                 <Textarea
