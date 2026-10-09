@@ -157,54 +157,65 @@ export function LiveHomePage() {
   const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons() : [];
   return (
     <SiteLayout>
-      <section className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
-        <div>
-          <span className="inline-flex rounded-full border border-border bg-card px-3 py-1 font-mono text-[11px] uppercase tracking-[.16em] text-muted-foreground">
-            Matemática, do Fundamental ao IME
-          </span>
-          <h1 className="mt-6 max-w-3xl font-display text-5xl font-semibold leading-[1.04] sm:text-6xl">
-            Aprenda Matemática de forma <em className="text-primary">simples</em>, clara e objetiva.
-          </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            {hasSupabaseConfig
-              ? "Aulas gravadas, progresso real, avaliações e dúvidas respondidas pelo professor."
-              : "Explore uma prévia da plataforma, com aulas ilustrativas identificadas como demonstração."}
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg" className="rounded-full">
-              <Link to="/aulas">Ver aulas</Link>
-            </Button>
-            {profile ? (
-              <Button asChild variant="outline" size="lg" className="rounded-full">
-                <Link to="/perfil">Meu progresso</Link>
+      <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8">
+        <div className="relative isolate grid overflow-hidden rounded-3xl bg-primary text-primary-foreground shadow-xl shadow-foreground/5 lg:grid-cols-[1.05fr_.95fr]">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-28 size-80 rounded-full border border-primary-foreground/10" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 left-[42%] size-96 rounded-full border border-primary-foreground/10" />
+          <div className="relative z-10 px-6 py-12 sm:px-10 sm:py-16 lg:px-12 lg:py-20">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/25 bg-primary-foreground/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[.16em]">
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-secondary" />
+              Matemática, do Fundamental ao IME
+            </span>
+            <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.06] sm:text-5xl lg:text-6xl">
+              Aprenda Matemática de forma <em className="text-[#e7d8ba] dark:text-[#41483a]">simples</em>, clara e objetiva.
+            </h1>
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-primary-foreground/80 sm:text-lg">
+              {hasSupabaseConfig
+                ? "Aulas gravadas, progresso real, avaliações e dúvidas respondidas pelo professor."
+                : "Explore uma prévia da plataforma, com aulas ilustrativas identificadas como demonstração."}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild size="lg" className="rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
+                <Link to="/aulas">Explorar aulas</Link>
               </Button>
-            ) : (
-              <Button asChild variant="outline" size="lg" className="rounded-full">
-                <Link to="/cadastro">Criar conta</Link>
-              </Button>
-            )}
+              {profile ? (
+                <Button asChild variant="outline" size="lg" className="rounded-full border-primary-foreground/35 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
+                  <Link to="/perfil">Meu progresso</Link>
+                </Button>
+              ) : (
+                <Button asChild variant="outline" size="lg" className="rounded-full border-primary-foreground/35 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
+                  <Link to="/cadastro">Criar conta</Link>
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="relative h-[360px] rounded-lg border border-border bg-gradient-to-br from-cyan/10 via-transparent to-primary/10">
-          <div className="math-glow absolute left-1/2 top-1/2 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/30 blur-3xl" />
-          <svg
-            aria-hidden="true"
-            focusable="false"
-            viewBox="0 0 400 400"
-            className="absolute inset-0 m-auto size-[280px] text-primary/50"
-            fill="none"
-            stroke="currentColor"
-          >
-            <circle cx="200" cy="200" r="150" />
-            <path d="M200 50 L330 275 L70 275 Z" />
-            <line x1="200" y1="50" x2="200" y2="350" />
-          </svg>
-          <span className="absolute left-5 top-7 rounded-lg border border-border bg-background/70 px-4 py-3 font-mono text-sm backdrop-blur">
-            a² + b² = c²
-          </span>
-          <span className="absolute bottom-8 right-5 rounded-lg border border-border bg-background/70 px-4 py-3 font-mono text-sm backdrop-blur">
-            ∫ eˣ dx = eˣ + C
-          </span>
+          <div className="relative min-h-[300px] overflow-hidden border-t border-primary-foreground/15 bg-primary-foreground/[0.04] sm:min-h-[360px] lg:border-l lg:border-t-0">
+            <div className="math-glow absolute left-1/2 top-1/2 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-secondary/35 blur-3xl sm:size-80" />
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              viewBox="0 0 400 400"
+              className="absolute inset-0 m-auto size-[250px] text-primary-foreground/35 sm:size-[310px]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.2"
+            >
+              <circle cx="200" cy="200" r="150" strokeDasharray="3 8" />
+              <path d="M200 50 L330 275 L70 275 Z" />
+              <line x1="200" y1="50" x2="200" y2="350" />
+              <line x1="70" y1="275" x2="330" y2="275" />
+              <circle cx="200" cy="200" r="78" />
+            </svg>
+            <span className="absolute left-4 top-5 rounded-xl border border-primary-foreground/20 bg-background/80 px-3 py-2.5 font-mono text-xs text-foreground shadow-lg backdrop-blur sm:left-7 sm:top-8 sm:px-4 sm:py-3 sm:text-sm">
+              a² + b² = c²
+            </span>
+            <span className="absolute bottom-6 right-4 rounded-xl border border-primary-foreground/20 bg-background/80 px-3 py-2.5 font-mono text-xs text-foreground shadow-lg backdrop-blur sm:bottom-8 sm:right-7 sm:px-4 sm:py-3 sm:text-sm">
+              ∫ eˣ dx = eˣ + C
+            </span>
+            <span className="absolute bottom-6 left-5 font-mono text-[10px] uppercase tracking-[.18em] text-primary-foreground/60 sm:bottom-8 sm:left-8">
+              Estudo com método
+            </span>
+          </div>
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6">
