@@ -345,9 +345,7 @@ export function CategoryCard({
   const lessonCount = getTrailLessons(category.slug).length;
   const progress = getTrailProgress(category.slug);
   return (
-    <article
-      className={`category-${category.tone} matris-surface matris-surface-interactive p-5`}
-    >
+    <article className={`category-${category.tone} matris-surface matris-surface-interactive p-5`}>
       <div className="flex items-center justify-between">
         <span className="font-mono text-xs text-muted-foreground">
           {String(index + 1).padStart(2, "0")} · {category.level}
