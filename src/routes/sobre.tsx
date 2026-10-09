@@ -1,1 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router'; import { AboutPage } from '@/components/account-pages'; export const Route=createFileRoute('/sobre')({head:()=>({meta:[{title:'Sobre o professor — Matris'},{name:'description',content:'Conheça a trajetória demonstrativa do professor.'},{property:'og:title',content:'Sobre o professor — Matris'},{property:'og:description',content:'Conheça a trajetória demonstrativa do professor.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}),component:()=> <AboutPage/>})
+import { createFileRoute } from "@tanstack/react-router";
+import { AboutPage } from "@/components/account-pages";
+export const Route = createFileRoute("/sobre")({
+  head: () => ({
+    meta: [
+      { title: "Sobre o professor — Matris" },
+      { name: "description", content: "Conheça a trajetória demonstrativa do professor." },
+      { property: "og:title", content: "Sobre o professor — Matris" },
+      { property: "og:description", content: "Conheça a trajetória demonstrativa do professor." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => <AboutPage />,
+});

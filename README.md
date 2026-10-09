@@ -100,11 +100,11 @@ Menu:
 
 Em dispositivos pequenos, transformar o menu em menu mobile/hambúrguer.
 
---------------------------------------------------
+---
 
 HERO
 
---------------------------------------------------
+---
 
 Criar uma seção inicial forte contendo:
 
@@ -130,11 +130,11 @@ Pode utilizar elementos matemáticos abstratos, fórmulas, gráficos ou formas g
 
 Evitar aparência infantil.
 
---------------------------------------------------
+---
 
 CATEGORIAS
 
---------------------------------------------------
+---
 
 Criar uma seção mostrando:
 
@@ -154,11 +154,11 @@ Ao clicar, navegar para a respectiva área.
 
 Cada categoria deve possuir uma identidade visual própria, mas mantendo a mesma identidade geral do site.
 
---------------------------------------------------
+---
 
 AULAS EM DESTAQUE
 
---------------------------------------------------
+---
 
 Criar uma seção:
 
@@ -194,11 +194,11 @@ Exemplos:
 
 Os dados podem ser fictícios.
 
---------------------------------------------------
+---
 
 PESQUISA
 
---------------------------------------------------
+---
 
 Criar uma pesquisa global.
 
@@ -712,37 +712,37 @@ Sugestão:
 
 /
 
- /fundamental
+/fundamental
 
- /ensino-medio
+/ensino-medio
 
- /pre-vestibular
+/pre-vestibular
 
- /superior
+/superior
 
- /concursos
+/concursos
 
- /concursos/espcex
+/concursos/espcex
 
- /concursos/esa
+/concursos/esa
 
- /aulas
+/aulas
 
- /aulas/:id
+/aulas/:id
 
- /login
+/login
 
- /cadastro
+/cadastro
 
- /perfil
+/perfil
 
- /configuracoes
+/configuracoes
 
- /sobre
+/sobre
 
- /contato
+/contato
 
- /professor
+/professor
 
 Não precisa criar todas as páginas de concursos individualmente se isso gerar repetição desnecessária.
 
