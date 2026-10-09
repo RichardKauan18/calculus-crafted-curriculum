@@ -178,11 +178,9 @@ export function TeacherConcursosManager() {
           <Button type="submit" disabled={busy || !hasSupabaseConfig || form.name.trim().length < 2 || !form.subjects.trim()}>
             <Save aria-hidden="true" className="mr-2 size-4" /> {busy ? "Salvando…" : editing ? "Salvar alterações" : "Criar pasta"}
           </Button>
-          {(editing || form.name || form.full_name || form.description || form.subjects) && (
-            <Button type="button" variant="outline" disabled={busy} onClick={reset}>
-              <X aria-hidden="true" className="mr-2 size-4" /> Cancelar
-            </Button>
-          )}
+          <Button type="button" variant="outline" disabled={busy} onClick={reset}>
+            <X aria-hidden="true" className="mr-2 size-4" /> Cancelar
+          </Button>
         </div>
       </form>}
 
