@@ -9,8 +9,22 @@ export type Comment={id:string;lesson_id:string;user_id:string;user_name:string;
 
 export function useLessons(level?:string,search=''){
  const [lessons,setLessons]=useState<PlatformLesson[]>([]);const [loading,setLoading]=useState(true);const [error,setError]=useState<string|null>(null)
- const load=useCallback(async()=>{if(!hasSupabaseConfig){setLessons([]);setLoading(false);return};setLoading(true);const q=supabase.from('lessons').select('*').order('created_at',{ascending:true});const {data,error}=level?await q.eq('level',level):await q;if(error)setError(error.message);let list=(data??[]) as PlatformLesson[];if(search.trim()){const s=search.toLowerCase();list=list.filter(l=>[l.title,l.subject,l.description].join(' ').toLowerCase().includes(s))}setLessons(list);setLoading(false)},[level,search])
- useEffect(()=>{load()},[load]);return{lessons,loading,error,refetch:load}
+ const load=useCallback(async()=>{
+  if(!hasSupabaseConfig){setLessons([]);setError(null);setLoading(false);return}
+  setLoading(true);setError(null)
+  try{
+   const q=supabase.from('lessons').select('*').order('created_at',{ascending:true})
+   const result=level?await q.eq('level',level):await q
+   if(result.error){setLessons([]);setError('Não foi possível carregar as aulas. Verifique sua conexão e tente novamente.');return}
+   let list=(result.data??[]) as PlatformLesson[]
+   if(search.trim()){const s=search.trim().toLocaleLowerCase('pt-BR');list=list.filter(l=>[l.title,l.subject,l.description].join(' ').toLocaleLowerCase('pt-BR').includes(s))}
+   setLessons(list)
+  }catch{
+   setLessons([])
+   setError('Ocorreu uma falha ao carregar as aulas. Tente novamente.')
+  }finally{setLoading(false)}
+ },[level,search])
+ useEffect(()=>{void load()},[load]);return{lessons,loading,error,refetch:load}
 }
 export function useConcursos(){const[items,setItems]=useState<Concurso[]>([]);const[loading,setLoading]=useState(true);const load=useCallback(async()=>{if(!hasSupabaseConfig){setLoading(false);return};const{data}=await supabase.from('concursos').select('*').order('name');setItems((data??[]) as Concurso[]);setLoading(false)},[]);useEffect(()=>{load()},[load]);return{concursos:items,loading,refetch:load}}
 export function useLesson(id:string|undefined){const[lesson,setLesson]=useState<PlatformLesson|null>(null);const[loading,setLoading]=useState(Boolean(id));useEffect(()=>{if(!id||!hasSupabaseConfig){setLoading(false);return}supabase.from('lessons').select('*').eq('id',id).maybeSingle().then(({data})=>{setLesson(data as PlatformLesson|null);setLoading(false)})},[id]);return{lesson,loading}}
