@@ -495,8 +495,14 @@ export function LiveLessonPage() {
       </SiteLayout>
     );
   const status = progress?.status;
-  const progressValue =
-    status === "completed" ? 100 : status === "half" ? 50 : status === "watching" ? 10 : 0;
+  const statusLabel =
+    status === "completed"
+      ? "Aula concluída"
+      : status === "half"
+        ? "Em andamento · pausada na metade"
+        : status === "watching"
+          ? "Em andamento"
+          : "Ainda não iniciada";
   const videoIsValid = isValidYouTubeId(lesson.video_id);
   const setStatus = async (next: "watching" | "half" | "completed") => {
     if (isDemoLesson) {
@@ -626,10 +632,9 @@ export function LiveLessonPage() {
                   Assistindo
                 </Button>
               </div>
-              <div className="mt-5">
-                <ProgressBar value={progressValue} label="Progresso da aula" />
-                <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
-              </div>
+              <p className="mt-4 rounded-lg bg-muted/60 px-3 py-2 text-sm text-muted-foreground" role="status">
+                Status de estudo: {statusLabel}. O progresso é registrado por status, não pelo tempo real de reprodução.
+              </p>
             </div>
           )}
           {message && (
