@@ -157,6 +157,24 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
 export function LiveHomePage() {
   const { lessons, loading, error, refetch } = useLessons();
   const { profile } = useAuth();
+  const [studentFeedback, setStudentFeedback] = useState<Array<{ id: string; title: string; message: string; created_at: string }>>([]);
+  useEffect(() => {
+    let active = true;
+    if (!profile || profile.role !== "student" || !hasSupabaseConfig) {
+      setStudentFeedback([]);
+      return () => { active = false; };
+    }
+    supabase
+      .from("teacher_feedback")
+      .select("id,title,message,created_at")
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .limit(3)
+      .then(({ data, error: feedbackError }) => {
+        if (active) setStudentFeedback(feedbackError ? [] : (data ?? []) as Array<{ id: string; title: string; message: string; created_at: string }>);
+      });
+    return () => { active = false; };
+  }, [profile?.id, profile?.role]);
   const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons() : [];
   return (
     <SiteLayout>
@@ -274,6 +292,26 @@ export function LiveHomePage() {
           </div>
         )}
       </section>
+      {profile?.role === "student" && studentFeedback.length > 0 && (
+        <section aria-labelledby="teacher-feedback-title" className="mx-auto max-w-7xl px-5 pb-12 sm:px-6">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[.14em] text-primary">Recados do professor</p>
+              <h2 id="teacher-feedback-title" className="mt-2 font-display text-2xl font-semibold sm:text-3xl">Avisos e orientações para seus estudos</h2>
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {studentFeedback.map((item) => (
+              <article key={item.id} className="rounded-2xl border border-primary/15 bg-card p-5 shadow-sm">
+                <span className="inline-flex items-center gap-2 text-xs font-medium text-primary"><MessageSquare className="size-4" aria-hidden="true" /> Mensagem do professor</span>
+                <h3 className="mt-3 font-display text-lg font-semibold">{item.title}</h3>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{item.message}</p>
+                <p className="mt-4 text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </SiteLayout>
   );
 }
@@ -1057,6 +1095,7 @@ export function LiveProfilePage() {
                 )}
               </>
             )}
+            <TeacherSupportPanel />
           </>
         ) : (
           <>
@@ -1167,6 +1206,209 @@ export function LiveProfilePage() {
     </SiteLayout>
   );
 }
+function TeacherSupportPanel() {
+  const { user } = useAuth();
+  const [questions, setQuestions] = useState<Array<{
+    id: string; lesson_id: string; user_id: string; user_name: string;
+    text: string; reply: string | null; created_at: string; lesson_title: string;
+  }>>([]);
+  const [feedback, setFeedback] = useState<Array<{
+    id: string; title: string; message: string; is_published: boolean; created_at: string;
+  }>>([]);
+  const [draftReplies, setDraftReplies] = useState<Record<string, string>>({});
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const loadPanel = async () => {
+    if (!user || !hasSupabaseConfig) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const [questionsResult, feedbackResult] = await Promise.all([
+      supabase.from("comments")
+        .select("id,lesson_id,user_id,user_name,text,reply,created_at,lessons(title)")
+        .order("created_at", { ascending: false })
+        .limit(100),
+      supabase.from("teacher_feedback")
+        .select("id,title,message,is_published,created_at")
+        .eq("teacher_id", user.id)
+        .order("created_at", { ascending: false }),
+    ]);
+    if (questionsResult.error) {
+      setNotice("Não foi possível carregar as dúvidas. Tente atualizar a página.");
+    } else {
+      setQuestions(((questionsResult.data ?? []) as Array<{
+        id: string; lesson_id: string; user_id: string; user_name: string; text: string;
+        reply: string | null; created_at: string; lessons?: { title: string } | null;
+      }>).map((q) => ({ ...q, lesson_title: q.lessons?.title ?? "Aula sem título" })));
+    }
+    if (feedbackResult.error) {
+      setNotice("Não foi possível carregar as mensagens da página inicial.");
+    } else {
+      setFeedback((feedbackResult.data ?? []) as typeof feedback);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { void loadPanel(); }, [user?.id]);
+
+  const sendReply = async (id: string) => {
+    const reply = draftReplies[id]?.trim();
+    if (!reply) return;
+    setBusy(true);
+    const result = await replyToComment(id, reply);
+    setBusy(false);
+    if (result.error) {
+      setNotice("Não foi possível enviar a resposta. Confira as permissões e tente novamente.");
+      return;
+    }
+    setDraftReplies((current) => ({ ...current, [id]: "" }));
+    setNotice("Resposta enviada.");
+    await loadPanel();
+  };
+
+  const createFeedback = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!user || title.trim().length < 3 || message.trim().length < 5) return;
+    setBusy(true);
+    const result = await supabase.from("teacher_feedback").insert({
+      teacher_id: user.id,
+      title: title.trim(),
+      message: message.trim(),
+      is_published: false,
+    });
+    setBusy(false);
+    if (result.error) {
+      setNotice("Não foi possível salvar a mensagem.");
+      return;
+    }
+    setTitle("");
+    setMessage("");
+    setNotice("Mensagem salva como rascunho. Publique quando estiver pronta.");
+    await loadPanel();
+  };
+
+  const toggleFeedback = async (item: (typeof feedback)[number]) => {
+    setBusy(true);
+    const result = await supabase.from("teacher_feedback")
+      .update({ is_published: !item.is_published, updated_at: new Date().toISOString() })
+      .eq("id", item.id)
+      .eq("teacher_id", user?.id);
+    setBusy(false);
+    if (result.error) setNotice("Não foi possível atualizar a publicação.");
+    else setNotice(item.is_published ? "Mensagem retirada da página inicial." : "Mensagem publicada na página inicial dos alunos.");
+    await loadPanel();
+  };
+
+  const deleteFeedback = async (id: string) => {
+    if (!window.confirm("Excluir esta mensagem permanentemente?")) return;
+    setBusy(true);
+    const result = await supabase.from("teacher_feedback").delete().eq("id", id).eq("teacher_id", user?.id);
+    setBusy(false);
+    if (result.error) setNotice("Não foi possível excluir a mensagem.");
+    else setNotice("Mensagem excluída.");
+    await loadPanel();
+  };
+
+  const unanswered = questions.filter((question) => !question.reply?.trim());
+  return (
+    <section className="mt-8 space-y-8">
+      <div aria-labelledby="teacher-questions-title" className="rounded-3xl border border-border/80 bg-card p-5 sm:p-7">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-primary"><MessageSquare className="size-4" aria-hidden="true" /> Atendimento aos alunos</span>
+            <h2 id="teacher-questions-title" className="mt-2 font-display text-2xl font-semibold">Central de dúvidas</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Consulte perguntas deixadas nas aulas e responda sem precisar procurar cada vídeo.</p>
+          </div>
+          <div className="rounded-xl bg-muted px-4 py-3 text-center">
+            <strong className="block font-display text-2xl">{unanswered.length}</strong>
+            <span className="text-xs text-muted-foreground">Sem resposta</span>
+          </div>
+        </div>
+        {loading ? <p role="status" className="mt-5 text-sm text-muted-foreground">Carregando dúvidas…</p> : questions.length ? (
+          <div className="mt-5 space-y-4">
+            {questions.map((question) => (
+              <article key={question.id} className="rounded-2xl border border-border bg-background p-4 sm:p-5">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <p className="font-medium">{question.user_name || "Aluno"}</p>
+                    <p className="mt-1 text-xs text-primary">{question.lesson_title}</p>
+                  </div>
+                  <span className="text-xs text-muted-foreground">{new Date(question.created_at).toLocaleDateString("pt-BR")}</span>
+                </div>
+                <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">{question.text}</p>
+                {question.reply ? (
+                  <div className="mt-4 rounded-xl bg-muted/60 p-3">
+                    <p className="text-xs font-semibold text-primary">Sua resposta</p>
+                    <p className="mt-1 whitespace-pre-wrap text-sm">{question.reply}</p>
+                  </div>
+                ) : (
+                  <div className="mt-4 space-y-2">
+                    <label htmlFor={`reply-${question.id}`} className="text-sm font-medium">Responder dúvida</label>
+                    <Textarea id={`reply-${question.id}`} value={draftReplies[question.id] ?? ""} onChange={(event) => setDraftReplies((current) => ({ ...current, [question.id]: event.target.value }))} placeholder="Escreva uma explicação clara para o aluno…" rows={3} />
+                    <div className="flex justify-end">
+                      <Button disabled={busy || !draftReplies[question.id]?.trim()} onClick={() => void sendReply(question.id)}><Send className="mr-2 size-4" /> Enviar resposta</Button>
+                    </div>
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-5 rounded-xl bg-muted/50 p-5 text-sm text-muted-foreground">Ainda não há dúvidas registradas nas aulas.</p>
+        )}
+      </div>
+
+      <div aria-labelledby="teacher-feedback-management-title" className="rounded-3xl border border-border/80 bg-card p-5 sm:p-7">
+        <span className="inline-flex items-center gap-2 text-sm font-medium text-primary"><Star className="size-4" aria-hidden="true" /> Comunicação com os alunos</span>
+        <h2 id="teacher-feedback-management-title" className="mt-2 font-display text-2xl font-semibold">Mensagens da página inicial</h2>
+        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">Crie avisos, orientações ou mensagens de incentivo. Elas ficam como rascunho até você publicar e, quando publicadas, aparecem apenas na página inicial dos alunos.</p>
+        <form onSubmit={createFeedback} className="mt-5 space-y-4 rounded-2xl bg-muted/40 p-4 sm:p-5">
+          <div>
+            <label htmlFor="feedback-title" className="mb-1.5 block text-sm font-medium">Título da mensagem</label>
+            <Input id="feedback-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={100} minLength={3} required placeholder="Ex.: Cronograma de revisão da semana" />
+          </div>
+          <div>
+            <label htmlFor="feedback-message" className="mb-1.5 block text-sm font-medium">Mensagem para os alunos</label>
+            <Textarea id="feedback-message" value={message} onChange={(event) => setMessage(event.target.value)} maxLength={1000} minLength={5} required rows={4} placeholder="Escreva o aviso ou a orientação que os alunos verão na página inicial…" />
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs text-muted-foreground">Até 100 caracteres no título e 1.000 na mensagem.</p>
+            <Button type="submit" disabled={busy || title.trim().length < 3 || message.trim().length < 5}>Salvar rascunho</Button>
+          </div>
+        </form>
+        {feedback.length ? (
+          <div className="mt-5 space-y-3">
+            <h3 className="font-display text-lg font-semibold">Suas mensagens</h3>
+            {feedback.map((item) => (
+              <article key={item.id} className="flex flex-col gap-4 rounded-2xl border border-border p-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="font-semibold">{item.title}</h4>
+                    <span className={item.is_published ? "rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary" : "rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground"}>{item.is_published ? "Publicada" : "Rascunho"}</span>
+                  </div>
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{item.message}</p>
+                </div>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => void toggleFeedback(item)}>{item.is_published ? "Retirar do início" : "Publicar"}</Button>
+                  <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => void deleteFeedback(item.id)}><Trash2 className="mr-1 size-4" /> Excluir</Button>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-5 text-sm text-muted-foreground">Você ainda não criou mensagens para os alunos.</p>
+        )}
+        {notice && <p role="status" className="mt-4 rounded-xl bg-muted/60 p-3 text-sm">{notice}</p>}
+      </div>
+    </section>
+  );
+}
+
 function Metric({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
     <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
