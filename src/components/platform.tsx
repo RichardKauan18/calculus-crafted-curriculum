@@ -34,6 +34,7 @@ import {
   type PlatformLesson,
 } from "@/hooks/usePlatformData";
 import { hasSupabaseConfig, supabase } from "@/lib/supabase";
+import { lessons as demoLessons } from "@/lib/mock-data";
 import parabola from "@/assets/parabola.jpg";
 import geometry from "@/assets/geometry.jpg";
 import trigonometry from "@/assets/trigonometry.jpg";
@@ -54,7 +55,39 @@ const levelName = (level: string) =>
   })[level] ?? level;
 const isValidYouTubeId = (id: string | undefined) => Boolean(id && /^[a-zA-Z0-9_-]{11}$/.test(id));
 
-function LiveLessonCard({ lesson }: { lesson: PlatformLesson }) {
+const demoPlatformLessons: PlatformLesson[] = demoLessons.map((lesson) => ({
+  id: lesson.id,
+  title: lesson.title,
+  subject: lesson.subject,
+  duration: lesson.duration,
+  video_id: "",
+  level:
+    lesson.categorySlug === "ensino-medio"
+      ? "medio"
+      : lesson.categorySlug === "concursos"
+        ? "concursos"
+        : lesson.categorySlug,
+  concurso_id: null,
+  description: `${lesson.topic}. Conteúdo ilustrativo para demonstrar a experiência da plataforma.`,
+  created_at: "",
+  updated_at: "",
+}));
+
+function getDemoLessons(level?: string, search = "") {
+  const term = search.trim().toLocaleLowerCase("pt-BR");
+  return demoPlatformLessons.filter((lesson) => {
+    const matchesLevel = !level || lesson.level === level;
+    const matchesSearch =
+      !term ||
+      [lesson.title, lesson.subject, lesson.description]
+        .join(" ")
+        .toLocaleLowerCase("pt-BR")
+        .includes(term);
+    return matchesLevel && matchesSearch;
+  });
+}
+
+function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo?: boolean }) {
   const { user } = useAuth();
   const { progress } = useMyProgress(lesson.id, user?.id);
   const value =
@@ -80,7 +113,7 @@ function LiveLessonCard({ lesson }: { lesson: PlatformLesson }) {
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           />
           <span className="absolute left-3 top-3 rounded-full bg-background/90 px-2.5 py-1 font-mono text-xs">
-            {value === 100 ? "Concluída" : value ? "Em andamento" : "Não iniciada"}
+            {demo ? "Demonstração" : value === 100 ? "Concluída" : value ? "Em andamento" : "Não iniciada"}
           </span>
           <span className="absolute bottom-3 right-3 grid size-10 place-items-center rounded-full bg-primary text-primary-foreground">
             <Play className="size-4" fill="currentColor" />
@@ -91,13 +124,21 @@ function LiveLessonCard({ lesson }: { lesson: PlatformLesson }) {
             {lesson.subject} · {levelName(lesson.level)}
           </p>
           <h3 className="mt-1 font-medium">{lesson.title}</h3>
-          <div className="mt-4">
-            <ProgressBar value={value} />
-          </div>
-          <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-            <span>{value}% concluído</span>
-            <span>{lesson.duration}</span>
-          </div>
+          {demo ? (
+            <p className="mt-4 text-xs text-muted-foreground">
+              Prévia ilustrativa · progresso não é salvo
+            </p>
+          ) : (
+            <>
+              <div className="mt-4">
+                <ProgressBar value={value} />
+              </div>
+              <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                <span>{value}% concluído</span>
+                <span>{lesson.duration}</span>
+              </div>
+            </>
+          )}
         </div>
       </Link>
     </article>
