@@ -972,6 +972,14 @@ export function LiveProfilePage() {
   const suggestedLessons = lessons
     .filter((lesson) => !progressItems.some((item) => item.lesson_id === lesson.id))
     .slice(0, 4);
+  const weekStart = new Date();
+  weekStart.setDate(weekStart.getDate() - 6);
+  weekStart.setHours(0, 0, 0, 0);
+  const weeklyCompleted = progressItems.filter(
+    (item) => item.status === "completed" && new Date(item.updated_at) >= weekStart,
+  ).length;
+  const weeklyGoal = goal?.lessons_per_week ?? 3;
+  const overallProgress = lessons.length ? Math.round((completedCount / lessons.length) * 100) : 0;
   return (
     <SiteLayout>
       <PageHeader
@@ -983,16 +991,8 @@ export function LiveProfilePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Metric icon={<CheckCircle2 />} value={String(completedCount)} label="Aulas concluídas" />
           <Metric icon={<Clock3 />} value={String(inProgressCount)} label="Em andamento" />
-          <Metric
-            icon={<Target />}
-            value={String(goal?.lessons_per_week ?? 3)}
-            label="Meta semanal"
-          />
-          <Metric
-            icon={<Users />}
-            value={profile.role === "teacher" ? "Professor" : "Aluno"}
-            label="Tipo de conta"
-          />
+          <Metric icon={<Target />} value={`${weeklyCompleted}/${weeklyGoal}`} label="Meta semanal" />
+          <Metric icon={<BookOpen />} value={`${overallProgress}%`} label="Aulas do catálogo concluídas" />
         </div>
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div>
@@ -1034,7 +1034,15 @@ export function LiveProfilePage() {
             <Target className="size-7 text-primary" />
             <h2 className="mt-4 font-display text-2xl">Meta semanal</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Quantas aulas você quer concluir por semana?
+              Quantas aulas você quer concluir por semana? Nos últimos 7 dias, você concluiu {weeklyCompleted} {weeklyCompleted === 1 ? "aula" : "aulas"}.
+            </p>
+            <div className="mt-4">
+              <ProgressBar value={weeklyGoal ? (weeklyCompleted / weeklyGoal) * 100 : 0} label="Progresso da meta semanal" />
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {weeklyCompleted >= weeklyGoal
+                ? "Meta semanal atingida. Excelente consistência!"
+                : `Faltam ${weeklyGoal - weeklyCompleted} ${weeklyGoal - weeklyCompleted === 1 ? "aula" : "aulas"} para atingir sua meta.`}
             </p>
             <label htmlFor="weekly-goal" className="mt-4 block text-sm font-medium">
               Aulas por semana
