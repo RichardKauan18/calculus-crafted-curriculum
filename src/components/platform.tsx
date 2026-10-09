@@ -632,8 +632,12 @@ export function LiveLessonPage() {
                   Assistindo
                 </Button>
               </div>
-              <p className="mt-4 rounded-lg bg-muted/60 px-3 py-2 text-sm text-muted-foreground" role="status">
-                Status de estudo: {statusLabel}. O progresso é registrado por status, não pelo tempo real de reprodução.
+              <p
+                className="mt-4 rounded-lg bg-muted/60 px-3 py-2 text-sm text-muted-foreground"
+                role="status"
+              >
+                Status de estudo: {statusLabel}. O progresso é registrado por status, não pelo tempo
+                real de reprodução.
               </p>
             </div>
           )}
