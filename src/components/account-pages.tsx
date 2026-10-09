@@ -142,7 +142,7 @@ export function SettingsPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem("matris-language");
-    if (saved && ["pt", "en", "es", "it"].includes(saved)) setLang(saved);
+    if (saved !== "pt") localStorage.setItem("matris-language", "pt");
   }, []);
 
   const selectLanguage = (code: string) => {
