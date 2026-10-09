@@ -12,6 +12,7 @@ export type PlatformLesson = {
   description: string;
   created_at: string;
   updated_at: string;
+  teacher_id?: string | null;
 };
 export type Concurso = {
   id: string;
@@ -35,6 +36,7 @@ export type Progress = {
   user_id: string;
   status: "watching" | "half" | "completed";
   updated_at: string;
+  completed_at?: string | null;
 };
 export type Comment = {
   id: string;
@@ -246,7 +248,7 @@ export function useProgressSummary(userId: string | undefined) {
     try {
       const result = await supabase
         .from("lesson_progress")
-        .select("id,lesson_id,user_id,status,updated_at")
+        .select("id,lesson_id,user_id,status,updated_at,completed_at")
         .eq("user_id", userId);
       if (result.error) {
         setItems([]);
@@ -279,7 +281,12 @@ export async function saveProgress(lessonId: string, status: Progress["status"])
   return supabase
     .from("lesson_progress")
     .upsert(
-      { lesson_id: lessonId, status, updated_at: new Date().toISOString() },
+      {
+        lesson_id: lessonId,
+        status,
+        updated_at: new Date().toISOString(),
+        completed_at: status === "completed" ? new Date().toISOString() : null,
+      },
       { onConflict: "lesson_id,user_id" },
     );
 }
