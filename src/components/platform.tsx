@@ -34,7 +34,7 @@ import {
   type PlatformLesson,
 } from "@/hooks/usePlatformData";
 import { hasSupabaseConfig, supabase } from "@/lib/supabase";
-import { lessons as demoLessons } from "@/lib/mock-data";
+import { exams as demoExams, lessons as demoLessons } from "@/lib/mock-data";
 import parabola from "@/assets/parabola.jpg";
 import geometry from "@/assets/geometry.jpg";
 import trigonometry from "@/assets/trigonometry.jpg";
@@ -166,7 +166,9 @@ export function LiveHomePage() {
             Aprenda Matemática de forma <em className="text-primary">simples</em>, clara e objetiva.
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Aulas gravadas, progresso real, avaliações e dúvidas respondidas pelo professor.
+            {hasSupabaseConfig
+              ? "Aulas gravadas, progresso real, avaliações e dúvidas respondidas pelo professor."
+              : "Explore uma prévia da plataforma, com aulas ilustrativas identificadas como demonstração."}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg" className="rounded-full">
@@ -1283,7 +1285,11 @@ export function LiveLevelPage({ level }: { level: string }) {
       <PageHeader
         eyebrow={levelName(level)}
         title={`Aulas de ${levelName(level)}`}
-        description="Trilha organizada por nível, usando o catálogo real da plataforma."
+        description={
+          hasSupabaseConfig
+            ? "Trilha organizada por nível, usando o catálogo da plataforma."
+            : "Prévia ilustrativa da organização das aulas por nível."
+        }
       />
       <section className="mx-auto max-w-7xl px-5 sm:px-6">
         {loading ? (
@@ -1307,7 +1313,7 @@ export function LiveLevelPage({ level }: { level: string }) {
           <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
             {hasSupabaseConfig
               ? "Ainda não há aulas publicadas nesta trilha."
-              : "Configure a conexão com o Supabase para carregar as aulas desta trilha."}
+              : "Ainda não há aulas demonstrativas para esta trilha."}
           </div>
         )}
       </section>
@@ -1317,12 +1323,17 @@ export function LiveLevelPage({ level }: { level: string }) {
 
 export function LiveConcursosPage() {
   const { concursos, loading, error, refetch } = useConcursos();
+  const demoMode = !hasSupabaseConfig && concursos.length === 0;
   return (
     <SiteLayout>
       <PageHeader
         eyebrow="Preparação por objetivo"
         title="Concursos Militares"
-        description="Organização por concurso, disciplina e assunto — inspirada na estrutura do Matematicando."
+        description={
+          hasSupabaseConfig
+            ? "Organização por concurso, disciplina e assunto."
+            : "Prévia ilustrativa de como a preparação por concurso pode ser organizada."
+        }
       />
       <section className="mx-auto max-w-7xl px-5 sm:px-6">
         {loading ? (
@@ -1336,22 +1347,44 @@ export function LiveConcursosPage() {
               Tentar novamente
             </Button>
           </div>
-        ) : concursos.length ? (
+        ) : concursos.length || demoMode ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {concursos.map((c) => (
-              <Link
-                key={c.id}
-                to="/concursos/$slug"
-                params={{ slug: c.id }}
-                className="rounded-lg border border-border bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <span className="font-display text-3xl font-semibold text-primary">{c.name}</span>
-                <p className="mt-3 text-sm text-muted-foreground">{c.description}</p>
-                <p className="mt-4 font-mono text-xs text-muted-foreground">
-                  {c.category} · {c.subjects?.length ?? 0} disciplinas
-                </p>
-              </Link>
-            ))}
+            {demoMode
+              ? demoExams.map((exam) => (
+                  <Link
+                    key={exam.slug}
+                    to="/concursos/$slug"
+                    params={{ slug: exam.slug }}
+                    className="rounded-lg border border-border bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <span className="inline-flex rounded-full border border-amber/30 bg-amber/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+                      Demonstração
+                    </span>
+                    <span className="mt-3 block font-display text-3xl font-semibold text-primary">
+                      {exam.name}
+                    </span>
+                    <p className="mt-3 text-sm text-muted-foreground">{exam.description}</p>
+                    <p className="mt-4 font-mono text-xs text-muted-foreground">
+                      {exam.subjects} disciplinas previstas · conteúdo ilustrativo
+                    </p>
+                  </Link>
+                ))
+              : concursos.map((c) => (
+                  <Link
+                    key={c.id}
+                    to="/concursos/$slug"
+                    params={{ slug: c.id }}
+                    className="rounded-lg border border-border bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <span className="font-display text-3xl font-semibold text-primary">
+                      {c.name}
+                    </span>
+                    <p className="mt-3 text-sm text-muted-foreground">{c.description}</p>
+                    <p className="mt-4 font-mono text-xs text-muted-foreground">
+                      {c.category} · {c.subjects?.length ?? 0} disciplinas
+                    </p>
+                  </Link>
+                ))}
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
@@ -1374,6 +1407,7 @@ export function LiveConcursoPage() {
     refetch: refetchContests,
   } = useConcursos();
   const concurso = concursos.find((c) => c.id === slug);
+  const demoExam = !hasSupabaseConfig ? demoExams.find((exam) => exam.slug === slug) : undefined;
   const {
     lessons,
     loading,
@@ -1399,6 +1433,29 @@ export function LiveConcursoPage() {
           </p>
           <Button className="mt-4" onClick={() => void refetchContests()}>
             Tentar novamente
+          </Button>
+        </section>
+      </SiteLayout>
+    );
+  if (demoExam)
+    return (
+      <SiteLayout>
+        <PageHeader
+          eyebrow="Prévia demonstrativa"
+          title={demoExam.name}
+          description={demoExam.description}
+        />
+        <section className="mx-auto max-w-7xl px-5 sm:px-6">
+          <div className="rounded-lg border border-amber/30 bg-amber/5 p-5">
+            <p className="font-medium">Conteúdo ilustrativo</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Esta prévia indica uma estrutura de preparação com {demoExam.subjects} disciplinas
+              previstas. A grade real de disciplinas, as aulas e o progresso só serão exibidos
+              quando os dados forem cadastrados no catálogo conectado.
+            </p>
+          </div>
+          <Button asChild variant="outline" className="mt-5">
+            <Link to="/concursos">Voltar aos concursos</Link>
           </Button>
         </section>
       </SiteLayout>
