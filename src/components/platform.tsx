@@ -1059,6 +1059,7 @@ export function LiveProfilePage() {
   const { goal, update } = useStudyGoal(user?.id);
   const [goalValue, setGoalValue] = useState(3);
   const [goalStatus, setGoalStatus] = useState("");
+  const [goalSaving, setGoalSaving] = useState(false);
 
   useEffect(() => {
     if (goal) setGoalValue(goal.lessons_per_week);
@@ -1066,12 +1067,15 @@ export function LiveProfilePage() {
 
   const saveGoal = async () => {
     const safe = Math.max(1, Math.min(50, Math.floor(Number.isFinite(goalValue) ? goalValue : 1)));
+    setGoalSaving(true);
     setGoalStatus("Salvando…");
     try {
       const result = await update(safe);
       setGoalStatus(result.error ? "Não foi possível salvar a meta." : "Meta semanal salva.");
     } catch {
       setGoalStatus("Não foi possível salvar a meta.");
+    } finally {
+      setGoalSaving(false);
     }
   };
 
@@ -1293,7 +1297,7 @@ export function LiveProfilePage() {
                 <label htmlFor="weekly-goal" className="mt-5 block text-sm font-medium">Aulas por semana</label>
                 <Input id="weekly-goal" type="number" min={1} max={50} value={goalValue} onChange={(e) => setGoalValue(Number(e.target.value))} className="mt-2" />
                 <p className="mt-2 text-xs text-muted-foreground">Escolha entre 1 e 50 aulas por semana.</p>
-                <Button className="mt-4 w-full rounded-full" onClick={() => void saveGoal()} disabled={goalValue < 1 || goalValue > 50}>Salvar meta</Button>
+                <Button className="mt-4 w-full rounded-full" onClick={() => void saveGoal()} disabled={goalSaving || goalValue < 1 || goalValue > 50}>{goalSaving ? "Salvando…" : "Salvar meta"}</Button>
                 {goalStatus && <p role="status" className="mt-3 text-sm text-muted-foreground">{goalStatus}</p>}
               </aside>
             </div>
