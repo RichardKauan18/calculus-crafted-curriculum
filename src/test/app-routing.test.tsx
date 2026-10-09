@@ -26,6 +26,28 @@ describe("App routing", () => {
     expect(router.state.matches.length).toBeGreaterThan(0);
   });
 
+
+  it.each([
+    ["/pesquisa", "/pesquisa"],
+    ["/login", "/login"],
+    ["/cadastro", "/cadastro"],
+    ["/perfil", "/perfil"],
+    ["/configuracoes", "/configuracoes"],
+    ["/fundamental", "/fundamental"],
+    ["/ensino-medio", "/ensino-medio"],
+    ["/pre-vestibular", "/pre-vestibular"],
+    ["/superior", "/superior"],
+    ["/aulas/example", "/aulas/$id"],
+    ["/concursos/example", "/concursos/$slug"],
+    ["/professor/aulas", "/professor/aulas"],
+  ])("resolves %s to its intended route", async (path, routeId) => {
+    const router = createTestRouter(path);
+
+    await router.load();
+
+    expect(router.state.matches.some((match) => match.routeId === routeId)).toBe(true);
+  });
+
   it("resolves an unknown path through the root not-found boundary", async () => {
     const path = "/this-route-does-not-exist";
     const router = createTestRouter(path);
