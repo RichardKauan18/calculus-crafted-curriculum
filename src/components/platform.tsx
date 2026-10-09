@@ -39,6 +39,7 @@ import { exams as demoExams, lessons as demoLessons } from "@/lib/mock-data";
 import parabola from "@/assets/parabola.jpg";
 import geometry from "@/assets/geometry.jpg";
 import trigonometry from "@/assets/trigonometry.jpg";
+import { TeacherTestimonialsManager, TestimonialsSection } from "@/components/testimonials";
 
 const imageFor = (lesson: PlatformLesson) =>
   lesson.level === "pre-vestibular"
@@ -323,6 +324,7 @@ export function LiveHomePage() {
           </div>
         )}
       </section>
+      <TestimonialsSection />
       {profile?.role === "student" &&
         (feedbackLoading || feedbackError || studentFeedback.length > 0) && (
           <section
@@ -1429,6 +1431,7 @@ export function LiveProfilePage() {
                 )}
               </>
             )}
+            <TeacherTestimonialsManager />
             <TeacherSupportPanel />
           </>
         ) : (
