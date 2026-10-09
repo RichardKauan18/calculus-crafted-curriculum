@@ -125,18 +125,18 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
             <Play className="size-4" fill="currentColor" />
           </span>
         </div>
-        <div className="p-4">
-          <p className="font-mono text-xs text-muted-foreground">
+        <div className="p-5">
+          <p className="font-mono text-[11px] uppercase tracking-[.12em] text-muted-foreground">
             {lesson.subject} · {levelName(lesson.level)}
           </p>
           <h3 className="mt-2 font-display text-lg font-semibold leading-snug tracking-tight">{lesson.title}</h3>
           {demo ? (
-            <p className="mt-4 text-xs text-muted-foreground">
+            <p className="mt-5 rounded-lg bg-muted/70 px-3 py-2 text-xs text-muted-foreground">
               Prévia ilustrativa · progresso não é salvo
             </p>
           ) : (
             <>
-              <div className="mt-4">
+              <div className="mt-5">
                 <ProgressBar value={value} />
               </div>
               <div className="mt-2 flex justify-between text-xs text-muted-foreground">
@@ -258,7 +258,7 @@ export function LiveHomePage() {
             </Button>
           </div>
         ) : displayedLessons.length ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {displayedLessons.slice(0, 6).map((l) => (
               <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
@@ -290,13 +290,15 @@ export function LiveLessonsPage() {
         title="Todas as aulas"
         description="Explore as aulas disponíveis por título, assunto ou descrição."
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+        <div className="rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:p-5">
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por aula, assunto ou matéria…"
-          className="h-12"
+          className="h-12 rounded-xl border-border/80 bg-background"
         />
+        </div>
         {loading ? (
           <p role="status" className="mt-8 text-muted-foreground">
             Carregando…
@@ -309,7 +311,7 @@ export function LiveLessonsPage() {
             </Button>
           </div>
         ) : displayedLessons.length ? (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {displayedLessons.map((l) => (
               <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
@@ -341,7 +343,8 @@ export function LiveSearchPage() {
         title="O que você quer aprender?"
         description="Pesquise aulas publicadas por título, matéria ou descrição."
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+        <div className="rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:p-5">
         <label htmlFor="platform-search" className="sr-only">
           Pesquisar aulas
         </label>
@@ -351,9 +354,10 @@ export function LiveSearchPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Ex.: equações, trigonometria, álgebra…"
-          className="h-12"
+          className="h-12 rounded-xl border-border/80 bg-background"
           autoComplete="off"
         />
+        </div>
         {loading ? (
           <p role="status" className="mt-8 text-muted-foreground">
             Buscando aulas…
@@ -372,7 +376,7 @@ export function LiveSearchPage() {
               {displayedLessons.length === 1 ? "resultado encontrado" : "resultados encontrados"}
             </p>
             {displayedLessons.length ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {displayedLessons.map((l) => (
                   <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
                 ))}
@@ -601,7 +605,7 @@ export function LiveLessonPage() {
                   Assistindo
                 </Button>
               </div>
-              <div className="mt-4">
+              <div className="mt-5">
                 <ProgressBar value={progressValue} label="Progresso da aula" />
                 <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
               </div>
@@ -938,7 +942,7 @@ export function LiveProfilePage() {
         title={`Olá, ${profile.name || "estudante"}`}
         description="Acompanhe seu progresso e mantenha uma meta de estudos consistente."
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Metric icon={<CheckCircle2 />} value={String(completedCount)} label="Aulas concluídas" />
           <Metric icon={<Clock3 />} value={String(inProgressCount)} label="Em andamento" />
@@ -1077,7 +1081,7 @@ export function LiveTeacherDashboard() {
             : "Prévia da área do professor. Conecte o catálogo real para exibir métricas e gerenciar aulas."
         }
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         {!hasSupabaseConfig ? (
           <div className="rounded-lg border border-amber/30 bg-amber/5 p-5">
             <h2 className="font-medium">Catálogo não conectado</h2>
@@ -1278,7 +1282,7 @@ export function LiveTeacherPage() {
         title="Gerenciar aulas"
         description="Cadastre, edite e remova aulas publicadas."
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="space-y-3">
             {lessonsLoading ? (
@@ -1447,7 +1451,7 @@ export function LiveLevelPage({ level }: { level: string }) {
             : "Prévia ilustrativa da organização das aulas por nível."
         }
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         {loading ? (
           <p role="status" className="py-8 text-muted-foreground">
             Carregando aulas…
@@ -1460,7 +1464,7 @@ export function LiveLevelPage({ level }: { level: string }) {
             </Button>
           </div>
         ) : displayedLessons.length ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {displayedLessons.map((l) => (
               <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
@@ -1491,7 +1495,7 @@ export function LiveConcursosPage() {
             : "Prévia ilustrativa de como a preparação por concurso pode ser organizada."
         }
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         {loading ? (
           <p role="status" className="py-8 text-muted-foreground">
             Carregando concursos…
@@ -1504,7 +1508,7 @@ export function LiveConcursosPage() {
             </Button>
           </div>
         ) : concursos.length || demoMode ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {demoMode
               ? demoExams.map((exam) => (
                   <Link
@@ -1601,7 +1605,7 @@ export function LiveConcursoPage() {
           title={demoExam.name}
           description={demoExam.description}
         />
-        <section className="mx-auto max-w-7xl px-5 sm:px-6">
+        <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
           <div className="rounded-lg border border-amber/30 bg-amber/5 p-5">
             <p className="font-medium">Conteúdo ilustrativo</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
