@@ -804,11 +804,12 @@ export function LiveLessonPage() {
 }
 
 export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
-  const { signIn, signUp, session } = useAuth();
+  const { signIn, signUp, resetPassword, session } = useAuth();
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [forgotPassword, setForgotPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [busy, setBusy] = useState(false);
@@ -821,6 +822,15 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
     setError("");
     setSuccess("");
     try {
+      if (forgotPassword) {
+        const err = await resetPassword(email.trim());
+        if (err) {
+          setError(err);
+          return;
+        }
+        setSuccess("Se esse e-mail estiver cadastrado, enviaremos um link para redefinir sua senha. Confira também a caixa de spam.");
+        return;
+      }
       const err = signup
         ? await signUp(email.trim(), password, name.trim())
         : await signIn(email.trim(), password);
@@ -859,9 +869,12 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
           onSubmit={submit}
           className="rounded-3xl border border-border/80 bg-card p-6 shadow-xl shadow-foreground/5 sm:p-8 lg:p-10"
         >
-          <h2 className="font-display text-3xl">{signup ? "Criar conta" : "Entrar"}</h2>
+          <h2 className="font-display text-3xl">{forgotPassword ? "Recuperar senha" : signup ? "Criar conta" : "Entrar"}</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {forgotPassword ? "Informe o e-mail da sua conta para receber um link seguro de redefinição." : signup ? "Crie sua conta para acompanhar seu progresso." : "Entre para acessar seu progresso e suas aulas."}
+          </p>
           <div className="mt-7 space-y-5">
-            {signup && (
+            {signup && !forgotPassword && (
               <label className="block">
                 <span className="mb-2 block text-sm font-medium">Nome</span>
                 <Input
@@ -882,17 +895,19 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
                 required
               />
             </label>
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium">Senha</span>
-              <Input
-                type="password"
-                autoComplete={signup ? "new-password" : "current-password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                minLength={6}
-                required
-              />
-            </label>
+            {!forgotPassword && (
+              <label className="block">
+                <span className="mb-2 block text-sm font-medium">Senha</span>
+                <Input
+                  type="password"
+                  autoComplete={signup ? "new-password" : "current-password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  minLength={6}
+                  required
+                />
+              </label>
+            )}
           </div>
           {error && (
             <p role="alert" className="mt-4 text-sm text-destructive">
@@ -908,10 +923,15 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
             </p>
           )}
           <Button disabled={busy} className="mt-6 h-11 w-full rounded-full">
-            {busy ? "Aguarde…" : signup ? "Criar conta" : "Entrar"}
+            {busy ? "Aguarde…" : forgotPassword ? "Enviar link de recuperação" : signup ? "Criar conta" : "Entrar"}
           </Button>
-          <div className="mt-5 text-right text-sm">
-            <Link to={signup ? "/login" : "/cadastro"} className="text-primary">
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
+            {!signup && (
+              <button type="button" className="text-primary underline-offset-4 hover:underline" onClick={() => { setForgotPassword((value) => !value); setError(""); setSuccess(""); }}>
+                {forgotPassword ? "Voltar para entrar" : "Esqueci minha senha"}
+              </button>
+            )}
+            <Link to={signup ? "/login" : "/cadastro"} className="ml-auto text-primary">
               {signup ? "Já tenho conta" : "Criar conta"}
             </Link>
           </div>
@@ -922,7 +942,7 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
 }
 
 export function LiveProfilePage() {
-  const { user, profile, loading: authLoading, signOut } = useAuth();
+  const { user, profile, loading: authLoading, profileError, signOut } = useAuth();
   const {
     lessons,
     loading: lessonsLoading,
@@ -968,13 +988,21 @@ export function LiveProfilePage() {
   if (!user || !profile)
     return (
       <SiteLayout>
-        <PageHeader eyebrow="Meu perfil" title="Entre para acessar sua área" description="Faça login para acompanhar seus estudos ou gerenciar suas aulas." />
+        <PageHeader
+          eyebrow="Meu perfil"
+          title={user && profileError ? "Não foi possível carregar seu perfil" : "Entre para acessar sua área"}
+          description={profileError || "Faça login para acompanhar seus estudos ou gerenciar suas aulas."}
+        />
         <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
           <div className="max-w-xl rounded-2xl border border-border bg-card p-6 sm:p-8">
-            <p className="text-muted-foreground">Seu perfil reúne as informações da conta e os atalhos mais importantes para seu tipo de acesso.</p>
-            <Button asChild className="mt-5 rounded-full">
-              <Link to="/login">Entrar na minha conta</Link>
-            </Button>
+            <p className="text-muted-foreground">
+              {user ? "Sua sessão está ativa, mas os dados do perfil não estão disponíveis. Tente novamente antes de continuar." : "Entre na sua conta para acompanhar seus estudos ou gerenciar suas aulas."}
+            </p>
+            {user ? (
+              <Button className="mt-5 rounded-full" onClick={() => window.location.reload()}>Tentar novamente</Button>
+            ) : (
+              <Button asChild className="mt-5 rounded-full"><Link to="/login">Entrar na minha conta</Link></Button>
+            )}
           </div>
         </section>
       </SiteLayout>
@@ -1546,8 +1574,9 @@ export function LiveTeacherDashboard() {
 }
 
 export function LiveTeacherPage() {
-  const { isTeacher, loading: authLoading } = useAuth();
+  const { user, isTeacher, loading: authLoading } = useAuth();
   const { lessons, loading: lessonsLoading, error: lessonsError, refetch } = useLessons();
+  const teacherLessons = lessons.filter((lesson) => lesson.teacher_id === user?.id);
   const [editing, setEditing] = useState<PlatformLesson | null>(null);
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
@@ -1610,6 +1639,10 @@ export function LiveTeacherPage() {
     setBusy(true);
     setStatus("Salvando…");
     try {
+      if (!user?.id) {
+        setStatus("Sua sessão expirou. Entre novamente para salvar aulas.");
+        return;
+      }
       const payload = {
         title: title.trim(),
         subject: subject.trim(),
@@ -1617,10 +1650,11 @@ export function LiveTeacherPage() {
         video_id: video.trim(),
         level,
         description: description.trim(),
+        teacher_id: user.id,
         updated_at: new Date().toISOString(),
       };
       const result = editing
-        ? await supabase.from("lessons").update(payload).eq("id", editing.id)
+        ? await supabase.from("lessons").update(payload).eq("id", editing.id).eq("teacher_id", user.id)
         : await supabase.from("lessons").insert(payload);
       if (result.error) {
         setStatus("Não foi possível salvar a aula. Confira os dados e suas permissões.");
@@ -1640,7 +1674,11 @@ export function LiveTeacherPage() {
     setBusy(true);
     setStatus("");
     try {
-      const result = await supabase.from("lessons").delete().eq("id", id);
+      if (!user?.id) {
+        setStatus("Sua sessão expirou. Entre novamente para excluir aulas.");
+        return;
+      }
+      const result = await supabase.from("lessons").delete().eq("id", id).eq("teacher_id", user.id);
       if (result.error) {
         setStatus("Não foi possível excluir a aula. Confira suas permissões.");
         return;
@@ -1675,8 +1713,8 @@ export function LiveTeacherPage() {
                   Tentar novamente
                 </Button>
               </div>
-            ) : lessons.length ? (
-              lessons.map((l) => (
+            ) : teacherLessons.length ? (
+              teacherLessons.map((l) => (
                 <article
                   key={l.id}
                   className="grid gap-4 rounded-2xl border border-border/80 bg-card p-5 shadow-sm transition-colors hover:border-primary/30 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
@@ -1760,6 +1798,19 @@ export function LiveTeacherPage() {
                 <span className="mt-1 block text-xs font-normal text-muted-foreground">
                   Cole apenas o ID, não o link completo.
                 </span>
+                {isValidYouTubeId(video.trim()) && (
+                  <div className="mt-3 overflow-hidden rounded-xl border border-border">
+                    <iframe
+                      className="aspect-video w-full"
+                      src={`https://www.youtube-nocookie.com/embed/${video.trim()}`}
+                      title={`Prévia do vídeo: ${title.trim() || "aula"}`}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                    />
+                  </div>
+                )}
               </label>
               <label className="block text-sm font-medium">
                 Nível
