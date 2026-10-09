@@ -113,7 +113,13 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           />
           <span className="absolute left-3 top-3 rounded-full bg-background/90 px-2.5 py-1 font-mono text-xs">
-            {demo ? "Demonstração" : value === 100 ? "Concluída" : value ? "Em andamento" : "Não iniciada"}
+            {demo
+              ? "Demonstração"
+              : value === 100
+                ? "Concluída"
+                : value
+                  ? "Em andamento"
+                  : "Não iniciada"}
           </span>
           <span className="absolute bottom-3 right-3 grid size-10 place-items-center rounded-full bg-primary text-primary-foreground">
             <Play className="size-4" fill="currentColor" />
@@ -238,7 +244,11 @@ export function LiveHomePage() {
 export function LiveLessonsPage() {
   const [search, setSearch] = useState("");
   const { lessons, loading, error, refetch } = useLessons(undefined, search);
-  const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons(undefined, search) : [];
+  const displayedLessons = lessons.length
+    ? lessons
+    : !hasSupabaseConfig
+      ? getDemoLessons(undefined, search)
+      : [];
   return (
     <SiteLayout>
       <PageHeader
@@ -332,7 +342,9 @@ export function LiveSearchPage() {
             ) : (
               <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
                 {!hasSupabaseConfig
-                  ? "Configure a conexão com o Supabase para disponibilizar a pesquisa de aulas."
+                  ? search.trim()
+                    ? "Nenhuma aula demonstrativa corresponde à busca."
+                    : "Configure o catálogo real para disponibilizar mais aulas."
                   : search.trim()
                     ? "Nenhuma aula encontrada. Tente outro termo."
                     : "Nenhuma aula publicada está disponível para pesquisa no momento."}
@@ -348,7 +360,9 @@ export function LiveSearchPage() {
 export function LiveLessonPage() {
   const { id } = useParams({ strict: false }) as { id?: string };
   const { lesson: loadedLesson, loading, error: lessonError, refetch: refetchLesson } = useLesson(id);
-  const lesson = loadedLesson ?? (!hasSupabaseConfig ? demoPlatformLessons.find((item) => item.id === id) ?? null : null);
+  const lesson =
+    loadedLesson ??
+    (!hasSupabaseConfig ? (demoPlatformLessons.find((item) => item.id === id) ?? null) : null);
   const isDemoLesson = !hasSupabaseConfig && Boolean(lesson);
   const { user, profile } = useAuth();
   const {
@@ -418,7 +432,9 @@ export function LiveLessonPage() {
   const videoIsValid = isValidYouTubeId(lesson.video_id);
   const setStatus = async (next: "watching" | "half" | "completed") => {
     if (isDemoLesson) {
-      setMessage("Esta é uma aula demonstrativa. O progresso será salvo quando o catálogo real estiver conectado.");
+      setMessage(
+        "Esta é uma aula demonstrativa. O progresso será salvo quando o catálogo real estiver conectado.",
+      );
       return;
     }
     if (!user) {
@@ -485,8 +501,9 @@ export function LiveLessonPage() {
       </section>
       <section className="mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         {isDemoLesson && (
-          <div className="lg:col-span-2 rounded-lg border border-amber/30 bg-amber/5 p-4 text-sm text-muted-foreground">
-            <strong className="text-foreground">Aula demonstrativa.</strong> O vídeo, o progresso, as avaliações e os comentários não são dados reais nem serão salvos nesta prévia.
+          <div className="rounded-lg border border-amber/30 bg-amber/5 p-4 text-sm text-muted-foreground lg:col-span-2">
+            <strong className="text-foreground">Aula demonstrativa.</strong> O vídeo, o progresso,
+            as avaliações e os comentários não são dados reais nem serão salvos nesta prévia.
           </div>
         )}
         <div>
@@ -512,8 +529,8 @@ export function LiveLessonPage() {
             )}
           </div>
           {!isDemoLesson && (
-          <div className="mt-4 rounded-lg border border-border bg-card p-4">
-            <div className="flex flex-wrap gap-2">
+            <div className="mt-4 rounded-lg border border-border bg-card p-4">
+              <div className="flex flex-wrap gap-2">
               <Button
                 disabled={busy || isDemoLesson}
                 aria-pressed={status === "completed"}
@@ -544,8 +561,8 @@ export function LiveLessonPage() {
             <div className="mt-4">
               <ProgressBar value={progressValue} label="Progresso da aula" />
               <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
+              </div>
             </div>
-          </div>
           )}
           {message && (
             <p role="status" className="mt-3 text-sm text-muted-foreground">
@@ -582,7 +599,11 @@ export function LiveLessonPage() {
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Professor, poderia explicar novamente esta parte?"
                 />
-                <Button className="mt-3" disabled={busy || isDemoLesson || !comment.trim()} onClick={sendComment}>
+                <Button
+                  className="mt-3"
+                  disabled={busy || isDemoLesson || !comment.trim()}
+                  onClick={sendComment}
+                >
                   <Send aria-hidden="true" />
                   Enviar comentário
                 </Button>
@@ -1243,7 +1264,11 @@ export function LiveTeacherPage() {
 
 export function LiveLevelPage({ level }: { level: string }) {
   const { lessons, loading, error, refetch } = useLessons(level);
-  const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons(level) : [];
+  const displayedLessons = lessons.length
+    ? lessons
+    : !hasSupabaseConfig
+      ? getDemoLessons(level)
+      : [];
   return (
     <SiteLayout>
       <PageHeader
