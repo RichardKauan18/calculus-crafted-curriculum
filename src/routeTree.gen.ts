@@ -18,6 +18,7 @@ import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as EnsinoMedioRouteImport } from './routes/ensino-medio'
 import { Route as FundamentalRouteImport } from './routes/fundamental'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as PesquisaRouteImport } from './routes/pesquisa'
 import { Route as PreVestibularRouteImport } from './routes/pre-vestibular'
@@ -74,6 +75,11 @@ const FundamentalRoute = FundamentalRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
+  id: '/redefinir-senha',
+  path: '/redefinir-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PerfilRoute = PerfilRouteImport.update({
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/ensino-medio': typeof EnsinoMedioRoute
   '/fundamental': typeof FundamentalRoute
   '/login': typeof LoginRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
   '/perfil': typeof PerfilRoute
   '/pesquisa': typeof PesquisaRoute
   '/pre-vestibular': typeof PreVestibularRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/ensino-medio': typeof EnsinoMedioRoute
   '/fundamental': typeof FundamentalRoute
   '/login': typeof LoginRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
   '/perfil': typeof PerfilRoute
   '/pesquisa': typeof PesquisaRoute
   '/pre-vestibular': typeof PreVestibularRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/ensino-medio': typeof EnsinoMedioRoute
   '/fundamental': typeof FundamentalRoute
   '/login': typeof LoginRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
   '/perfil': typeof PerfilRoute
   '/pesquisa': typeof PesquisaRoute
   '/pre-vestibular': typeof PreVestibularRoute
@@ -216,6 +225,7 @@ export interface FileRouteTypes {
     | '/ensino-medio'
     | '/fundamental'
     | '/login'
+    | '/redefinir-senha'
     | '/perfil'
     | '/pesquisa'
     | '/pre-vestibular'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/ensino-medio'
     | '/fundamental'
     | '/login'
+    | '/redefinir-senha'
     | '/perfil'
     | '/pesquisa'
     | '/pre-vestibular'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/ensino-medio'
     | '/fundamental'
     | '/login'
+    | '/redefinir-senha'
     | '/perfil'
     | '/pesquisa'
     | '/pre-vestibular'
@@ -283,6 +295,7 @@ export interface RootRouteChildren {
   EnsinoMedioRoute: typeof EnsinoMedioRoute
   FundamentalRoute: typeof FundamentalRoute
   LoginRoute: typeof LoginRoute
+  RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   PerfilRoute: typeof PerfilRoute
   PesquisaRoute: typeof PesquisaRoute
   PreVestibularRoute: typeof PreVestibularRoute
@@ -354,6 +367,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/redefinir-senha': {
+      id: '/redefinir-senha'
+      path: '/redefinir-senha'
+      fullPath: '/redefinir-senha'
+      preLoaderRoute: typeof RedefinirSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/perfil': {
