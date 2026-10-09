@@ -806,7 +806,9 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
     <SiteLayout>
       <section className="mx-auto grid min-h-[70vh] max-w-6xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[.9fr_1.1fr] lg:gap-12">
         <div className="hidden rounded-3xl bg-primary p-10 text-primary-foreground shadow-xl shadow-foreground/5 lg:block">
-          <p className="font-mono text-xs uppercase tracking-[.16em] text-primary-foreground/70">Matris .mat</p>
+          <p className="font-mono text-xs uppercase tracking-[.16em] text-primary-foreground/70">
+            Matris .mat
+          </p>
           <h1 className="mt-5 font-display text-4xl font-semibold leading-tight xl:text-5xl">
             Sua evolução começa com uma aula.
           </h1>
@@ -814,7 +816,10 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
             Conta real com progresso, avaliações, comentários e metas sincronizados.
           </p>
         </div>
-        <form onSubmit={submit} className="rounded-3xl border border-border/80 bg-card p-6 shadow-xl shadow-foreground/5 sm:p-8 lg:p-10">
+        <form
+          onSubmit={submit}
+          className="rounded-3xl border border-border/80 bg-card p-6 shadow-xl shadow-foreground/5 sm:p-8 lg:p-10"
+        >
           <h2 className="font-display text-3xl">{signup ? "Criar conta" : "Entrar"}</h2>
           <div className="mt-7 space-y-5">
             {signup && (
