@@ -513,6 +513,7 @@ const rootRouteChildren: RootRouteChildren = {
   EnsinoMedioRoute: EnsinoMedioRoute,
   FundamentalRoute: FundamentalRoute,
   LoginRoute: LoginRoute,
+  RedefinirSenhaRoute: RedefinirSenhaRoute,
   PerfilRoute: PerfilRoute,
   PesquisaRoute: PesquisaRoute,
   PreVestibularRoute: PreVestibularRoute,
