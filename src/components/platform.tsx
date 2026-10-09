@@ -287,7 +287,9 @@ export function LiveLessonsPage() {
     : !hasSupabaseConfig
       ? getDemoLessons(undefined, search)
       : [];
-  const filteredLessons = displayedLessons.filter((lesson) => level === "all" || lesson.level === level);
+  const filteredLessons = displayedLessons.filter(
+    (lesson) => level === "all" || lesson.level === level,
+  );
   return (
     <SiteLayout>
       <PageHeader
@@ -326,7 +328,9 @@ export function LiveLessonsPage() {
           </label>
         </div>
         <p aria-live="polite" className="mt-5 font-mono text-xs text-muted-foreground">
-          {filteredLessons.length} {filteredLessons.length === 1 ? "aula encontrada" : "aulas encontradas"}
+          {filteredLessons.length}
+          {" "}
+          {filteredLessons.length === 1 ? "aula encontrada" : "aulas encontradas"}
         </p>
         {loading ? (
           <p role="status" className="mt-8 text-muted-foreground">
@@ -925,7 +929,10 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
             </p>
           )}
           {resetMessage && (
-            <p role="status" className="mt-4 rounded-xl border border-border bg-muted/50 p-3 text-sm text-muted-foreground">
+            <p
+              role="status"
+              className="mt-4 rounded-xl border border-border bg-muted/50 p-3 text-sm text-muted-foreground"
+            >
               {resetMessage}
             </p>
           )}
@@ -934,7 +941,12 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
           </Button>
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
             {!signup && (
-              <button type="button" onClick={() => void requestPasswordReset()} disabled={busy} className="text-muted-foreground underline underline-offset-4 hover:text-foreground disabled:opacity-50">
+              <button
+                type="button"
+                onClick={() => void requestPasswordReset()}
+                disabled={busy}
+                className="text-muted-foreground underline underline-offset-4 hover:text-foreground disabled:opacity-50"
+              >
                 Esqueci minha senha
               </button>
             )}
@@ -969,7 +981,7 @@ export function LiveProfilePage() {
   const [goalStatus, setGoalStatus] = useState("");
   useEffect(() => {
     if (goal) setGoalValue(goal.lessons_per_week);
-  }, [goal?.lessons_per_week]);
+  }, [goal]);
   const saveGoal = async () => {
     const safe = Math.max(1, Math.min(50, Math.floor(Number.isFinite(goalValue) ? goalValue : 1)));
     setGoalStatus("Salvando…");
@@ -1030,8 +1042,16 @@ export function LiveProfilePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Metric icon={<CheckCircle2 />} value={String(completedCount)} label="Aulas concluídas" />
           <Metric icon={<Clock3 />} value={String(inProgressCount)} label="Em andamento" />
-          <Metric icon={<Target />} value={`${weeklyCompleted}/${weeklyGoal}`} label="Meta semanal" />
-          <Metric icon={<BookOpen />} value={`${overallProgress}%`} label="Aulas do catálogo concluídas" />
+          <Metric
+            icon={<Target />}
+            value={`${weeklyCompleted}/${weeklyGoal}`}
+            label="Meta semanal"
+          />
+          <Metric
+            icon={<BookOpen />}
+            value={`${overallProgress}%`}
+            label="Aulas do catálogo concluídas"
+          />
         </div>
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div>
@@ -1073,10 +1093,14 @@ export function LiveProfilePage() {
             <Target className="size-7 text-primary" />
             <h2 className="mt-4 font-display text-2xl">Meta semanal</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Quantas aulas você quer concluir por semana? Nos últimos 7 dias, você concluiu {weeklyCompleted} {weeklyCompleted === 1 ? "aula" : "aulas"}.
+              Quantas aulas você quer concluir por semana? Nos últimos 7 dias, você concluiu
+              {weeklyCompleted}{" "}{weeklyCompleted === 1 ? "aula" : "aulas"}.
             </p>
             <div className="mt-4">
-              <ProgressBar value={weeklyGoal ? (weeklyCompleted / weeklyGoal) * 100 : 0} label="Progresso da meta semanal" />
+              <ProgressBar
+                value={weeklyGoal ? (weeklyCompleted / weeklyGoal) * 100 : 0}
+                label="Progresso da meta semanal"
+              />
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
               {weeklyCompleted >= weeklyGoal
