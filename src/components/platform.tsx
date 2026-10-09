@@ -74,8 +74,8 @@ export function LiveTeacherPage(){
 
 
 export function LiveLevelPage({level}:{level:string}){
- const {lessons,loading}=useLessons(level)
- return <SiteLayout><PageHeader eyebrow={levelName(level)} title={`Aulas de ${levelName(level)}`} description="Trilha organizada por nível, usando o catálogo real da plataforma."/><section className="mx-auto max-w-7xl px-5 sm:px-6">{loading?<p className="text-muted-foreground">Carregando…</p>:lessons.length?<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{lessons.map(l=><LiveLessonCard key={l.id} lesson={l}/>)}</div>:<div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">Ainda não há aulas publicadas nesta trilha.</div>}</section></SiteLayout>
+ const {lessons,loading,error,refetch}=useLessons(level)
+ return <SiteLayout><PageHeader eyebrow={levelName(level)} title={`Aulas de ${levelName(level)}`} description="Trilha organizada por nível, usando o catálogo real da plataforma."/><section className="mx-auto max-w-7xl px-5 sm:px-6">{loading?<p role="status" className="py-8 text-muted-foreground">Carregando aulas…</p>:error?<div role="alert" className="rounded-lg border border-destructive/30 bg-card p-6"><p className="text-sm text-muted-foreground">{error}</p><Button variant="outline" className="mt-3" onClick={()=>void refetch()}>Tentar novamente</Button></div>:lessons.length?<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{lessons.map(l=><LiveLessonCard key={l.id} lesson={l}/>)}</div>:<div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">Ainda não há aulas publicadas nesta trilha.</div>}</section></SiteLayout>
 }
 
 export function LiveConcursosPage(){
