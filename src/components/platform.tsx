@@ -799,10 +799,39 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (session) void navigate({ to: "/perfil" });
   }, [session, navigate]);
+  const requestPasswordReset = async () => {
+    setError("");
+    setSuccess("");
+    setResetMessage("");
+    if (!email.trim()) {
+      setError("Informe seu e-mail para receber o link de redefinição.");
+      return;
+    }
+    if (!hasSupabaseConfig) {
+      setError("A recuperação de senha ficará disponível quando o Supabase estiver configurado.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: window.location.origin + "/login",
+      });
+      setResetMessage(
+        resetError
+          ? "Não foi possível solicitar a redefinição. Confira o e-mail e tente novamente."
+          : "Se houver uma conta para este e-mail, você receberá instruções para redefinir a senha.",
+      );
+    } catch {
+      setError("Não foi possível solicitar a redefinição. Tente novamente.");
+    } finally {
+      setBusy(false);
+    }
+  };
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
@@ -895,11 +924,21 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
               {success}
             </p>
           )}
+          {resetMessage && (
+            <p role="status" className="mt-4 rounded-xl border border-border bg-muted/50 p-3 text-sm text-muted-foreground">
+              {resetMessage}
+            </p>
+          )}
           <Button disabled={busy} className="mt-6 h-11 w-full rounded-full">
             {busy ? "Aguarde…" : signup ? "Criar conta" : "Entrar"}
           </Button>
-          <div className="mt-5 text-right text-sm">
-            <Link to={signup ? "/login" : "/cadastro"} className="text-primary">
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
+            {!signup && (
+              <button type="button" onClick={() => void requestPasswordReset()} disabled={busy} className="text-muted-foreground underline underline-offset-4 hover:text-foreground disabled:opacity-50">
+                Esqueci minha senha
+              </button>
+            )}
+            <Link to={signup ? "/login" : "/cadastro"} className="ml-auto text-primary">
               {signup ? "Já tenho conta" : "Criar conta"}
             </Link>
           </div>
