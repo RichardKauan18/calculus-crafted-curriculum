@@ -20,3 +20,24 @@
 .math-draw { animation:draw 1.6s cubic-bezier(.32,.72,0,1) forwards; } .math-glow { animation:glow 7s ease-in-out infinite; }
 .category-primary{color:var(--primary)} .category-cyan{color:var(--cyan)} .category-mint{color:var(--mint)} .category-amber{color:var(--amber)}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Shared accessibility and layout safeguards */
+@layer base {
+  :where(a, button, input, textarea, select, [role="button"], [tabindex]):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+  img, video, iframe, svg {
+    max-width: 100%;
+  }
+  input, textarea, select {
+    min-width: 0;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 24%, transparent);
+    color: var(--foreground);
+  }
+}
+@media (max-width: 359px) {
+  h1 { overflow-wrap: anywhere; }
+}
