@@ -966,7 +966,7 @@ export function LiveProfilePage() {
     const updatedAt = new Date(item.updated_at);
     return !Number.isNaN(updatedAt.getTime()) && updatedAt >= weekStart;
   }).length;
-  const weeklyProgress = Math.min(100, Math.round((weeklyCompleted / weeklyGoal) * 100));
+  const weeklyProgress = Math.min(100, Math.round((weeklyCompleted / Math.max(1, weeklyGoal)) * 100));
   const recentActivity = [...progressItems]
     .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
     .slice(0, 5)
