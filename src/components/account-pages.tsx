@@ -140,13 +140,17 @@ export function SettingsPage() {
   const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
+    // Only Portuguese is fully available. Normalize legacy preferences instead
+    // of showing a disabled language as selected while the UI remains in Portuguese.
     const saved = localStorage.getItem("matris-language");
-    if (saved && ["pt", "en", "es", "it"].includes(saved)) setLang(saved);
+    if (saved !== "pt") localStorage.setItem("matris-language", "pt");
+    setLang("pt");
   }, []);
 
   const selectLanguage = (code: string) => {
-    setLang(code);
-    localStorage.setItem("matris-language", code);
+    if (code !== "pt") return;
+    setLang("pt");
+    localStorage.setItem("matris-language", "pt");
   };
 
   const handleSignOut = async () => {
