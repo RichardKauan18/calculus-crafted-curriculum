@@ -2457,7 +2457,9 @@ export function LiveTeacherPage() {
                   >
                     <option value="">Selecione uma matéria</option>
                     {selectedContest.subjects.map((item) => (
-                      <option key={item} value={item}>{item}</option>
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
                     ))}
                   </select>
                 ) : (
@@ -2529,7 +2531,8 @@ export function LiveTeacherPage() {
                       const nextId = e.target.value;
                       const nextContest = teacherConcursos.find((contest) => contest.id === nextId);
                       setConcursoId(nextId);
-                      if (subject && nextContest && !nextContest.subjects.includes(subject)) setSubject("");
+                      if (subject && nextContest && !nextContest.subjects.includes(subject))
+                        setSubject("");
                     }}
                     className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
                   >
@@ -2727,10 +2730,16 @@ export function LiveConcursoPage() {
     refetch: refetchLessons,
   } = useLessons("concursos");
   const filtered = lessons.filter((l) => l.concurso_id === slug);
-  const subjectNames = [...new Set([...(concurso?.subjects ?? []), ...filtered.map((lesson) => lesson.subject)].filter(Boolean))];
+  const subjectNames = [
+    ...new Set(
+      [...(concurso?.subjects ?? []), ...filtered.map((lesson) => lesson.subject)].filter(Boolean),
+    ),
+  ];
   const groupedLessons = subjectNames.map((subject) => ({
     subject,
-    lessons: filtered.filter((lesson) => lesson.subject.toLocaleLowerCase("pt-BR") === subject.toLocaleLowerCase("pt-BR")),
+    lessons: filtered.filter(
+      (lesson) => lesson.subject.toLocaleLowerCase("pt-BR") === subject.toLocaleLowerCase("pt-BR"),
+    ),
   }));
   if (contestsLoading)
     return (
@@ -2834,23 +2843,28 @@ export function LiveConcursoPage() {
             </div>
           ) : filtered.length ? (
             <div className="space-y-8">
-              {groupedLessons.filter((group) => group.lessons.length > 0).map((group) => (
-                <section key={group.subject} aria-label={`Aulas de ${group.subject}`}>
-                  <div className="mb-4 border-b border-border pb-3">
-                    <h2 className="font-display text-xl font-semibold">{group.subject}</h2>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {group.lessons.length} {group.lessons.length === 1 ? "aula" : "aulas"}
-                    </p>
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {group.lessons.map((lesson) => <LiveLessonCard key={lesson.id} lesson={lesson} />)}
-                  </div>
-                </section>
-              ))}
+              {groupedLessons
+                .filter((group) => group.lessons.length > 0)
+                .map((group) => (
+                  <section key={group.subject} aria-label={`Aulas de ${group.subject}`}>
+                    <div className="mb-4 border-b border-border pb-3">
+                      <h2 className="font-display text-xl font-semibold">{group.subject}</h2>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {group.lessons.length} {group.lessons.length === 1 ? "aula" : "aulas"}
+                      </p>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {group.lessons.map((lesson) => (
+                        <LiveLessonCard key={lesson.id} lesson={lesson} />
+                      ))}
+                    </div>
+                  </section>
+                ))}
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
-              Ainda não há aulas publicadas para este concurso. O professor poderá adicioná-las pelo perfil.
+              Ainda não há aulas publicadas para este concurso. O professor poderá adicioná-las pelo
+              perfil.
             </div>
           )}
         </div>
