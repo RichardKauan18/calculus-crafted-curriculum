@@ -38,6 +38,7 @@ describe("App routing", () => {
     ["/superior", "/superior"],
     ["/aulas/example", "/aulas/$id"],
     ["/concursos/example", "/concursos/$slug"],
+    ["/professor", "/professor/"],
     ["/professor/aulas", "/professor/aulas"],
   ])("resolves %s to its intended route", async (path, routeId) => {
     const router = createTestRouter(path);
