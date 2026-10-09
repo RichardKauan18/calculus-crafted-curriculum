@@ -129,7 +129,9 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
           <p className="font-mono text-[11px] uppercase tracking-[.12em] text-muted-foreground">
             {lesson.subject} · {levelName(lesson.level)}
           </p>
-          <h3 className="mt-2 font-display text-lg font-semibold leading-snug tracking-tight">{lesson.title}</h3>
+          <h3 className="mt-2 font-display text-lg font-semibold leading-snug tracking-tight">
+            {lesson.title}
+          </h3>
           {demo ? (
             <p className="mt-5 rounded-lg bg-muted/70 px-3 py-2 text-xs text-muted-foreground">
               Prévia ilustrativa · progresso não é salvo
@@ -292,12 +294,12 @@ export function LiveLessonsPage() {
       />
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         <div className="rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:p-5">
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar por aula, assunto ou matéria…"
-          className="h-12 rounded-xl border-border/80 bg-background"
-        />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por aula, assunto ou matéria…"
+            className="h-12 rounded-xl border-border/80 bg-background"
+          />
         </div>
         {loading ? (
           <p role="status" className="mt-8 text-muted-foreground">
@@ -345,18 +347,18 @@ export function LiveSearchPage() {
       />
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         <div className="rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:p-5">
-        <label htmlFor="platform-search" className="sr-only">
-          Pesquisar aulas
-        </label>
-        <Input
-          id="platform-search"
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Ex.: equações, trigonometria, álgebra…"
-          className="h-12 rounded-xl border-border/80 bg-background"
-          autoComplete="off"
-        />
+          <label htmlFor="platform-search" className="sr-only">
+            Pesquisar aulas
+          </label>
+          <Input
+            id="platform-search"
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Ex.: equações, trigonometria, álgebra…"
+            className="h-12 rounded-xl border-border/80 bg-background"
+            autoComplete="off"
+          />
         </div>
         {loading ? (
           <p role="status" className="mt-8 text-muted-foreground">
@@ -685,7 +687,10 @@ export function LiveLessonPage() {
               </div>
             ) : comments.length ? (
               comments.map((c) => (
-                <article key={c.id} className="mt-4 rounded-xl border border-border/80 bg-card p-5 shadow-sm">
+                <article
+                  key={c.id}
+                  className="mt-4 rounded-xl border border-border/80 bg-card p-5 shadow-sm"
+                >
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <MessageSquare className="size-4 text-primary" />
                     {c.user_name}
