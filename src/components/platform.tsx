@@ -99,7 +99,7 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
           ? 10
           : 0;
   return (
-    <article className="group overflow-hidden rounded-lg border border-border bg-card transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl">
+    <article className="group overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5">
       <Link
         to="/aulas/$id"
         params={{ id: lesson.id }}
@@ -112,7 +112,7 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
             loading="lazy"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           />
-          <span className="absolute left-3 top-3 rounded-full bg-background/90 px-2.5 py-1 font-mono text-xs">
+          <span className="absolute left-3 top-3 rounded-full border border-border/70 bg-background/95 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider shadow-sm backdrop-blur">
             {demo
               ? "Demonstração"
               : value === 100
@@ -121,22 +121,24 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
                   ? "Em andamento"
                   : "Não iniciada"}
           </span>
-          <span className="absolute bottom-3 right-3 grid size-10 place-items-center rounded-full bg-primary text-primary-foreground">
+          <span className="absolute bottom-3 right-3 grid size-11 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform group-hover:scale-105">
             <Play className="size-4" fill="currentColor" />
           </span>
         </div>
-        <div className="p-4">
-          <p className="font-mono text-xs text-muted-foreground">
+        <div className="p-5">
+          <p className="font-mono text-[11px] uppercase tracking-[.12em] text-muted-foreground">
             {lesson.subject} · {levelName(lesson.level)}
           </p>
-          <h3 className="mt-1 font-medium">{lesson.title}</h3>
+          <h3 className="mt-2 font-display text-lg font-semibold leading-snug tracking-tight">
+            {lesson.title}
+          </h3>
           {demo ? (
-            <p className="mt-4 text-xs text-muted-foreground">
+            <p className="mt-5 rounded-lg bg-muted/70 px-3 py-2 text-xs text-muted-foreground">
               Prévia ilustrativa · progresso não é salvo
             </p>
           ) : (
             <>
-              <div className="mt-4">
+              <div className="mt-5">
                 <ProgressBar value={value} />
               </div>
               <div className="mt-2 flex justify-between text-xs text-muted-foreground">
@@ -258,7 +260,7 @@ export function LiveHomePage() {
             </Button>
           </div>
         ) : displayedLessons.length ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {displayedLessons.slice(0, 6).map((l) => (
               <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
@@ -290,13 +292,15 @@ export function LiveLessonsPage() {
         title="Todas as aulas"
         description="Explore as aulas disponíveis por título, assunto ou descrição."
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar por aula, assunto ou matéria…"
-          className="h-12"
-        />
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+        <div className="rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:p-5">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por aula, assunto ou matéria…"
+            className="h-12 rounded-xl border-border/80 bg-background"
+          />
+        </div>
         {loading ? (
           <p role="status" className="mt-8 text-muted-foreground">
             Carregando…
@@ -309,7 +313,7 @@ export function LiveLessonsPage() {
             </Button>
           </div>
         ) : displayedLessons.length ? (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {displayedLessons.map((l) => (
               <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
@@ -341,19 +345,21 @@ export function LiveSearchPage() {
         title="O que você quer aprender?"
         description="Pesquise aulas publicadas por título, matéria ou descrição."
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
-        <label htmlFor="platform-search" className="sr-only">
-          Pesquisar aulas
-        </label>
-        <Input
-          id="platform-search"
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Ex.: equações, trigonometria, álgebra…"
-          className="h-12"
-          autoComplete="off"
-        />
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+        <div className="rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:p-5">
+          <label htmlFor="platform-search" className="sr-only">
+            Pesquisar aulas
+          </label>
+          <Input
+            id="platform-search"
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Ex.: equações, trigonometria, álgebra…"
+            className="h-12 rounded-xl border-border/80 bg-background"
+            autoComplete="off"
+          />
+        </div>
         {loading ? (
           <p role="status" className="mt-8 text-muted-foreground">
             Buscando aulas…
@@ -372,13 +378,13 @@ export function LiveSearchPage() {
               {displayedLessons.length === 1 ? "resultado encontrado" : "resultados encontrados"}
             </p>
             {displayedLessons.length ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {displayedLessons.map((l) => (
                   <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
+              <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
                 {!hasSupabaseConfig
                   ? search.trim()
                     ? "Nenhuma aula demonstrativa corresponde à busca."
@@ -542,15 +548,15 @@ export function LiveLessonPage() {
           {lesson.subject} · {levelName(lesson.level)} · {lesson.duration}
         </p>
       </section>
-      <section className="mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         {isDemoLesson && (
-          <div className="rounded-lg border border-amber/30 bg-amber/5 p-4 text-sm text-muted-foreground lg:col-span-2">
+          <div className="rounded-2xl border border-amber/30 bg-amber/5 p-5 text-sm text-muted-foreground lg:col-span-2">
             <strong className="text-foreground">Aula demonstrativa.</strong> O vídeo, o progresso,
             as avaliações e os comentários não são dados reais nem serão salvos nesta prévia.
           </div>
         )}
         <div>
-          <div className="aspect-video overflow-hidden rounded-lg bg-black">
+          <div className="aspect-video overflow-hidden rounded-2xl bg-black shadow-xl shadow-foreground/10 ring-1 ring-border/50">
             {videoIsValid ? (
               <iframe
                 className="h-full w-full"
@@ -572,7 +578,7 @@ export function LiveLessonPage() {
             )}
           </div>
           {!isDemoLesson && (
-            <div className="mt-4 rounded-lg border border-border bg-card p-4">
+            <div className="mt-4 rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
               <div className="flex flex-wrap gap-2">
                 <Button
                   disabled={busy}
@@ -601,7 +607,7 @@ export function LiveLessonPage() {
                   Assistindo
                 </Button>
               </div>
-              <div className="mt-4">
+              <div className="mt-5">
                 <ProgressBar value={progressValue} label="Progresso da aula" />
                 <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
               </div>
@@ -632,7 +638,7 @@ export function LiveLessonPage() {
           <section className="mt-10">
             <h2 className="font-display text-2xl">Comentários e dúvidas</h2>
             {user ? (
-              <div className="mt-4 rounded-lg border border-border bg-card p-4">
+              <div className="mt-4 rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
                 <label htmlFor="lesson-comment" className="mb-2 block text-sm font-medium">
                   Sua dúvida
                 </label>
@@ -681,7 +687,10 @@ export function LiveLessonPage() {
               </div>
             ) : comments.length ? (
               comments.map((c) => (
-                <article key={c.id} className="mt-4 rounded-lg border border-border bg-card p-4">
+                <article
+                  key={c.id}
+                  className="mt-4 rounded-xl border border-border/80 bg-card p-5 shadow-sm"
+                >
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <MessageSquare className="size-4 text-primary" />
                     {c.user_name}
@@ -703,7 +712,7 @@ export function LiveLessonPage() {
           </section>
         </div>
         <aside className="space-y-5">
-          <div className="rounded-lg border border-border bg-card p-5">
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
             <p className="font-mono text-xs uppercase text-muted-foreground">Avaliação</p>
             <div className="mt-3 flex items-end gap-3">
               <strong className="font-display text-5xl">
@@ -938,7 +947,7 @@ export function LiveProfilePage() {
         title={`Olá, ${profile.name || "estudante"}`}
         description="Acompanhe seu progresso e mantenha uma meta de estudos consistente."
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Metric icon={<CheckCircle2 />} value={String(completedCount)} label="Aulas concluídas" />
           <Metric icon={<Clock3 />} value={String(inProgressCount)} label="Em andamento" />
@@ -1030,7 +1039,7 @@ export function LiveProfilePage() {
 }
 function Metric({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
       <span className="text-primary">{icon}</span>
       <strong className="mt-5 block font-display text-3xl">{value}</strong>
       <p className="text-sm text-muted-foreground">{label}</p>
@@ -1077,7 +1086,7 @@ export function LiveTeacherDashboard() {
             : "Prévia da área do professor. Conecte o catálogo real para exibir métricas e gerenciar aulas."
         }
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         {!hasSupabaseConfig ? (
           <div className="rounded-lg border border-amber/30 bg-amber/5 p-5">
             <h2 className="font-medium">Catálogo não conectado</h2>
@@ -1278,7 +1287,7 @@ export function LiveTeacherPage() {
         title="Gerenciar aulas"
         description="Cadastre, edite e remova aulas publicadas."
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="space-y-3">
             {lessonsLoading ? (
@@ -1332,7 +1341,7 @@ export function LiveTeacherPage() {
               Nova aula
             </Button>
           </div>
-          <div className="rounded-lg border border-border bg-card p-5">
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
             <h2 className="font-display text-2xl">{editing ? "Editar aula" : "Nova aula"}</h2>
             <div className="mt-4 space-y-3">
               <label className="block text-sm font-medium">
@@ -1447,7 +1456,7 @@ export function LiveLevelPage({ level }: { level: string }) {
             : "Prévia ilustrativa da organização das aulas por nível."
         }
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         {loading ? (
           <p role="status" className="py-8 text-muted-foreground">
             Carregando aulas…
@@ -1460,13 +1469,13 @@ export function LiveLevelPage({ level }: { level: string }) {
             </Button>
           </div>
         ) : displayedLessons.length ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {displayedLessons.map((l) => (
               <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
             {hasSupabaseConfig
               ? "Ainda não há aulas publicadas nesta trilha."
               : "Ainda não há aulas demonstrativas para esta trilha."}
@@ -1491,7 +1500,7 @@ export function LiveConcursosPage() {
             : "Prévia ilustrativa de como a preparação por concurso pode ser organizada."
         }
       />
-      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         {loading ? (
           <p role="status" className="py-8 text-muted-foreground">
             Carregando concursos…
@@ -1504,23 +1513,23 @@ export function LiveConcursosPage() {
             </Button>
           </div>
         ) : concursos.length || demoMode ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {demoMode
               ? demoExams.map((exam) => (
                   <Link
                     key={exam.slug}
                     to="/concursos/$slug"
                     params={{ slug: exam.slug }}
-                    className="rounded-lg border border-border bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <span className="inline-flex rounded-full border border-amber/30 bg-amber/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
                       Demonstração
                     </span>
-                    <span className="mt-3 block font-display text-3xl font-semibold text-primary">
+                    <span className="mt-4 block font-display text-3xl font-semibold tracking-tight text-primary">
                       {exam.name}
                     </span>
                     <p className="mt-3 text-sm text-muted-foreground">{exam.description}</p>
-                    <p className="mt-4 font-mono text-xs text-muted-foreground">
+                    <p className="mt-5 border-t border-border/70 pt-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                       {exam.subjects} disciplinas previstas · conteúdo ilustrativo
                     </p>
                   </Link>
@@ -1530,20 +1539,20 @@ export function LiveConcursosPage() {
                     key={c.id}
                     to="/concursos/$slug"
                     params={{ slug: c.id }}
-                    className="rounded-lg border border-border bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <span className="font-display text-3xl font-semibold text-primary">
+                    <span className="font-display text-3xl font-semibold tracking-tight text-primary">
                       {c.name}
                     </span>
                     <p className="mt-3 text-sm text-muted-foreground">{c.description}</p>
-                    <p className="mt-4 font-mono text-xs text-muted-foreground">
+                    <p className="mt-5 border-t border-border/70 pt-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                       {c.category} · {c.subjects?.length ?? 0} disciplinas
                     </p>
                   </Link>
                 ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
             {hasSupabaseConfig
               ? "Os concursos ainda não foram cadastrados."
               : "Configure a conexão com o Supabase para disponibilizar os concursos."}
@@ -1601,7 +1610,7 @@ export function LiveConcursoPage() {
           title={demoExam.name}
           description={demoExam.description}
         />
-        <section className="mx-auto max-w-7xl px-5 sm:px-6">
+        <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
           <div className="rounded-lg border border-amber/30 bg-amber/5 p-5">
             <p className="font-medium">Conteúdo ilustrativo</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -1678,7 +1687,7 @@ export function LiveConcursoPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
+            <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
               Ainda não há aulas publicadas para este concurso.
             </div>
           )}
