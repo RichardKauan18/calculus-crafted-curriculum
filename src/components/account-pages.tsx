@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { LessonCard, PageHeader, ProgressBar, SiteLayout, ThemeToggle } from "@/components/site";
 import { lessons } from "@/lib/mock-data";
 import { useAuth } from "@/hooks/useAuth";
-import professor from "@/assets/professor.jpg";
 
 export function ProfilePage() {
   return (
@@ -177,8 +176,7 @@ export function SettingsPage() {
         <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm sm:p-7">
           <h2 className="font-display text-2xl">Idioma</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            A preferência fica salva neste navegador. A tradução completa da interface ainda não
-            está disponível.
+            A interface está disponível em Português (Brasil). Outros idiomas serão liberados quando a tradução estiver completa.
           </p>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {(
@@ -193,11 +191,13 @@ export function SettingsPage() {
                 key={code}
                 type="button"
                 aria-pressed={lang === code}
+                disabled={code !== "pt"}
                 onClick={() => selectLanguage(code)}
-                className={`flex min-h-12 items-center gap-3 rounded-xl border p-3.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${lang === code ? "border-primary bg-primary/10 shadow-sm" : "border-border/80 hover:bg-muted/60"}`}
+                className={`flex min-h-12 items-center gap-3 rounded-xl border p-3.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60 ${lang === code ? "border-primary bg-primary/10 shadow-sm" : "border-border/80 hover:bg-muted/60"}`}
               >
                 <Flag country={country} />
                 <span>{name}</span>
+                {code !== "pt" && <span className="ml-auto text-xs text-muted-foreground">Em breve</span>}
                 {lang === code && (
                   <Check aria-hidden="true" className="ml-auto size-4 text-primary" />
                 )}
@@ -286,25 +286,27 @@ function Flag({ country }: { country: "BR" | "US" | "ES" | "IT" }) {
 export function AboutPage() {
   return (
     <SiteLayout>
-      <PageHeader eyebrow="Sobre mim" title="Clareza antes da complexidade." />
-      <section className="mx-auto grid max-w-6xl items-center gap-8 px-4 pb-16 sm:px-6 lg:grid-cols-[.7fr_1fr]">
-        <img
-          src={professor}
-          alt="Foto provisória do professor"
-          width={800}
-          height={1008}
-          className="max-h-[560px] w-full rounded-2xl object-cover shadow-xl shadow-foreground/10"
-        />
-        <div>
-          <h2 className="font-display text-3xl">Prof. André Matos</h2>
-          <p className="mt-5 leading-relaxed text-muted-foreground">
-            Doutor em Matemática Aplicada e professor há 15 anos. O propósito das aulas é traduzir
-            ideias difíceis em raciocínios visuais, progressivos e objetivos.
-          </p>
-          <p className="mt-5 rounded-xl border border-border/80 bg-card p-5 font-mono text-xs leading-relaxed text-muted-foreground">
-            Biografia e imagem demonstrativas. Todo este conteúdo poderá ser substituído
-            posteriormente.
-          </p>
+      <PageHeader
+        eyebrow="Sobre o Matris"
+        title="Clareza antes da complexidade."
+        description="Uma plataforma em desenvolvimento para organizar o aprendizado de Matemática, da base aos conteúdos avançados."
+      />
+      <section className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">
+        <div className="matris-surface grid gap-6 p-6 sm:p-8 md:grid-cols-[auto_1fr] md:items-start">
+          <div className="grid size-16 place-items-center rounded-2xl bg-primary/10 text-primary">
+            <BookOpen className="size-8" aria-hidden="true" />
+          </div>
+          <div>
+            <h2 className="font-display text-2xl">Aprender com organização e método</h2>
+            <p className="mt-4 leading-relaxed text-muted-foreground">
+              O Matris reúne aulas, trilhas de estudo e ferramentas para acompanhar o progresso.
+              O catálogo e algumas experiências ainda estão em preparação; os conteúdos disponíveis
+              são identificados na própria plataforma.
+            </p>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Informações sobre professores e equipe serão publicadas aqui quando forem confirmadas.
+            </p>
+          </div>
         </div>
       </section>
     </SiteLayout>
@@ -315,13 +317,22 @@ export function ContactPage() {
     <SiteLayout>
       <PageHeader
         eyebrow="Contato"
-        title="Vamos conversar"
-        description="Os canais abaixo são demonstrativos e poderão receber os links reais na próxima etapa."
+        title="Fale com a equipe do Matris"
+        description="Os canais oficiais serão publicados assim que forem configurados. Não exibimos endereços ou perfis fictícios."
       />
-      <section className="mx-auto grid max-w-4xl gap-4 px-5 sm:grid-cols-3 sm:px-6">
-        <Contact icon={<MessageCircle />} title="WhatsApp" text="Conversar por mensagem" />
-        <Contact icon={<Instagram />} title="Instagram" text="Acompanhar conteúdos" />
-        <Contact icon={<Mail />} title="E-mail" text="Enviar uma mensagem" />
+      <section className="mx-auto max-w-4xl px-5 pb-16 sm:px-6">
+        <div className="matris-surface flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center sm:p-8">
+          <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+            <Mail aria-hidden="true" className="size-6" />
+          </span>
+          <div>
+            <h2 className="font-display text-xl">Canais em configuração</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              WhatsApp, e-mail e redes sociais serão disponibilizados nesta página quando os dados
+              oficiais forem definidos pelo responsável pelo projeto.
+            </p>
+          </div>
+        </div>
       </section>
     </SiteLayout>
   );
