@@ -307,8 +307,7 @@ export function AboutPage() {
               são identificados na própria plataforma.
             </p>
             <p className="mt-4 text-sm text-muted-foreground">
-              Informações sobre professores e equipe serão publicadas aqui quando forem
-              confirmadas.
+              Informações sobre professores e equipe serão publicadas aqui quando forem confirmadas.
             </p>
           </div>
         </div>
