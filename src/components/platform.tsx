@@ -177,7 +177,7 @@ export function LiveHomePage() {
             </span>
             <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.06] sm:text-5xl lg:text-6xl">
               Aprenda Matemática de forma{" "}
-              <em className="text-[#e7d8ba] dark:text-[#41483a]">simples</em>, clara e objetiva.
+              <em className="text-[#e7d8ba] dark:text-[#d7e2c7]">simples</em>, clara e objetiva.
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-primary-foreground/80 sm:text-lg">
               {hasSupabaseConfig
@@ -280,12 +280,14 @@ export function LiveHomePage() {
 
 export function LiveLessonsPage() {
   const [search, setSearch] = useState("");
+  const [level, setLevel] = useState("all");
   const { lessons, loading, error, refetch } = useLessons(undefined, search);
   const displayedLessons = lessons.length
     ? lessons
     : !hasSupabaseConfig
       ? getDemoLessons(undefined, search)
       : [];
+  const filteredLessons = displayedLessons.filter((lesson) => level === "all" || lesson.level === level);
   return (
     <SiteLayout>
       <PageHeader
@@ -294,14 +296,38 @@ export function LiveLessonsPage() {
         description="Explore as aulas disponíveis por título, assunto ou descrição."
       />
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
-        <div className="rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:p-5">
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por aula, assunto ou matéria…"
-            className="h-12 rounded-xl border-border/80 bg-background"
-          />
+        <div className="grid gap-3 rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:grid-cols-[minmax(0,1fr)_220px] sm:p-5">
+          <label className="block">
+            <span className="sr-only">Buscar aulas</span>
+            <Input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por aula, assunto ou matéria…"
+              className="h-12 rounded-xl border-border/80 bg-background"
+              autoComplete="off"
+            />
+          </label>
+          <label className="block">
+            <span className="sr-only">Filtrar por nível</span>
+            <select
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className="h-12 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="all">Todos os níveis</option>
+              <option value="fundamental">Fundamental</option>
+              <option value="medio">Ensino Médio</option>
+              <option value="ensino-medio">Ensino Médio (trilha)</option>
+              <option value="pre-vestibular">Pré-vestibular</option>
+              <option value="superior">Superior</option>
+              <option value="concursos">Concursos</option>
+            </select>
+          </label>
         </div>
+        <p aria-live="polite" className="mt-5 font-mono text-xs text-muted-foreground">
+          {filteredLessons.length} {filteredLessons.length === 1 ? "aula encontrada" : "aulas encontradas"}
+        </p>
         {loading ? (
           <p role="status" className="mt-8 text-muted-foreground">
             Carregando…
@@ -313,16 +339,16 @@ export function LiveLessonsPage() {
               Tentar novamente
             </Button>
           </div>
-        ) : displayedLessons.length ? (
+        ) : filteredLessons.length ? (
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {displayedLessons.map((l) => (
+            {filteredLessons.map((l) => (
               <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
           </div>
         ) : (
           <p className="mt-8 text-muted-foreground">
             {hasSupabaseConfig
-              ? "Nenhuma aula encontrada para esta busca."
+              ? "Nenhuma aula encontrada com estes filtros."
               : "Configure a conexão com o Supabase para disponibilizar o catálogo de aulas."}
           </p>
         )}
