@@ -25,6 +25,7 @@ import {
   saveProgress,
   saveRating,
   useComments,
+  useConcursos,
   useLesson,
   useLessons,
   useMyProgress,
