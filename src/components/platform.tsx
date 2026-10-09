@@ -159,15 +159,22 @@ export function LiveHomePage() {
     <SiteLayout>
       <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8">
         <div className="relative isolate grid overflow-hidden rounded-3xl bg-primary text-primary-foreground shadow-xl shadow-foreground/5 lg:grid-cols-[1.05fr_.95fr]">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-28 size-80 rounded-full border border-primary-foreground/10" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 left-[42%] size-96 rounded-full border border-primary-foreground/10" />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-20 -top-28 size-80 rounded-full border border-primary-foreground/10"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-40 left-[42%] size-96 rounded-full border border-primary-foreground/10"
+          />
           <div className="relative z-10 px-6 py-12 sm:px-10 sm:py-16 lg:px-12 lg:py-20">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/25 bg-primary-foreground/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[.16em]">
               <span aria-hidden="true" className="size-1.5 rounded-full bg-secondary" />
               Matemática, do Fundamental ao IME
             </span>
             <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.06] sm:text-5xl lg:text-6xl">
-              Aprenda Matemática de forma <em className="text-[#e7d8ba] dark:text-[#41483a]">simples</em>, clara e objetiva.
+              Aprenda Matemática de forma{" "}
+              <em className="text-[#e7d8ba] dark:text-[#41483a]">simples</em>, clara e objetiva.
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-primary-foreground/80 sm:text-lg">
               {hasSupabaseConfig
@@ -175,11 +182,20 @@ export function LiveHomePage() {
                 : "Explore uma prévia da plataforma, com aulas ilustrativas identificadas como demonstração."}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
+              <Button
+                asChild
+                size="lg"
+                className="rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90"
+              >
                 <Link to="/aulas">Explorar aulas</Link>
               </Button>
               {profile ? (
-                <Button asChild variant="outline" size="lg" className="rounded-full border-primary-foreground/35 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="rounded-full border-primary-foreground/35 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                >
                   <Link to="/perfil">Meu progresso</Link>
                 </Button>
               ) : (
