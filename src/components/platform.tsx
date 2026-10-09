@@ -1232,7 +1232,7 @@ function TeacherSupportPanel() {
     const [questionsResult, feedbackResult] = await Promise.all([
       supabase.from("comments")
         .select("id,lesson_id,user_id,user_name,text,reply,created_at,lessons!inner(title,teacher_id)")
-        .eq("lessons.teacher_id", user.id)
+        .eq("lessons.teacher_id", userId)
         .order("created_at", { ascending: false })
         .limit(100),
       supabase.from("teacher_feedback")
