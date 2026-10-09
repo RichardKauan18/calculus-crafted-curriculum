@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
   const signUp = async (email: string, password: string, name: string) => {
     if (!hasSupabaseConfig) return "Supabase ainda não foi configurado.";
-    const { error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+    const { error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
     return error ? mapAuthError(error.message) : null;
   };
   const signOut = async () => {
