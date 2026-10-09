@@ -322,8 +322,7 @@ export function ContactPage() {
       <PageHeader
         eyebrow="Contato"
         title="Fale com a equipe do Matris"
-        description="Os canais oficiais serão publicados assim que forem configurados. Não exibimos
-        endereços ou perfis fictícios."
+        description="Os canais oficiais serão publicados assim que forem configurados. Não exibimos endereços ou perfis fictícios."
       />
       <section className="mx-auto max-w-4xl px-5 pb-16 sm:px-6">
         <div className="matris-surface flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center sm:p-8">
