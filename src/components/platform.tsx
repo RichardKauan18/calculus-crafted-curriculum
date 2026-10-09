@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   BookOpen,
@@ -1221,9 +1221,10 @@ function TeacherSupportPanel() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(true);
+  const userId = user?.id;
 
-  const loadPanel = async () => {
-    if (!user || !hasSupabaseConfig) {
+  const loadPanel = useCallback(async () => {
+    if (!userId || !hasSupabaseConfig) {
       setLoading(false);
       return;
     }
@@ -1236,7 +1237,7 @@ function TeacherSupportPanel() {
         .limit(100),
       supabase.from("teacher_feedback")
         .select("id,title,message,is_published,created_at")
-        .eq("teacher_id", user.id)
+        .eq("teacher_id", userId)
         .order("created_at", { ascending: false }),
     ]);
     if (questionsResult.error) {
@@ -1253,9 +1254,9 @@ function TeacherSupportPanel() {
       setFeedback((feedbackResult.data ?? []) as typeof feedback);
     }
     setLoading(false);
-  };
+  }, [userId]);
 
-  useEffect(() => { void loadPanel(); }, [user?.id]);
+  useEffect(() => { void loadPanel(); }, [loadPanel]);
 
   const sendReply = async (id: string) => {
     const reply = draftReplies[id]?.trim();
