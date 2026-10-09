@@ -91,14 +91,12 @@ function getDemoLessons(level?: string, search = "") {
 function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo?: boolean }) {
   const { user } = useAuth();
   const { progress } = useMyProgress(lesson.id, user?.id);
-  const value =
+  const statusLabel =
     progress?.status === "completed"
-      ? 100
-      : progress?.status === "half"
-        ? 50
-        : progress?.status === "watching"
-          ? 10
-          : 0;
+      ? "Concluída"
+      : progress?.status === "watching" || progress?.status === "half"
+        ? "Em andamento"
+        : "Não iniciada";
   return (
     <article className="group overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5">
       <Link
@@ -114,13 +112,7 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           />
           <span className="absolute left-3 top-3 rounded-full border border-border/70 bg-background/95 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider shadow-sm backdrop-blur">
-            {demo
-              ? "Demonstração"
-              : value === 100
-                ? "Concluída"
-                : value
-                  ? "Em andamento"
-                  : "Não iniciada"}
+            {demo ? "Demonstração" : statusLabel}
           </span>
           <span className="absolute bottom-3 right-3 grid size-11 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform group-hover:scale-105">
             <Play className="size-4" fill="currentColor" />
@@ -139,12 +131,9 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
             </p>
           ) : (
             <>
-              <div className="mt-5">
-                <ProgressBar value={value} />
-              </div>
-              <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-                <span>{value}% concluído</span>
-                <span>{lesson.duration}</span>
+              <div className="mt-5 flex justify-between gap-3 text-xs text-muted-foreground">
+                <span>Status: {statusLabel}</span>
+                <span className="shrink-0">{lesson.duration}</span>
               </div>
             </>
           )}
@@ -177,7 +166,7 @@ export function LiveHomePage() {
             </span>
             <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.06] sm:text-5xl lg:text-6xl">
               Aprenda Matemática de forma{" "}
-              <em className="text-[#e7d8ba] dark:text-[#41483a]">simples</em>, clara e objetiva.
+              <em className="text-[#e7d8ba] dark:text-[#d7e2c7]">simples</em>, clara e objetiva.
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-primary-foreground/80 sm:text-lg">
               {hasSupabaseConfig
@@ -280,12 +269,16 @@ export function LiveHomePage() {
 
 export function LiveLessonsPage() {
   const [search, setSearch] = useState("");
+  const [level, setLevel] = useState("all");
   const { lessons, loading, error, refetch } = useLessons(undefined, search);
   const displayedLessons = lessons.length
     ? lessons
     : !hasSupabaseConfig
       ? getDemoLessons(undefined, search)
       : [];
+  const filteredLessons = displayedLessons.filter(
+    (lesson) => level === "all" || lesson.level === level,
+  );
   return (
     <SiteLayout>
       <PageHeader
@@ -294,14 +287,39 @@ export function LiveLessonsPage() {
         description="Explore as aulas disponíveis por título, assunto ou descrição."
       />
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
-        <div className="rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:p-5">
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por aula, assunto ou matéria…"
-            className="h-12 rounded-xl border-border/80 bg-background"
-          />
+        <div className="grid gap-3 rounded-2xl border border-border/80 bg-card/70 p-4 shadow-sm sm:grid-cols-[minmax(0,1fr)_220px] sm:p-5">
+          <label className="block">
+            <span className="sr-only">Buscar aulas</span>
+            <Input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por aula, assunto ou matéria…"
+              className="h-12 rounded-xl border-border/80 bg-background"
+              autoComplete="off"
+            />
+          </label>
+          <label className="block">
+            <span className="sr-only">Filtrar por nível</span>
+            <select
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className="h-12 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="all">Todos os níveis</option>
+              <option value="fundamental">Fundamental</option>
+              <option value="medio">Ensino Médio</option>
+              <option value="ensino-medio">Ensino Médio (trilha)</option>
+              <option value="pre-vestibular">Pré-vestibular</option>
+              <option value="superior">Superior</option>
+              <option value="concursos">Concursos</option>
+            </select>
+          </label>
         </div>
+        <p aria-live="polite" className="mt-5 font-mono text-xs text-muted-foreground">
+          {filteredLessons.length}{" "}
+          {filteredLessons.length === 1 ? "aula encontrada" : "aulas encontradas"}
+        </p>
         {loading ? (
           <p role="status" className="mt-8 text-muted-foreground">
             Carregando…
@@ -313,16 +331,16 @@ export function LiveLessonsPage() {
               Tentar novamente
             </Button>
           </div>
-        ) : displayedLessons.length ? (
+        ) : filteredLessons.length ? (
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {displayedLessons.map((l) => (
+            {filteredLessons.map((l) => (
               <LiveLessonCard key={l.id} lesson={l} demo={!hasSupabaseConfig} />
             ))}
           </div>
         ) : (
           <p className="mt-8 text-muted-foreground">
             {hasSupabaseConfig
-              ? "Nenhuma aula encontrada para esta busca."
+              ? "Nenhuma aula encontrada com estes filtros."
               : "Configure a conexão com o Supabase para disponibilizar o catálogo de aulas."}
           </p>
         )}
@@ -477,8 +495,14 @@ export function LiveLessonPage() {
       </SiteLayout>
     );
   const status = progress?.status;
-  const progressValue =
-    status === "completed" ? 100 : status === "half" ? 50 : status === "watching" ? 10 : 0;
+  const statusLabel =
+    status === "completed"
+      ? "Aula concluída"
+      : status === "half"
+        ? "Em andamento · pausada na metade"
+        : status === "watching"
+          ? "Em andamento"
+          : "Ainda não iniciada";
   const videoIsValid = isValidYouTubeId(lesson.video_id);
   const setStatus = async (next: "watching" | "half" | "completed") => {
     if (isDemoLesson) {
@@ -608,10 +632,13 @@ export function LiveLessonPage() {
                   Assistindo
                 </Button>
               </div>
-              <div className="mt-5">
-                <ProgressBar value={progressValue} label="Progresso da aula" />
-                <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
-              </div>
+              <p
+                className="mt-4 rounded-lg bg-muted/60 px-3 py-2 text-sm text-muted-foreground"
+                role="status"
+              >
+                Status de estudo: {statusLabel}. O progresso é registrado por status, não pelo tempo
+                real de reprodução.
+              </p>
             </div>
           )}
           {message && (
@@ -773,10 +800,39 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (session) void navigate({ to: "/perfil" });
   }, [session, navigate]);
+  const requestPasswordReset = async () => {
+    setError("");
+    setSuccess("");
+    setResetMessage("");
+    if (!email.trim()) {
+      setError("Informe seu e-mail para receber o link de redefinição.");
+      return;
+    }
+    if (!hasSupabaseConfig) {
+      setError("A recuperação de senha ficará disponível quando o Supabase estiver configurado.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: window.location.origin + "/login",
+      });
+      setResetMessage(
+        resetError
+          ? "Não foi possível solicitar a redefinição. Confira o e-mail e tente novamente."
+          : "Se houver uma conta para este e-mail, você receberá instruções para redefinir a senha.",
+      );
+    } catch {
+      setError("Não foi possível solicitar a redefinição. Tente novamente.");
+    } finally {
+      setBusy(false);
+    }
+  };
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
@@ -869,11 +925,29 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
               {success}
             </p>
           )}
+          {resetMessage && (
+            <p
+              role="status"
+              className="mt-4 rounded-xl border border-border bg-muted/50 p-3 text-sm text-muted-foreground"
+            >
+              {resetMessage}
+            </p>
+          )}
           <Button disabled={busy} className="mt-6 h-11 w-full rounded-full">
             {busy ? "Aguarde…" : signup ? "Criar conta" : "Entrar"}
           </Button>
-          <div className="mt-5 text-right text-sm">
-            <Link to={signup ? "/login" : "/cadastro"} className="text-primary">
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
+            {!signup && (
+              <button
+                type="button"
+                onClick={() => void requestPasswordReset()}
+                disabled={busy}
+                className="text-muted-foreground underline underline-offset-4 hover:text-foreground disabled:opacity-50"
+              >
+                Esqueci minha senha
+              </button>
+            )}
+            <Link to={signup ? "/login" : "/cadastro"} className="ml-auto text-primary">
               {signup ? "Já tenho conta" : "Criar conta"}
             </Link>
           </div>
@@ -904,7 +978,7 @@ export function LiveProfilePage() {
   const [goalStatus, setGoalStatus] = useState("");
   useEffect(() => {
     if (goal) setGoalValue(goal.lessons_per_week);
-  }, [goal?.lessons_per_week]);
+  }, [goal]);
   const saveGoal = async () => {
     const safe = Math.max(1, Math.min(50, Math.floor(Number.isFinite(goalValue) ? goalValue : 1)));
     setGoalStatus("Salvando…");
@@ -946,6 +1020,14 @@ export function LiveProfilePage() {
   const suggestedLessons = lessons
     .filter((lesson) => !progressItems.some((item) => item.lesson_id === lesson.id))
     .slice(0, 4);
+  const weekStart = new Date();
+  weekStart.setDate(weekStart.getDate() - 6);
+  weekStart.setHours(0, 0, 0, 0);
+  const weeklyCompleted = progressItems.filter(
+    (item) => item.status === "completed" && new Date(item.updated_at) >= weekStart,
+  ).length;
+  const weeklyGoal = goal?.lessons_per_week ?? 3;
+  const overallProgress = lessons.length ? Math.round((completedCount / lessons.length) * 100) : 0;
   return (
     <SiteLayout>
       <PageHeader
@@ -959,13 +1041,13 @@ export function LiveProfilePage() {
           <Metric icon={<Clock3 />} value={String(inProgressCount)} label="Em andamento" />
           <Metric
             icon={<Target />}
-            value={String(goal?.lessons_per_week ?? 3)}
+            value={`${weeklyCompleted}/${weeklyGoal}`}
             label="Meta semanal"
           />
           <Metric
-            icon={<Users />}
-            value={profile.role === "teacher" ? "Professor" : "Aluno"}
-            label="Tipo de conta"
+            icon={<BookOpen />}
+            value={`${overallProgress}%`}
+            label="Aulas do catálogo concluídas"
           />
         </div>
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -1008,7 +1090,19 @@ export function LiveProfilePage() {
             <Target className="size-7 text-primary" />
             <h2 className="mt-4 font-display text-2xl">Meta semanal</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Quantas aulas você quer concluir por semana?
+              Quantas aulas você quer concluir por semana? Nos últimos 7 dias, você concluiu
+              {weeklyCompleted} {weeklyCompleted === 1 ? "aula" : "aulas"}.
+            </p>
+            <div className="mt-4">
+              <ProgressBar
+                value={weeklyGoal ? (weeklyCompleted / weeklyGoal) * 100 : 0}
+                label="Progresso da meta semanal"
+              />
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {weeklyCompleted >= weeklyGoal
+                ? "Meta semanal atingida. Excelente consistência!"
+                : `Faltam ${weeklyGoal - weeklyCompleted} ${weeklyGoal - weeklyCompleted === 1 ? "aula" : "aulas"} para atingir sua meta.`}
             </p>
             <label htmlFor="weekly-goal" className="mt-4 block text-sm font-medium">
               Aulas por semana
