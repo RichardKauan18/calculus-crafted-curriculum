@@ -941,6 +941,80 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
   );
 }
 
+
+export function LivePasswordResetPage() {
+  const { session, updatePassword } = useAuth();
+  const navigate = useNavigate();
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+    if (password.length < 6) {
+      setError("A senha deve ter pelo menos 6 caracteres.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("As senhas não coincidem.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const result = await updatePassword(password);
+      if (result) {
+        setError(result);
+        return;
+      }
+      setSuccess("Senha alterada com sucesso. Redirecionando para seu perfil…");
+      window.setTimeout(() => { void navigate({ to: "/perfil" }); }, 900);
+    } catch {
+      setError("Não foi possível alterar a senha. Solicite um novo link de recuperação.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <SiteLayout>
+      <PageHeader
+        eyebrow="Segurança da conta"
+        title="Definir nova senha"
+        description="Escolha uma senha nova para voltar a acessar sua conta."
+      />
+      <section className="mx-auto max-w-xl px-4 pb-16 sm:px-6">
+        {session ? (
+          <form onSubmit={submit} className="space-y-5 rounded-3xl border border-border/80 bg-card p-6 shadow-sm sm:p-8">
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium">Nova senha</span>
+              <Input type="password" autoComplete="new-password" minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} required />
+              <span className="mt-1 block text-xs text-muted-foreground">Use pelo menos 6 caracteres.</span>
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium">Confirmar nova senha</span>
+              <Input type="password" autoComplete="new-password" minLength={6} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} required />
+            </label>
+            {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+            {success && <p role="status" className="rounded-xl bg-primary/5 p-3 text-sm">{success}</p>}
+            <Button type="submit" className="w-full rounded-full" disabled={busy || password.length < 6 || password !== confirmPassword}>
+              {busy ? "Alterando senha…" : "Salvar nova senha"}
+            </Button>
+          </form>
+        ) : (
+          <div className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8">
+            <p className="text-sm leading-relaxed text-muted-foreground">Este link de recuperação é inválido ou expirou. Solicite um novo link para seu e-mail.</p>
+            <Button asChild className="mt-5 rounded-full"><Link to="/login">Voltar para entrar</Link></Button>
+          </div>
+        )}
+      </section>
+    </SiteLayout>
+  );
+}
+
 export function LiveProfilePage() {
   const { user, profile, loading: authLoading, profileError, signOut } = useAuth();
   const {
