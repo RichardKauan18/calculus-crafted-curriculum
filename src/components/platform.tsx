@@ -902,9 +902,11 @@ export function LiveProfilePage() {
   const { goal, update } = useStudyGoal(user?.id);
   const [goalValue, setGoalValue] = useState(3);
   const [goalStatus, setGoalStatus] = useState("");
+
   useEffect(() => {
     if (goal) setGoalValue(goal.lessons_per_week);
   }, [goal?.lessons_per_week]);
+
   const saveGoal = async () => {
     const safe = Math.max(1, Math.min(50, Math.floor(Number.isFinite(goalValue) ? goalValue : 1)));
     setGoalStatus("Salvando…");
@@ -915,6 +917,7 @@ export function LiveProfilePage() {
       setGoalStatus("Não foi possível salvar a meta.");
     }
   };
+
   if (authLoading)
     return (
       <SiteLayout>
@@ -923,122 +926,176 @@ export function LiveProfilePage() {
         </div>
       </SiteLayout>
     );
+
   if (!user || !profile)
     return (
       <SiteLayout>
-        <PageHeader eyebrow="Área do aluno" title="Entre para acompanhar seu progresso" />
-        <section className="mx-auto max-w-7xl px-5">
-          <p className="mb-4 text-muted-foreground">
-            Entre na sua conta para consultar aulas concluídas, metas e progresso salvo.
-          </p>
-          <Button asChild>
-            <Link to="/login">Entrar</Link>
-          </Button>
+        <PageHeader eyebrow="Meu perfil" title="Entre para acessar sua área" description="Faça login para acompanhar seus estudos ou gerenciar suas aulas." />
+        <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+          <div className="max-w-xl rounded-2xl border border-border bg-card p-6 sm:p-8">
+            <p className="text-muted-foreground">Seu perfil reúne as informações da conta e os atalhos mais importantes para seu tipo de acesso.</p>
+            <Button asChild className="mt-5 rounded-full">
+              <Link to="/login">Entrar na minha conta</Link>
+            </Button>
+          </div>
         </section>
       </SiteLayout>
     );
+
+  const isTeacher = profile.role === "teacher";
+  const displayName = profile.name?.trim() || (isTeacher ? "Professor" : "Estudante");
+  const initials = displayName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toLocaleUpperCase("pt-BR");
+  const createdLabel = profile.created_at
+    ? new Date(profile.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })
+    : "—";
   const inProgressLessons = lessons.filter((lesson) =>
-    progressItems.some(
-      (item) =>
-        item.lesson_id === lesson.id && (item.status === "watching" || item.status === "half"),
-    ),
+    progressItems.some((item) => item.lesson_id === lesson.id && (item.status === "watching" || item.status === "half")),
   );
   const suggestedLessons = lessons
     .filter((lesson) => !progressItems.some((item) => item.lesson_id === lesson.id))
     .slice(0, 4);
+  const weeklyGoal = goal?.lessons_per_week ?? 3;
+
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="Área do aluno"
-        title={`Olá, ${profile.name || "estudante"}`}
-        description="Acompanhe seu progresso e mantenha uma meta de estudos consistente."
+        eyebrow={isTeacher ? "Área do professor" : "Área do aluno"}
+        title="Meu perfil"
+        description={isTeacher ? "Gerencie sua conta e acesse rapidamente suas ferramentas de ensino." : "Veja sua evolução e organize os próximos passos dos seus estudos."}
       />
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Metric icon={<CheckCircle2 />} value={String(completedCount)} label="Aulas concluídas" />
-          <Metric icon={<Clock3 />} value={String(inProgressCount)} label="Em andamento" />
-          <Metric
-            icon={<Target />}
-            value={String(goal?.lessons_per_week ?? 3)}
-            label="Meta semanal"
-          />
-          <Metric
-            icon={<Users />}
-            value={profile.role === "teacher" ? "Professor" : "Aluno"}
-            label="Tipo de conta"
-          />
-        </div>
-        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div>
-            <h2 className="mb-4 font-display text-2xl">
-              {inProgressLessons.length ? "Continue de onde parou" : "Sugestões para estudar"}
-            </h2>
-            {progressError ? (
-              <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
-                <p className="text-sm text-muted-foreground">{progressError}</p>
-                <Button variant="outline" className="mt-3" onClick={() => void refetchProgress()}>
-                  Tentar novamente
-                </Button>
+        <div className="overflow-hidden rounded-3xl border border-border/80 bg-card shadow-sm">
+          <div className="h-2 bg-primary" aria-hidden="true" />
+          <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <div className="flex min-w-0 items-center gap-4 sm:gap-5">
+              <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-primary text-xl font-semibold text-primary-foreground sm:size-20 sm:text-2xl" aria-label={`Iniciais de ${displayName}`}>
+                {initials || "M"}
               </div>
-            ) : lessonsError ? (
-              <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
-                <p className="text-sm text-muted-foreground">{lessonsError}</p>
-                <Button variant="outline" className="mt-3" onClick={() => void refetchLessons()}>
-                  Tentar novamente
-                </Button>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl">{displayName}</h2>
+                  <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+                    {isTeacher ? "Professor" : "Aluno"}
+                  </span>
+                </div>
+                <p className="mt-1 break-all text-sm text-muted-foreground">{user.email}</p>
+                <p className="mt-2 text-xs text-muted-foreground">Conta criada em {createdLabel}</p>
               </div>
-            ) : lessonsLoading || progressLoading ? (
-              <p role="status" className="py-8 text-muted-foreground">
-                Carregando seu progresso…
-              </p>
-            ) : (inProgressLessons.length ? inProgressLessons : suggestedLessons).length ? (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {(inProgressLessons.length ? inProgressLessons : suggestedLessons).map((l) => (
-                  <LiveLessonCard key={l.id} lesson={l} />
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-muted-foreground">
-                Ainda não há aulas publicadas para exibir. Volte mais tarde para continuar seus
-                estudos.
-              </div>
-            )}
+            </div>
+            <Button variant="outline" className="shrink-0 rounded-full" onClick={() => void signOut()}>
+              Sair da conta
+            </Button>
           </div>
-          <aside className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm">
-            <Target className="size-7 text-primary" />
-            <h2 className="mt-4 font-display text-2xl">Meta semanal</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Quantas aulas você quer concluir por semana?
-            </p>
-            <label htmlFor="weekly-goal" className="mt-4 block text-sm font-medium">
-              Aulas por semana
-            </label>
-            <Input
-              id="weekly-goal"
-              type="number"
-              min={1}
-              max={50}
-              value={goalValue}
-              onChange={(e) => setGoalValue(Number(e.target.value))}
-              className="mt-2"
-            />
-            <Button
-              className="mt-3 w-full"
-              onClick={() => void saveGoal()}
-              disabled={goalValue < 1 || goalValue > 50}
-            >
-              Salvar meta
-            </Button>
-            {goalStatus && (
-              <p role="status" className="mt-2 text-sm text-muted-foreground">
-                {goalStatus}
-              </p>
-            )}
-            <Button variant="outline" className="mt-3 w-full" onClick={() => void signOut()}>
-              Sair
-            </Button>
-          </aside>
         </div>
+
+        {isTeacher ? (
+          <>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="font-display text-2xl font-semibold">Seu espaço de ensino</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Acompanhe o catálogo e escolha uma ação para continuar.</p>
+              </div>
+              <Button asChild className="rounded-full">
+                <Link to="/professor/aulas"><Pencil className="mr-2 size-4" /> Gerenciar aulas</Link>
+              </Button>
+            </div>
+            {lessonsError ? (
+              <div role="alert" className="mt-5 rounded-2xl border border-destructive/30 bg-card p-5">
+                <p className="text-sm text-muted-foreground">{lessonsError}</p>
+                <Button variant="outline" className="mt-3" onClick={() => void refetchLessons()}>Tentar novamente</Button>
+              </div>
+            ) : lessonsLoading ? (
+              <p role="status" className="py-8 text-muted-foreground">Carregando dados do catálogo…</p>
+            ) : (
+              <>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <Metric icon={<BookOpen aria-hidden="true" />} value={String(lessons.length)} label="Aulas cadastradas" />
+                  <Metric icon={<CheckCircle2 aria-hidden="true" />} value={String(lessons.filter((lesson) => lesson.level === "medio").length)} label="Aulas de Ensino Médio" />
+                  <Metric icon={<Target aria-hidden="true" />} value={String(lessons.filter((lesson) => lesson.level === "concursos").length)} label="Aulas para concursos" />
+                </div>
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <Link to="/professor/aulas" className="group rounded-2xl border border-border/80 bg-card p-6 transition hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary"><Pencil className="size-5" /></span>
+                    <h3 className="mt-4 font-display text-xl font-semibold">Cadastrar ou editar aulas</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Adicione vídeos, atualize descrições e mantenha seu catálogo organizado.</p>
+                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">Abrir gerenciamento <ArrowLeft className="size-4 rotate-180" /></span>
+                  </Link>
+                  <Link to="/aulas" className="group rounded-2xl border border-border/80 bg-card p-6 transition hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <span className="grid size-11 place-items-center rounded-xl bg-secondary/60 text-secondary-foreground"><Play className="size-5" /></span>
+                    <h3 className="mt-4 font-display text-xl font-semibold">Visualizar biblioteca</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Confira a experiência de quem acessa as aulas como aluno.</p>
+                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">Ver biblioteca <ArrowLeft className="size-4 rotate-180" /></span>
+                  </Link>
+                </div>
+                {!lessons.length && (
+                  <div className="mt-6 rounded-2xl border border-dashed border-border bg-muted/30 p-7 text-center sm:p-9">
+                    <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-background text-primary"><BookOpen className="size-6" /></span>
+                    <h3 className="mt-4 font-display text-xl font-semibold">Vamos publicar sua primeira aula?</h3>
+                    <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">Seu catálogo ainda está vazio. Cadastre uma aula para começar a preencher a biblioteca que os alunos vão acessar.</p>
+                    <Button asChild className="mt-5 rounded-full"><Link to="/professor/aulas"><Pencil className="mr-2 size-4" /> Cadastrar primeira aula</Link></Button>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="mt-7">
+              <h2 className="font-display text-2xl font-semibold">Seu progresso</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Pequenos passos constantes fazem diferença. Veja como está sua jornada.</p>
+            </div>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <Metric icon={<CheckCircle2 aria-hidden="true" />} value={String(completedCount)} label="Aulas concluídas" />
+              <Metric icon={<Clock3 aria-hidden="true" />} value={String(inProgressCount)} label="Aulas em andamento" />
+              <Metric icon={<Target aria-hidden="true" />} value={String(weeklyGoal)} label="Meta de aulas por semana" />
+            </div>
+            <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="min-w-0">
+                <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <h3 className="font-display text-xl font-semibold">{inProgressLessons.length ? "Continue de onde parou" : "Próximos passos"}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{inProgressLessons.length ? "Retome uma aula sem perder o ritmo." : "Escolha uma aula e comece a construir seu progresso."}</p>
+                  </div>
+                  <Button asChild variant="outline" size="sm" className="rounded-full"><Link to="/aulas">Explorar aulas</Link></Button>
+                </div>
+                {progressError ? (
+                  <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
+                    <p className="text-sm text-muted-foreground">{progressError}</p>
+                    <Button variant="outline" className="mt-3" onClick={() => void refetchProgress()}>Tentar novamente</Button>
+                  </div>
+                ) : lessonsError ? (
+                  <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
+                    <p className="text-sm text-muted-foreground">{lessonsError}</p>
+                    <Button variant="outline" className="mt-3" onClick={() => void refetchLessons()}>Tentar novamente</Button>
+                  </div>
+                ) : lessonsLoading || progressLoading ? (
+                  <p role="status" className="py-8 text-muted-foreground">Carregando seus estudos…</p>
+                ) : (inProgressLessons.length ? inProgressLessons : suggestedLessons).length ? (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {(inProgressLessons.length ? inProgressLessons : suggestedLessons).map((lesson) => <LiveLessonCard key={lesson.id} lesson={lesson} />)}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-7 text-center sm:p-9">
+                    <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-background text-primary"><BookOpen className="size-6" /></span>
+                    <h3 className="mt-4 font-display text-xl font-semibold">Seu próximo capítulo começa aqui</h3>
+                    <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">Ainda não há aulas publicadas. Quando o professor adicionar conteúdo, ele aparecerá nesta área.</p>
+                    <Button asChild className="mt-5 rounded-full"><Link to="/aulas">Explorar biblioteca</Link></Button>
+                  </div>
+                )}
+              </div>
+              <aside className="h-fit rounded-2xl border border-border/80 bg-card p-5 sm:p-6">
+                <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary"><Target className="size-5" /></span>
+                <h3 className="mt-4 font-display text-xl font-semibold">Meta semanal</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Defina uma meta realista para manter a consistência nos estudos.</p>
+                <label htmlFor="weekly-goal" className="mt-5 block text-sm font-medium">Aulas por semana</label>
+                <Input id="weekly-goal" type="number" min={1} max={50} value={goalValue} onChange={(e) => setGoalValue(Number(e.target.value))} className="mt-2" />
+                <p className="mt-2 text-xs text-muted-foreground">Escolha entre 1 e 50 aulas por semana.</p>
+                <Button className="mt-4 w-full rounded-full" onClick={() => void saveGoal()} disabled={goalValue < 1 || goalValue > 50}>Salvar meta</Button>
+                {goalStatus && <p role="status" className="mt-3 text-sm text-muted-foreground">{goalStatus}</p>}
+              </aside>
+            </div>
+          </>
+        )}
       </section>
     </SiteLayout>
   );
