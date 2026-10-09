@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase, hasSupabaseConfig } from "@/lib/supabase";
 
@@ -118,9 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch(() => {
         if (mounted) {
-          setProfileError(
-            "Não foi possível verificar sua sessão. Verifique sua conexão.",
-          );
+          setProfileError("Não foi possível verificar sua sessão. Verifique sua conexão.");
           setLoading(false);
         }
       });

@@ -157,7 +157,9 @@ function LiveLessonCard({ lesson, demo = false }: { lesson: PlatformLesson; demo
 export function LiveHomePage() {
   const { lessons, loading, error, refetch } = useLessons();
   const { profile } = useAuth();
-  const [studentFeedback, setStudentFeedback] = useState<Array<{ id: string; title: string; message: string; created_at: string }>>([]);
+  const [studentFeedback, setStudentFeedback] = useState<
+    Array<{ id: string; title: string; message: string; created_at: string }>
+  >([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [feedbackError, setFeedbackError] = useState("");
   useEffect(() => {
@@ -166,7 +168,9 @@ export function LiveHomePage() {
       setStudentFeedback([]);
       setFeedbackLoading(false);
       setFeedbackError("");
-      return () => { active = false; };
+      return () => {
+        active = false;
+      };
     }
     setFeedbackLoading(true);
     setFeedbackError("");
@@ -182,7 +186,14 @@ export function LiveHomePage() {
           setStudentFeedback([]);
           setFeedbackError("Não foi possível carregar os recados do professor.");
         } else {
-          setStudentFeedback((data ?? []) as Array<{ id: string; title: string; message: string; created_at: string }>);
+          setStudentFeedback(
+            (data ?? []) as Array<{
+              id: string;
+              title: string;
+              message: string;
+              created_at: string;
+            }>,
+          );
         }
       })
       .catch(() => {
@@ -191,7 +202,9 @@ export function LiveHomePage() {
       .finally(() => {
         if (active) setFeedbackLoading(false);
       });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [profile?.id, profile?.role]);
   const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons() : [];
   return (
@@ -310,33 +323,64 @@ export function LiveHomePage() {
           </div>
         )}
       </section>
-      {profile?.role === "student" && (feedbackLoading || feedbackError || studentFeedback.length > 0) && (
-        <section aria-labelledby="teacher-feedback-title" className="mx-auto max-w-7xl px-5 pb-12 sm:px-6">
-          <div className="mb-5">
-            <p className="font-mono text-xs uppercase tracking-[.14em] text-primary">Recados do professor</p>
-            <h2 id="teacher-feedback-title" className="mt-2 font-display text-2xl font-semibold sm:text-3xl">Avisos e orientações para seus estudos</h2>
-          </div>
-          {feedbackLoading ? (
-            <p role="status" className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">Carregando recados…</p>
-          ) : feedbackError ? (
-            <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
-              <p className="text-sm text-muted-foreground">{feedbackError}</p>
-              <Button variant="outline" className="mt-3" onClick={() => window.location.reload()}>Tentar novamente</Button>
+      {profile?.role === "student" &&
+        (feedbackLoading || feedbackError || studentFeedback.length > 0) && (
+          <section
+            aria-labelledby="teacher-feedback-title"
+            className="mx-auto max-w-7xl px-5 pb-12 sm:px-6"
+          >
+            <div className="mb-5">
+              <p className="font-mono text-xs uppercase tracking-[.14em] text-primary">
+                Recados do professor
+              </p>
+              <h2
+                id="teacher-feedback-title"
+                className="mt-2 font-display text-2xl font-semibold sm:text-3xl"
+              >
+                Avisos e orientações para seus estudos
+              </h2>
             </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {studentFeedback.map((item) => (
-                <article key={item.id} className="rounded-2xl border border-primary/15 bg-card p-5 shadow-sm">
-                  <span className="inline-flex items-center gap-2 text-xs font-medium text-primary"><MessageSquare className="size-4" aria-hidden="true" /> Mensagem do professor</span>
-                  <h3 className="mt-3 font-display text-lg font-semibold">{item.title}</h3>
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{item.message}</p>
-                  <p className="mt-4 text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}</p>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
+            {feedbackLoading ? (
+              <p
+                role="status"
+                className="rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground"
+              >
+                Carregando recados…
+              </p>
+            ) : feedbackError ? (
+              <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
+                <p className="text-sm text-muted-foreground">{feedbackError}</p>
+                <Button variant="outline" className="mt-3" onClick={() => window.location.reload()}>
+                  Tentar novamente
+                </Button>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {studentFeedback.map((item) => (
+                  <article
+                    key={item.id}
+                    className="rounded-2xl border border-primary/15 bg-card p-5 shadow-sm"
+                  >
+                    <span className="inline-flex items-center gap-2 text-xs font-medium text-primary">
+                      <MessageSquare className="size-4" aria-hidden="true" /> Mensagem do professor
+                    </span>
+                    <h3 className="mt-3 font-display text-lg font-semibold">{item.title}</h3>
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+                      {item.message}
+                    </p>
+                    <p className="mt-4 text-xs text-muted-foreground">
+                      {new Date(item.created_at).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
     </SiteLayout>
   );
 }
@@ -853,7 +897,9 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
           setError(err);
           return;
         }
-        setSuccess("Se esse e-mail estiver cadastrado, enviaremos um link para redefinir sua senha. Confira também a caixa de spam.");
+        setSuccess(
+          "Se esse e-mail estiver cadastrado, enviaremos um link para redefinir sua senha. Confira também a caixa de spam.",
+        );
         return;
       }
       const err = signup
@@ -894,9 +940,15 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
           onSubmit={submit}
           className="rounded-3xl border border-border/80 bg-card p-6 shadow-xl shadow-foreground/5 sm:p-8 lg:p-10"
         >
-          <h2 className="font-display text-3xl">{forgotPassword ? "Recuperar senha" : signup ? "Criar conta" : "Entrar"}</h2>
+          <h2 className="font-display text-3xl">
+            {forgotPassword ? "Recuperar senha" : signup ? "Criar conta" : "Entrar"}
+          </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            {forgotPassword ? "Informe o e-mail da sua conta para receber um link seguro de redefinição." : signup ? "Crie sua conta para acompanhar seu progresso." : "Entre para acessar seu progresso e suas aulas."}
+            {forgotPassword
+              ? "Informe o e-mail da sua conta para receber um link seguro de redefinição."
+              : signup
+                ? "Crie sua conta para acompanhar seu progresso."
+                : "Entre para acessar seu progresso e suas aulas."}
           </p>
           <div className="mt-7 space-y-5">
             {signup && !forgotPassword && (
@@ -948,11 +1000,25 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
             </p>
           )}
           <Button disabled={busy} className="mt-6 h-11 w-full rounded-full">
-            {busy ? "Aguarde…" : forgotPassword ? "Enviar link de recuperação" : signup ? "Criar conta" : "Entrar"}
+            {busy
+              ? "Aguarde…"
+              : forgotPassword
+                ? "Enviar link de recuperação"
+                : signup
+                  ? "Criar conta"
+                  : "Entrar"}
           </Button>
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
             {!signup && (
-              <button type="button" className="text-primary underline-offset-4 hover:underline" onClick={() => { setForgotPassword((value) => !value); setError(""); setSuccess(""); }}>
+              <button
+                type="button"
+                className="text-primary underline-offset-4 hover:underline"
+                onClick={() => {
+                  setForgotPassword((value) => !value);
+                  setError("");
+                  setSuccess("");
+                }}
+              >
                 {forgotPassword ? "Voltar para entrar" : "Esqueci minha senha"}
               </button>
             )}
@@ -965,7 +1031,6 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
     </SiteLayout>
   );
 }
-
 
 export function LivePasswordResetPage() {
   const { session, updatePassword } = useAuth();
@@ -996,7 +1061,9 @@ export function LivePasswordResetPage() {
         return;
       }
       setSuccess("Senha alterada com sucesso. Redirecionando para seu perfil…");
-      window.setTimeout(() => { void navigate({ to: "/perfil" }); }, 900);
+      window.setTimeout(() => {
+        void navigate({ to: "/perfil" });
+      }, 900);
     } catch {
       setError("Não foi possível alterar a senha. Solicite um novo link de recuperação.");
     } finally {
@@ -1013,26 +1080,61 @@ export function LivePasswordResetPage() {
       />
       <section className="mx-auto max-w-xl px-4 pb-16 sm:px-6">
         {session ? (
-          <form onSubmit={submit} className="space-y-5 rounded-3xl border border-border/80 bg-card p-6 shadow-sm sm:p-8">
+          <form
+            onSubmit={submit}
+            className="space-y-5 rounded-3xl border border-border/80 bg-card p-6 shadow-sm sm:p-8"
+          >
             <label className="block">
               <span className="mb-2 block text-sm font-medium">Nova senha</span>
-              <Input type="password" autoComplete="new-password" minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} required />
-              <span className="mt-1 block text-xs text-muted-foreground">Use pelo menos 6 caracteres.</span>
+              <Input
+                type="password"
+                autoComplete="new-password"
+                minLength={6}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+              <span className="mt-1 block text-xs text-muted-foreground">
+                Use pelo menos 6 caracteres.
+              </span>
             </label>
             <label className="block">
               <span className="mb-2 block text-sm font-medium">Confirmar nova senha</span>
-              <Input type="password" autoComplete="new-password" minLength={6} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} required />
+              <Input
+                type="password"
+                autoComplete="new-password"
+                minLength={6}
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                required
+              />
             </label>
-            {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-            {success && <p role="status" className="rounded-xl bg-primary/5 p-3 text-sm">{success}</p>}
-            <Button type="submit" className="w-full rounded-full" disabled={busy || password.length < 6 || password !== confirmPassword}>
+            {error && (
+              <p role="alert" className="text-sm text-destructive">
+                {error}
+              </p>
+            )}
+            {success && (
+              <p role="status" className="rounded-xl bg-primary/5 p-3 text-sm">
+                {success}
+              </p>
+            )}
+            <Button
+              type="submit"
+              className="w-full rounded-full"
+              disabled={busy || password.length < 6 || password !== confirmPassword}
+            >
               {busy ? "Alterando senha…" : "Salvar nova senha"}
             </Button>
           </form>
         ) : (
           <div className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8">
-            <p className="text-sm leading-relaxed text-muted-foreground">Este link de recuperação é inválido ou expirou. Solicite um novo link para seu e-mail.</p>
-            <Button asChild className="mt-5 rounded-full"><Link to="/login">Voltar para entrar</Link></Button>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Este link de recuperação é inválido ou expirou. Solicite um novo link para seu e-mail.
+            </p>
+            <Button asChild className="mt-5 rounded-full">
+              <Link to="/login">Voltar para entrar</Link>
+            </Button>
           </div>
         )}
       </section>
@@ -1093,18 +1195,30 @@ export function LiveProfilePage() {
       <SiteLayout>
         <PageHeader
           eyebrow="Meu perfil"
-          title={user && profileError ? "Não foi possível carregar seu perfil" : "Entre para acessar sua área"}
-          description={profileError || "Faça login para acompanhar seus estudos ou gerenciar suas aulas."}
+          title={
+            user && profileError
+              ? "Não foi possível carregar seu perfil"
+              : "Entre para acessar sua área"
+          }
+          description={
+            profileError || "Faça login para acompanhar seus estudos ou gerenciar suas aulas."
+          }
         />
         <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
           <div className="max-w-xl rounded-2xl border border-border bg-card p-6 sm:p-8">
             <p className="text-muted-foreground">
-              {user ? "Sua sessão está ativa, mas os dados do perfil não estão disponíveis. Tente novamente antes de continuar." : "Entre na sua conta para acompanhar seus estudos ou gerenciar suas aulas."}
+              {user
+                ? "Sua sessão está ativa, mas os dados do perfil não estão disponíveis. Tente novamente antes de continuar."
+                : "Entre na sua conta para acompanhar seus estudos ou gerenciar suas aulas."}
             </p>
             {user ? (
-              <Button className="mt-5 rounded-full" onClick={() => window.location.reload()}>Tentar novamente</Button>
+              <Button className="mt-5 rounded-full" onClick={() => window.location.reload()}>
+                Tentar novamente
+              </Button>
             ) : (
-              <Button asChild className="mt-5 rounded-full"><Link to="/login">Entrar na minha conta</Link></Button>
+              <Button asChild className="mt-5 rounded-full">
+                <Link to="/login">Entrar na minha conta</Link>
+              </Button>
             )}
           </div>
         </section>
@@ -1114,12 +1228,25 @@ export function LiveProfilePage() {
   const isTeacher = profile.role === "teacher";
   const teacherLessons = lessons.filter((lesson) => lesson.teacher_id === user.id);
   const displayName = profile.name?.trim() || (isTeacher ? "Professor" : "Estudante");
-  const initials = displayName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toLocaleUpperCase("pt-BR");
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toLocaleUpperCase("pt-BR");
   const createdLabel = profile.created_at
-    ? new Date(profile.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })
+    ? new Date(profile.created_at).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      })
     : "—";
   const inProgressLessons = lessons.filter((lesson) =>
-    progressItems.some((item) => item.lesson_id === lesson.id && (item.status === "watching" || item.status === "half")),
+    progressItems.some(
+      (item) =>
+        item.lesson_id === lesson.id && (item.status === "watching" || item.status === "half"),
+    ),
   );
   const suggestedLessons = lessons
     .filter((lesson) => !progressItems.some((item) => item.lesson_id === lesson.id))
@@ -1135,7 +1262,10 @@ export function LiveProfilePage() {
     const completedAt = new Date(item.completed_at);
     return !Number.isNaN(completedAt.getTime()) && completedAt >= weekStart;
   }).length;
-  const weeklyProgress = Math.min(100, Math.round((weeklyCompleted / Math.max(1, weeklyGoal)) * 100));
+  const weeklyProgress = Math.min(
+    100,
+    Math.round((weeklyCompleted / Math.max(1, weeklyGoal)) * 100),
+  );
   const recentActivity = [...progressItems]
     .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
     .slice(0, 5)
@@ -1150,19 +1280,28 @@ export function LiveProfilePage() {
       <PageHeader
         eyebrow={isTeacher ? "Área do professor" : "Área do aluno"}
         title="Meu perfil"
-        description={isTeacher ? "Gerencie sua conta e acesse rapidamente suas ferramentas de ensino." : "Veja sua evolução e organize os próximos passos dos seus estudos."}
+        description={
+          isTeacher
+            ? "Gerencie sua conta e acesse rapidamente suas ferramentas de ensino."
+            : "Veja sua evolução e organize os próximos passos dos seus estudos."
+        }
       />
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         <div className="overflow-hidden rounded-3xl border border-border/80 bg-card shadow-sm">
           <div className="h-2 bg-primary" aria-hidden="true" />
           <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-8">
             <div className="flex min-w-0 items-center gap-4 sm:gap-5">
-              <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-primary text-xl font-semibold text-primary-foreground sm:size-20 sm:text-2xl" aria-label={`Iniciais de ${displayName}`}>
+              <div
+                className="grid size-16 shrink-0 place-items-center rounded-2xl bg-primary text-xl font-semibold text-primary-foreground sm:size-20 sm:text-2xl"
+                aria-label={`Iniciais de ${displayName}`}
+              >
                 {initials || "M"}
               </div>
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl">{displayName}</h2>
+                  <h2 className="truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+                    {displayName}
+                  </h2>
                   <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
                     {isTeacher ? "Professor" : "Aluno"}
                   </span>
@@ -1171,7 +1310,11 @@ export function LiveProfilePage() {
                 <p className="mt-2 text-xs text-muted-foreground">Conta criada em {createdLabel}</p>
               </div>
             </div>
-            <Button variant="outline" className="shrink-0 rounded-full" onClick={() => void signOut()}>
+            <Button
+              variant="outline"
+              className="shrink-0 rounded-full"
+              onClick={() => void signOut()}
+            >
               Sair da conta
             </Button>
           </div>
@@ -1182,46 +1325,106 @@ export function LiveProfilePage() {
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2 className="font-display text-2xl font-semibold">Seu espaço de ensino</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Acompanhe o catálogo e escolha uma ação para continuar.</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Acompanhe o catálogo e escolha uma ação para continuar.
+                </p>
               </div>
               <Button asChild className="rounded-full">
-                <Link to="/professor/aulas"><Pencil className="mr-2 size-4" /> Gerenciar aulas</Link>
+                <Link to="/professor/aulas">
+                  <Pencil className="mr-2 size-4" /> Gerenciar aulas
+                </Link>
               </Button>
             </div>
             {lessonsError ? (
-              <div role="alert" className="mt-5 rounded-2xl border border-destructive/30 bg-card p-5">
+              <div
+                role="alert"
+                className="mt-5 rounded-2xl border border-destructive/30 bg-card p-5"
+              >
                 <p className="text-sm text-muted-foreground">{lessonsError}</p>
-                <Button variant="outline" className="mt-3" onClick={() => void refetchLessons()}>Tentar novamente</Button>
+                <Button variant="outline" className="mt-3" onClick={() => void refetchLessons()}>
+                  Tentar novamente
+                </Button>
               </div>
             ) : lessonsLoading ? (
-              <p role="status" className="py-8 text-muted-foreground">Carregando dados do catálogo…</p>
+              <p role="status" className="py-8 text-muted-foreground">
+                Carregando dados do catálogo…
+              </p>
             ) : (
               <>
                 <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <Metric icon={<BookOpen aria-hidden="true" />} value={String(teacherLessons.length)} label="Aulas cadastradas" />
-                  <Metric icon={<CheckCircle2 aria-hidden="true" />} value={String(teacherLessons.filter((lesson) => lesson.level === "medio").length)} label="Aulas de Ensino Médio" />
-                  <Metric icon={<Target aria-hidden="true" />} value={String(teacherLessons.filter((lesson) => lesson.level === "concursos").length)} label="Aulas para concursos" />
+                  <Metric
+                    icon={<BookOpen aria-hidden="true" />}
+                    value={String(teacherLessons.length)}
+                    label="Aulas cadastradas"
+                  />
+                  <Metric
+                    icon={<CheckCircle2 aria-hidden="true" />}
+                    value={String(
+                      teacherLessons.filter((lesson) => lesson.level === "medio").length,
+                    )}
+                    label="Aulas de Ensino Médio"
+                  />
+                  <Metric
+                    icon={<Target aria-hidden="true" />}
+                    value={String(
+                      teacherLessons.filter((lesson) => lesson.level === "concursos").length,
+                    )}
+                    label="Aulas para concursos"
+                  />
                 </div>
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <Link to="/professor/aulas" className="group rounded-2xl border border-border/80 bg-card p-6 transition hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary"><Pencil className="size-5" /></span>
-                    <h3 className="mt-4 font-display text-xl font-semibold">Cadastrar ou editar aulas</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Adicione vídeos, atualize descrições e mantenha seu catálogo organizado.</p>
-                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">Abrir gerenciamento <ArrowLeft className="size-4 rotate-180" /></span>
+                  <Link
+                    to="/professor/aulas"
+                    className="group rounded-2xl border border-border/80 bg-card p-6 transition hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
+                      <Pencil className="size-5" />
+                    </span>
+                    <h3 className="mt-4 font-display text-xl font-semibold">
+                      Cadastrar ou editar aulas
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      Adicione vídeos, atualize descrições e mantenha seu catálogo organizado.
+                    </p>
+                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">
+                      Abrir gerenciamento <ArrowLeft className="size-4 rotate-180" />
+                    </span>
                   </Link>
-                  <Link to="/aulas" className="group rounded-2xl border border-border/80 bg-card p-6 transition hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    <span className="grid size-11 place-items-center rounded-xl bg-secondary/60 text-secondary-foreground"><Play className="size-5" /></span>
-                    <h3 className="mt-4 font-display text-xl font-semibold">Visualizar biblioteca</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Confira a experiência de quem acessa as aulas como aluno.</p>
-                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">Ver biblioteca <ArrowLeft className="size-4 rotate-180" /></span>
+                  <Link
+                    to="/aulas"
+                    className="group rounded-2xl border border-border/80 bg-card p-6 transition hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <span className="grid size-11 place-items-center rounded-xl bg-secondary/60 text-secondary-foreground">
+                      <Play className="size-5" />
+                    </span>
+                    <h3 className="mt-4 font-display text-xl font-semibold">
+                      Visualizar biblioteca
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      Confira a experiência de quem acessa as aulas como aluno.
+                    </p>
+                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">
+                      Ver biblioteca <ArrowLeft className="size-4 rotate-180" />
+                    </span>
                   </Link>
                 </div>
                 {!lessons.length && (
                   <div className="mt-6 rounded-2xl border border-dashed border-border bg-muted/30 p-7 text-center sm:p-9">
-                    <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-background text-primary"><BookOpen className="size-6" /></span>
-                    <h3 className="mt-4 font-display text-xl font-semibold">Vamos publicar sua primeira aula?</h3>
-                    <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">Seu catálogo ainda está vazio. Cadastre uma aula para começar a preencher a biblioteca que os alunos vão acessar.</p>
-                    <Button asChild className="mt-5 rounded-full"><Link to="/professor/aulas"><Pencil className="mr-2 size-4" /> Cadastrar primeira aula</Link></Button>
+                    <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-background text-primary">
+                      <BookOpen className="size-6" />
+                    </span>
+                    <h3 className="mt-4 font-display text-xl font-semibold">
+                      Vamos publicar sua primeira aula?
+                    </h3>
+                    <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                      Seu catálogo ainda está vazio. Cadastre uma aula para começar a preencher a
+                      biblioteca que os alunos vão acessar.
+                    </p>
+                    <Button asChild className="mt-5 rounded-full">
+                      <Link to="/professor/aulas">
+                        <Pencil className="mr-2 size-4" /> Cadastrar primeira aula
+                      </Link>
+                    </Button>
                   </div>
                 )}
               </>
@@ -1232,23 +1435,60 @@ export function LiveProfilePage() {
           <>
             <div className="mt-7">
               <h2 className="font-display text-2xl font-semibold">Seu progresso</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Pequenos passos constantes fazem diferença. Veja como está sua jornada.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Pequenos passos constantes fazem diferença. Veja como está sua jornada.
+              </p>
             </div>
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Metric icon={<CheckCircle2 aria-hidden="true" />} value={String(completedCount)} label="Aulas concluídas" />
-              <Metric icon={<Clock3 aria-hidden="true" />} value={String(inProgressCount)} label="Aulas em andamento" />
-              <Metric icon={<Target aria-hidden="true" />} value={String(weeklyGoal)} label="Meta de aulas por semana" />
+              <Metric
+                icon={<CheckCircle2 aria-hidden="true" />}
+                value={String(completedCount)}
+                label="Aulas concluídas"
+              />
+              <Metric
+                icon={<Clock3 aria-hidden="true" />}
+                value={String(inProgressCount)}
+                label="Aulas em andamento"
+              />
+              <Metric
+                icon={<Target aria-hidden="true" />}
+                value={String(weeklyGoal)}
+                label="Meta de aulas por semana"
+              />
             </div>
-            <section aria-labelledby="weekly-progress-title" className="mt-6 rounded-2xl border border-border/80 bg-card p-5 sm:p-6">
+            <section
+              aria-labelledby="weekly-progress-title"
+              className="mt-6 rounded-2xl border border-border/80 bg-card p-5 sm:p-6"
+            >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <h3 id="weekly-progress-title" className="font-display text-xl font-semibold">Seu ritmo nesta semana</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Acompanhe as aulas concluídas desde segunda-feira.</p>
+                  <h3 id="weekly-progress-title" className="font-display text-xl font-semibold">
+                    Seu ritmo nesta semana
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Acompanhe as aulas concluídas desde segunda-feira.
+                  </p>
                 </div>
-                <p className="font-display text-2xl font-semibold tabular-nums">{weeklyCompleted}<span className="text-base font-normal text-muted-foreground"> / {weeklyGoal}</span></p>
+                <p className="font-display text-2xl font-semibold tabular-nums">
+                  {weeklyCompleted}
+                  <span className="text-base font-normal text-muted-foreground">
+                    {" "}
+                    / {weeklyGoal}
+                  </span>
+                </p>
               </div>
-              <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Progresso da meta semanal" aria-valuemin={0} aria-valuemax={weeklyGoal} aria-valuenow={Math.min(weeklyCompleted, weeklyGoal)}>
-                <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${weeklyProgress}%` }} />
+              <div
+                className="mt-4 h-2.5 overflow-hidden rounded-full bg-muted"
+                role="progressbar"
+                aria-label="Progresso da meta semanal"
+                aria-valuemin={0}
+                aria-valuemax={weeklyGoal}
+                aria-valuenow={Math.min(weeklyCompleted, weeklyGoal)}
+              >
+                <div
+                  className="h-full rounded-full bg-primary transition-all"
+                  style={{ width: `${weeklyProgress}%` }}
+                />
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
                 {weeklyCompleted >= weeklyGoal
@@ -1260,75 +1500,173 @@ export function LiveProfilePage() {
               <div className="min-w-0">
                 <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                   <div>
-                    <h3 className="font-display text-xl font-semibold">{inProgressLessons.length ? "Continue de onde parou" : "Próximos passos"}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{inProgressLessons.length ? "Retome uma aula sem perder o ritmo." : "Escolha uma aula e comece a construir seu progresso."}</p>
+                    <h3 className="font-display text-xl font-semibold">
+                      {inProgressLessons.length ? "Continue de onde parou" : "Próximos passos"}
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {inProgressLessons.length
+                        ? "Retome uma aula sem perder o ritmo."
+                        : "Escolha uma aula e comece a construir seu progresso."}
+                    </p>
                   </div>
-                  <Button asChild variant="outline" size="sm" className="rounded-full"><Link to="/aulas">Explorar aulas</Link></Button>
+                  <Button asChild variant="outline" size="sm" className="rounded-full">
+                    <Link to="/aulas">Explorar aulas</Link>
+                  </Button>
                 </div>
                 {progressError ? (
-                  <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
+                  <div
+                    role="alert"
+                    className="rounded-2xl border border-destructive/30 bg-card p-5"
+                  >
                     <p className="text-sm text-muted-foreground">{progressError}</p>
-                    <Button variant="outline" className="mt-3" onClick={() => void refetchProgress()}>Tentar novamente</Button>
+                    <Button
+                      variant="outline"
+                      className="mt-3"
+                      onClick={() => void refetchProgress()}
+                    >
+                      Tentar novamente
+                    </Button>
                   </div>
                 ) : lessonsError ? (
-                  <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
+                  <div
+                    role="alert"
+                    className="rounded-2xl border border-destructive/30 bg-card p-5"
+                  >
                     <p className="text-sm text-muted-foreground">{lessonsError}</p>
-                    <Button variant="outline" className="mt-3" onClick={() => void refetchLessons()}>Tentar novamente</Button>
+                    <Button
+                      variant="outline"
+                      className="mt-3"
+                      onClick={() => void refetchLessons()}
+                    >
+                      Tentar novamente
+                    </Button>
                   </div>
                 ) : lessonsLoading || progressLoading ? (
-                  <p role="status" className="py-8 text-muted-foreground">Carregando seus estudos…</p>
+                  <p role="status" className="py-8 text-muted-foreground">
+                    Carregando seus estudos…
+                  </p>
                 ) : (inProgressLessons.length ? inProgressLessons : suggestedLessons).length ? (
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {(inProgressLessons.length ? inProgressLessons : suggestedLessons).map((lesson) => <LiveLessonCard key={lesson.id} lesson={lesson} />)}
+                    {(inProgressLessons.length ? inProgressLessons : suggestedLessons).map(
+                      (lesson) => (
+                        <LiveLessonCard key={lesson.id} lesson={lesson} />
+                      ),
+                    )}
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-7 text-center sm:p-9">
-                    <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-background text-primary"><BookOpen className="size-6" /></span>
-                    <h3 className="mt-4 font-display text-xl font-semibold">Seu próximo capítulo começa aqui</h3>
-                    <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">Ainda não há aulas publicadas. Quando o professor adicionar conteúdo, ele aparecerá nesta área.</p>
-                    <Button asChild className="mt-5 rounded-full"><Link to="/aulas">Explorar biblioteca</Link></Button>
+                    <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-background text-primary">
+                      <BookOpen className="size-6" />
+                    </span>
+                    <h3 className="mt-4 font-display text-xl font-semibold">
+                      Seu próximo capítulo começa aqui
+                    </h3>
+                    <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                      Ainda não há aulas publicadas. Quando o professor adicionar conteúdo, ele
+                      aparecerá nesta área.
+                    </p>
+                    <Button asChild className="mt-5 rounded-full">
+                      <Link to="/aulas">Explorar biblioteca</Link>
+                    </Button>
                   </div>
                 )}
               </div>
               <aside className="h-fit rounded-2xl border border-border/80 bg-card p-5 sm:p-6">
-                <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary"><Target className="size-5" /></span>
+                <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <Target className="size-5" />
+                </span>
                 <h3 className="mt-4 font-display text-xl font-semibold">Meta semanal</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Defina uma meta realista para manter a consistência nos estudos.</p>
-                <label htmlFor="weekly-goal" className="mt-5 block text-sm font-medium">Aulas por semana</label>
-                <Input id="weekly-goal" type="number" min={1} max={50} value={goalValue} onChange={(e) => setGoalValue(Number(e.target.value))} className="mt-2" />
-                <p className="mt-2 text-xs text-muted-foreground">Escolha entre 1 e 50 aulas por semana.</p>
-                <Button className="mt-4 w-full rounded-full" onClick={() => void saveGoal()} disabled={goalSaving || goalValue < 1 || goalValue > 50}>{goalSaving ? "Salvando…" : "Salvar meta"}</Button>
-                {goalStatus && <p role="status" className="mt-3 text-sm text-muted-foreground">{goalStatus}</p>}
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Defina uma meta realista para manter a consistência nos estudos.
+                </p>
+                <label htmlFor="weekly-goal" className="mt-5 block text-sm font-medium">
+                  Aulas por semana
+                </label>
+                <Input
+                  id="weekly-goal"
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={goalValue}
+                  onChange={(e) => setGoalValue(Number(e.target.value))}
+                  className="mt-2"
+                />
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Escolha entre 1 e 50 aulas por semana.
+                </p>
+                <Button
+                  className="mt-4 w-full rounded-full"
+                  onClick={() => void saveGoal()}
+                  disabled={goalSaving || goalValue < 1 || goalValue > 50}
+                >
+                  {goalSaving ? "Salvando…" : "Salvar meta"}
+                </Button>
+                {goalStatus && (
+                  <p role="status" className="mt-3 text-sm text-muted-foreground">
+                    {goalStatus}
+                  </p>
+                )}
               </aside>
             </div>
-            <section aria-labelledby="recent-activity-title" className="mt-7 rounded-2xl border border-border/80 bg-card p-5 sm:p-6">
+            <section
+              aria-labelledby="recent-activity-title"
+              className="mt-7 rounded-2xl border border-border/80 bg-card p-5 sm:p-6"
+            >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h3 id="recent-activity-title" className="font-display text-xl font-semibold">Atividade recente</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Retome seus estudos e confira a última atualização de cada aula.</p>
+                  <h3 id="recent-activity-title" className="font-display text-xl font-semibold">
+                    Atividade recente
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Retome seus estudos e confira a última atualização de cada aula.
+                  </p>
                 </div>
-                <Button asChild variant="outline" size="sm" className="rounded-full"><Link to="/aulas">Ver biblioteca</Link></Button>
+                <Button asChild variant="outline" size="sm" className="rounded-full">
+                  <Link to="/aulas">Ver biblioteca</Link>
+                </Button>
               </div>
               {progressLoading ? (
-                <p role="status" className="mt-4 text-sm text-muted-foreground">Carregando atividade…</p>
+                <p role="status" className="mt-4 text-sm text-muted-foreground">
+                  Carregando atividade…
+                </p>
               ) : recentActivity.length ? (
                 <ul className="mt-4 divide-y divide-border">
                   {recentActivity.map((item) => (
-                    <li key={item.id} className="flex flex-col gap-2 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between">
-                      <Link to="/aulas/$id" params={{ id: item.lesson_id }} className="font-medium hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <li
+                      key={item.id}
+                      className="flex flex-col gap-2 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <Link
+                        to="/aulas/$id"
+                        params={{ id: item.lesson_id }}
+                        className="font-medium hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
                         {item.lesson?.title}
                       </Link>
                       <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-                        {item.status === "completed" ? <CheckCircle2 className="size-4 text-primary" aria-hidden="true" /> : <Clock3 className="size-4" aria-hidden="true" />}
-                        {item.status === "completed" ? "Concluída" : item.status === "half" ? "Parei na metade" : "Em andamento"}
+                        {item.status === "completed" ? (
+                          <CheckCircle2 className="size-4 text-primary" aria-hidden="true" />
+                        ) : (
+                          <Clock3 className="size-4" aria-hidden="true" />
+                        )}
+                        {item.status === "completed"
+                          ? "Concluída"
+                          : item.status === "half"
+                            ? "Parei na metade"
+                            : "Em andamento"}
                         <span aria-hidden="true">·</span>
-                        {new Date(item.updated_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                        {new Date(item.updated_at).toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "short",
+                        })}
                       </span>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="mt-4 rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">Sua atividade aparecerá aqui assim que você começar uma aula e salvar o progresso.</p>
+                <p className="mt-4 rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">
+                  Sua atividade aparecerá aqui assim que você começar uma aula e salvar o progresso.
+                </p>
               )}
             </section>
           </>
@@ -1339,13 +1677,27 @@ export function LiveProfilePage() {
 }
 function TeacherSupportPanel() {
   const { user } = useAuth();
-  const [questions, setQuestions] = useState<Array<{
-    id: string; lesson_id: string; user_id: string; user_name: string;
-    text: string; reply: string | null; created_at: string; lesson_title: string;
-  }>>([]);
-  const [feedback, setFeedback] = useState<Array<{
-    id: string; title: string; message: string; is_published: boolean; created_at: string;
-  }>>([]);
+  const [questions, setQuestions] = useState<
+    Array<{
+      id: string;
+      lesson_id: string;
+      user_id: string;
+      user_name: string;
+      text: string;
+      reply: string | null;
+      created_at: string;
+      lesson_title: string;
+    }>
+  >([]);
+  const [feedback, setFeedback] = useState<
+    Array<{
+      id: string;
+      title: string;
+      message: string;
+      is_published: boolean;
+      created_at: string;
+    }>
+  >([]);
   const [draftReplies, setDraftReplies] = useState<Record<string, string>>({});
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -1364,12 +1716,16 @@ function TeacherSupportPanel() {
     setLoading(true);
     try {
       const [questionsResult, feedbackResult] = await Promise.all([
-        supabase.from("comments")
-          .select("id,lesson_id,user_id,user_name,text,reply,created_at,lessons!inner(title,teacher_id)")
+        supabase
+          .from("comments")
+          .select(
+            "id,lesson_id,user_id,user_name,text,reply,created_at,lessons!inner(title,teacher_id)",
+          )
           .eq("lessons.teacher_id", userId)
           .order("created_at", { ascending: false })
           .range(0, 99),
-        supabase.from("teacher_feedback")
+        supabase
+          .from("teacher_feedback")
           .select("id,title,message,is_published,created_at")
           .eq("teacher_id", userId)
           .order("created_at", { ascending: false }),
@@ -1378,10 +1734,18 @@ function TeacherSupportPanel() {
         setNotice("Não foi possível carregar as dúvidas. Tente atualizar a página.");
       } else {
         const rows = (questionsResult.data ?? []) as Array<{
-          id: string; lesson_id: string; user_id: string; user_name: string; text: string;
-          reply: string | null; created_at: string; lessons?: { title: string; teacher_id: string } | null;
+          id: string;
+          lesson_id: string;
+          user_id: string;
+          user_name: string;
+          text: string;
+          reply: string | null;
+          created_at: string;
+          lessons?: { title: string; teacher_id: string } | null;
         }>;
-        setQuestions(rows.map((q) => ({ ...q, lesson_title: q.lessons?.title ?? "Aula sem título" })));
+        setQuestions(
+          rows.map((q) => ({ ...q, lesson_title: q.lessons?.title ?? "Aula sem título" })),
+        );
         setHasMoreQuestions(rows.length === 100);
       }
       if (feedbackResult.error) {
@@ -1400,8 +1764,11 @@ function TeacherSupportPanel() {
     if (!userId || loadingMoreQuestions || !hasMoreQuestions) return;
     setLoadingMoreQuestions(true);
     try {
-      const result = await supabase.from("comments")
-        .select("id,lesson_id,user_id,user_name,text,reply,created_at,lessons!inner(title,teacher_id)")
+      const result = await supabase
+        .from("comments")
+        .select(
+          "id,lesson_id,user_id,user_name,text,reply,created_at,lessons!inner(title,teacher_id)",
+        )
         .eq("lessons.teacher_id", userId)
         .order("created_at", { ascending: false })
         .range(questions.length, questions.length + 99);
@@ -1410,10 +1777,19 @@ function TeacherSupportPanel() {
         return;
       }
       const rows = (result.data ?? []) as Array<{
-        id: string; lesson_id: string; user_id: string; user_name: string; text: string;
-        reply: string | null; created_at: string; lessons?: { title: string; teacher_id: string } | null;
+        id: string;
+        lesson_id: string;
+        user_id: string;
+        user_name: string;
+        text: string;
+        reply: string | null;
+        created_at: string;
+        lessons?: { title: string; teacher_id: string } | null;
       }>;
-      setQuestions((current) => [...current, ...rows.map((q) => ({ ...q, lesson_title: q.lessons?.title ?? "Aula sem título" }))]);
+      setQuestions((current) => [
+        ...current,
+        ...rows.map((q) => ({ ...q, lesson_title: q.lessons?.title ?? "Aula sem título" })),
+      ]);
       setHasMoreQuestions(rows.length === 100);
     } catch {
       setNotice("Ocorreu uma falha ao carregar mais dúvidas.");
@@ -1422,7 +1798,9 @@ function TeacherSupportPanel() {
     }
   };
 
-  useEffect(() => { void loadPanel(); }, [loadPanel]);
+  useEffect(() => {
+    void loadPanel();
+  }, [loadPanel]);
 
   const sendReply = async (id: string) => {
     const reply = draftReplies[id]?.trim();
@@ -1462,20 +1840,30 @@ function TeacherSupportPanel() {
 
   const toggleFeedback = async (item: (typeof feedback)[number]) => {
     setBusy(true);
-    const result = await supabase.from("teacher_feedback")
+    const result = await supabase
+      .from("teacher_feedback")
       .update({ is_published: !item.is_published, updated_at: new Date().toISOString() })
       .eq("id", item.id)
       .eq("teacher_id", user?.id);
     setBusy(false);
     if (result.error) setNotice("Não foi possível atualizar a publicação.");
-    else setNotice(item.is_published ? "Mensagem retirada da página inicial." : "Mensagem publicada na página inicial dos alunos.");
+    else
+      setNotice(
+        item.is_published
+          ? "Mensagem retirada da página inicial."
+          : "Mensagem publicada na página inicial dos alunos.",
+      );
     await loadPanel();
   };
 
   const deleteFeedback = async (id: string) => {
     if (!window.confirm("Excluir esta mensagem permanentemente?")) return;
     setBusy(true);
-    const result = await supabase.from("teacher_feedback").delete().eq("id", id).eq("teacher_id", user?.id);
+    const result = await supabase
+      .from("teacher_feedback")
+      .delete()
+      .eq("id", id)
+      .eq("teacher_id", user?.id);
     setBusy(false);
     if (result.error) setNotice("Não foi possível excluir a mensagem.");
     else setNotice("Mensagem excluída.");
@@ -1485,102 +1873,226 @@ function TeacherSupportPanel() {
   const unanswered = questions.filter((question) => !question.reply?.trim());
   return (
     <section className="mt-8 space-y-8">
-      <div aria-labelledby="teacher-questions-title" className="rounded-3xl border border-border/80 bg-card p-5 sm:p-7">
+      <div
+        aria-labelledby="teacher-questions-title"
+        className="rounded-3xl border border-border/80 bg-card p-5 sm:p-7"
+      >
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-2 text-sm font-medium text-primary"><MessageSquare className="size-4" aria-hidden="true" /> Atendimento aos alunos</span>
-            <h2 id="teacher-questions-title" className="mt-2 font-display text-2xl font-semibold">Central de dúvidas</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Consulte perguntas deixadas nas aulas e responda sem precisar procurar cada vídeo.</p>
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+              <MessageSquare className="size-4" aria-hidden="true" /> Atendimento aos alunos
+            </span>
+            <h2 id="teacher-questions-title" className="mt-2 font-display text-2xl font-semibold">
+              Central de dúvidas
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Consulte perguntas deixadas nas aulas e responda sem precisar procurar cada vídeo.
+            </p>
           </div>
           <div className="rounded-xl bg-muted px-4 py-3 text-center">
             <strong className="block font-display text-2xl">{unanswered.length}</strong>
             <span className="text-xs text-muted-foreground">Sem resposta na lista</span>
           </div>
         </div>
-        {loading ? <p role="status" className="mt-5 text-sm text-muted-foreground">Carregando dúvidas…</p> : questions.length ? (
+        {loading ? (
+          <p role="status" className="mt-5 text-sm text-muted-foreground">
+            Carregando dúvidas…
+          </p>
+        ) : questions.length ? (
           <>
-          <div className="mt-5 space-y-4">
-            {questions.map((question) => (
-              <article key={question.id} className="rounded-2xl border border-border bg-background p-4 sm:p-5">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <p className="font-medium">{question.user_name || "Aluno"}</p>
-                    <p className="mt-1 text-xs text-primary">{question.lesson_title}</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{new Date(question.created_at).toLocaleDateString("pt-BR")}</span>
-                </div>
-                <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">{question.text}</p>
-                {question.reply ? (
-                  <div className="mt-4 rounded-xl bg-muted/60 p-3">
-                    <p className="text-xs font-semibold text-primary">Sua resposta</p>
-                    <p className="mt-1 whitespace-pre-wrap text-sm">{question.reply}</p>
-                  </div>
-                ) : (
-                  <div className="mt-4 space-y-2">
-                    <label htmlFor={`reply-${question.id}`} className="text-sm font-medium">Responder dúvida</label>
-                    <Textarea id={`reply-${question.id}`} value={draftReplies[question.id] ?? ""} onChange={(event) => setDraftReplies((current) => ({ ...current, [question.id]: event.target.value }))} placeholder="Escreva uma explicação clara para o aluno…" rows={3} />
-                    <div className="flex justify-end">
-                      <Button disabled={busy || !draftReplies[question.id]?.trim()} onClick={() => void sendReply(question.id)}><Send className="mr-2 size-4" /> Enviar resposta</Button>
+            <div className="mt-5 space-y-4">
+              {questions.map((question) => (
+                <article
+                  key={question.id}
+                  className="rounded-2xl border border-border bg-background p-4 sm:p-5"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium">{question.user_name || "Aluno"}</p>
+                      <p className="mt-1 text-xs text-primary">{question.lesson_title}</p>
                     </div>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(question.created_at).toLocaleDateString("pt-BR")}
+                    </span>
                   </div>
-                )}
-              </article>
-            ))}
-          </div>
-          {hasMoreQuestions && (
-            <div className="flex justify-center pt-2">
-              <Button type="button" variant="outline" onClick={() => void loadMoreQuestions()} disabled={loadingMoreQuestions}>
-                {loadingMoreQuestions ? "Carregando dúvidas…" : "Carregar mais dúvidas"}
-              </Button>
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">
+                    {question.text}
+                  </p>
+                  {question.reply ? (
+                    <div className="mt-4 rounded-xl bg-muted/60 p-3">
+                      <p className="text-xs font-semibold text-primary">Sua resposta</p>
+                      <p className="mt-1 whitespace-pre-wrap text-sm">{question.reply}</p>
+                    </div>
+                  ) : (
+                    <div className="mt-4 space-y-2">
+                      <label htmlFor={`reply-${question.id}`} className="text-sm font-medium">
+                        Responder dúvida
+                      </label>
+                      <Textarea
+                        id={`reply-${question.id}`}
+                        value={draftReplies[question.id] ?? ""}
+                        onChange={(event) =>
+                          setDraftReplies((current) => ({
+                            ...current,
+                            [question.id]: event.target.value,
+                          }))
+                        }
+                        placeholder="Escreva uma explicação clara para o aluno…"
+                        rows={3}
+                      />
+                      <div className="flex justify-end">
+                        <Button
+                          disabled={busy || !draftReplies[question.id]?.trim()}
+                          onClick={() => void sendReply(question.id)}
+                        >
+                          <Send className="mr-2 size-4" /> Enviar resposta
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </article>
+              ))}
             </div>
-          )}
+            {hasMoreQuestions && (
+              <div className="flex justify-center pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void loadMoreQuestions()}
+                  disabled={loadingMoreQuestions}
+                >
+                  {loadingMoreQuestions ? "Carregando dúvidas…" : "Carregar mais dúvidas"}
+                </Button>
+              </div>
+            )}
           </>
         ) : (
-          <p className="mt-5 rounded-xl bg-muted/50 p-5 text-sm text-muted-foreground">Ainda não há dúvidas registradas nas aulas.</p>
+          <p className="mt-5 rounded-xl bg-muted/50 p-5 text-sm text-muted-foreground">
+            Ainda não há dúvidas registradas nas aulas.
+          </p>
         )}
       </div>
 
-      <div aria-labelledby="teacher-feedback-management-title" className="rounded-3xl border border-border/80 bg-card p-5 sm:p-7">
-        <span className="inline-flex items-center gap-2 text-sm font-medium text-primary"><Star className="size-4" aria-hidden="true" /> Comunicação com os alunos</span>
-        <h2 id="teacher-feedback-management-title" className="mt-2 font-display text-2xl font-semibold">Mensagens da página inicial</h2>
-        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">Crie avisos, orientações ou mensagens de incentivo. Elas ficam como rascunho até você publicar e, quando publicadas, aparecem apenas na página inicial dos alunos.</p>
-        <form onSubmit={createFeedback} className="mt-5 space-y-4 rounded-2xl bg-muted/40 p-4 sm:p-5">
+      <div
+        aria-labelledby="teacher-feedback-management-title"
+        className="rounded-3xl border border-border/80 bg-card p-5 sm:p-7"
+      >
+        <span className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+          <Star className="size-4" aria-hidden="true" /> Comunicação com os alunos
+        </span>
+        <h2
+          id="teacher-feedback-management-title"
+          className="mt-2 font-display text-2xl font-semibold"
+        >
+          Mensagens da página inicial
+        </h2>
+        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Crie avisos, orientações ou mensagens de incentivo. Elas ficam como rascunho até você
+          publicar e, quando publicadas, aparecem apenas na página inicial dos alunos.
+        </p>
+        <form
+          onSubmit={createFeedback}
+          className="mt-5 space-y-4 rounded-2xl bg-muted/40 p-4 sm:p-5"
+        >
           <div>
-            <label htmlFor="feedback-title" className="mb-1.5 block text-sm font-medium">Título da mensagem</label>
-            <Input id="feedback-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={100} minLength={3} required placeholder="Ex.: Cronograma de revisão da semana" />
+            <label htmlFor="feedback-title" className="mb-1.5 block text-sm font-medium">
+              Título da mensagem
+            </label>
+            <Input
+              id="feedback-title"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              maxLength={100}
+              minLength={3}
+              required
+              placeholder="Ex.: Cronograma de revisão da semana"
+            />
           </div>
           <div>
-            <label htmlFor="feedback-message" className="mb-1.5 block text-sm font-medium">Mensagem para os alunos</label>
-            <Textarea id="feedback-message" value={message} onChange={(event) => setMessage(event.target.value)} maxLength={1000} minLength={5} required rows={4} placeholder="Escreva o aviso ou a orientação que os alunos verão na página inicial…" />
+            <label htmlFor="feedback-message" className="mb-1.5 block text-sm font-medium">
+              Mensagem para os alunos
+            </label>
+            <Textarea
+              id="feedback-message"
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              maxLength={1000}
+              minLength={5}
+              required
+              rows={4}
+              placeholder="Escreva o aviso ou a orientação que os alunos verão na página inicial…"
+            />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-xs text-muted-foreground">Até 100 caracteres no título e 1.000 na mensagem.</p>
-            <Button type="submit" disabled={busy || title.trim().length < 3 || message.trim().length < 5}>Salvar rascunho</Button>
+            <p className="text-xs text-muted-foreground">
+              Até 100 caracteres no título e 1.000 na mensagem.
+            </p>
+            <Button
+              type="submit"
+              disabled={busy || title.trim().length < 3 || message.trim().length < 5}
+            >
+              Salvar rascunho
+            </Button>
           </div>
         </form>
         {feedback.length ? (
           <div className="mt-5 space-y-3">
             <h3 className="font-display text-lg font-semibold">Suas mensagens</h3>
             {feedback.map((item) => (
-              <article key={item.id} className="flex flex-col gap-4 rounded-2xl border border-border p-4 sm:flex-row sm:items-start sm:justify-between">
+              <article
+                key={item.id}
+                className="flex flex-col gap-4 rounded-2xl border border-border p-4 sm:flex-row sm:items-start sm:justify-between"
+              >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="font-semibold">{item.title}</h4>
-                    <span className={item.is_published ? "rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary" : "rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground"}>{item.is_published ? "Publicada" : "Rascunho"}</span>
+                    <span
+                      className={
+                        item.is_published
+                          ? "rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary"
+                          : "rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground"
+                      }
+                    >
+                      {item.is_published ? "Publicada" : "Rascunho"}
+                    </span>
                   </div>
-                  <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{item.message}</p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
+                    {item.message}
+                  </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-2">
-                  <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => void toggleFeedback(item)}>{item.is_published ? "Retirar do início" : "Publicar"}</Button>
-                  <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => void deleteFeedback(item.id)}><Trash2 className="mr-1 size-4" /> Excluir</Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={busy}
+                    onClick={() => void toggleFeedback(item)}
+                  >
+                    {item.is_published ? "Retirar do início" : "Publicar"}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={busy}
+                    onClick={() => void deleteFeedback(item.id)}
+                  >
+                    <Trash2 className="mr-1 size-4" /> Excluir
+                  </Button>
                 </div>
               </article>
             ))}
           </div>
         ) : (
-          <p className="mt-5 text-sm text-muted-foreground">Você ainda não criou mensagens para os alunos.</p>
+          <p className="mt-5 text-sm text-muted-foreground">
+            Você ainda não criou mensagens para os alunos.
+          </p>
         )}
-        {notice && <p role="status" className="mt-4 rounded-xl bg-muted/60 p-3 text-sm">{notice}</p>}
+        {notice && (
+          <p role="status" className="mt-4 rounded-xl bg-muted/60 p-3 text-sm">
+            {notice}
+          </p>
+        )}
       </div>
     </section>
   );
@@ -1671,12 +2183,16 @@ export function LiveTeacherDashboard() {
               />
               <Metric
                 icon={<Target aria-hidden="true" />}
-                value={String(teacherLessons.filter((lesson) => lesson.level === "pre-vestibular").length)}
+                value={String(
+                  teacherLessons.filter((lesson) => lesson.level === "pre-vestibular").length,
+                )}
                 label="Pré-vestibular"
               />
               <Metric
                 icon={<Target aria-hidden="true" />}
-                value={String(teacherLessons.filter((lesson) => lesson.level === "concursos").length)}
+                value={String(
+                  teacherLessons.filter((lesson) => lesson.level === "concursos").length,
+                )}
                 label="Concursos"
               />
             </div>
@@ -1802,7 +2318,11 @@ export function LiveTeacherPage() {
         updated_at: new Date().toISOString(),
       };
       const result = editing
-        ? await supabase.from("lessons").update(payload).eq("id", editing.id).eq("teacher_id", user.id)
+        ? await supabase
+            .from("lessons")
+            .update(payload)
+            .eq("id", editing.id)
+            .eq("teacher_id", user.id)
         : await supabase.from("lessons").insert(payload);
       if (result.error) {
         setStatus("Não foi possível salvar a aula. Confira os dados e suas permissões.");

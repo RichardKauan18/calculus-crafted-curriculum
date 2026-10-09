@@ -278,17 +278,15 @@ export function useProgressSummary(userId: string | undefined) {
 }
 
 export async function saveProgress(lessonId: string, status: Progress["status"]) {
-  return supabase
-    .from("lesson_progress")
-    .upsert(
-      {
-        lesson_id: lessonId,
-        status,
-        updated_at: new Date().toISOString(),
-        completed_at: status === "completed" ? new Date().toISOString() : null,
-      },
-      { onConflict: "lesson_id,user_id" },
-    );
+  return supabase.from("lesson_progress").upsert(
+    {
+      lesson_id: lessonId,
+      status,
+      updated_at: new Date().toISOString(),
+      completed_at: status === "completed" ? new Date().toISOString() : null,
+    },
+    { onConflict: "lesson_id,user_id" },
+  );
 }
 export async function saveRating(lessonId: string, rating: number) {
   return supabase
