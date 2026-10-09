@@ -286,7 +286,7 @@ export function LessonCard({
   const safe = normalizeProgress(progress);
   const label = safe === 100 ? "Concluída" : safe > 0 ? "Em andamento" : "Não iniciada";
   return (
-    <article className="group overflow-hidden rounded-lg border border-border bg-card transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl">
+    <article className="group overflow-hidden matris-surface matris-surface-interactive group overflow-hidden">
       <Link
         to="/aulas/$id"
         params={{ id: lesson.id }}
@@ -346,7 +346,7 @@ export function CategoryCard({
   const progress = getTrailProgress(category.slug);
   return (
     <article
-      className={`category-${category.tone} rounded-lg border border-border bg-card/70 p-5 transition hover:-translate-y-1 hover:border-current`}
+      className={`category-${category.tone} matris-surface matris-surface-interactive p-5`}
     >
       <div className="flex items-center justify-between">
         <span className="font-mono text-xs text-muted-foreground">
@@ -390,7 +390,7 @@ export function CategoryCard({
 }
 export function ExamCard({ exam }: { exam: (typeof exams)[number] }) {
   return (
-    <article className="rounded-lg border border-border bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30">
+    <article className="matris-surface matris-surface-interactive p-5">
       <div className="flex items-start justify-between gap-4">
         <span className="font-display text-3xl font-semibold text-primary">{exam.name}</span>
         <Trophy aria-hidden="true" className="size-5 shrink-0 text-amber" />
