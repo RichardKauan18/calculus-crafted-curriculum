@@ -531,36 +531,36 @@ export function LiveLessonPage() {
           {!isDemoLesson && (
             <div className="mt-4 rounded-lg border border-border bg-card p-4">
               <div className="flex flex-wrap gap-2">
-              <Button
-                disabled={busy || isDemoLesson}
-                aria-pressed={status === "completed"}
-                onClick={() => setStatus("completed")}
-              >
-                <CheckCircle2 aria-hidden="true" />
-                Concluída
-              </Button>
-              <Button
-                disabled={busy || isDemoLesson}
-                aria-pressed={status === "half"}
-                variant="outline"
-                onClick={() => setStatus("half")}
-              >
-                <Clock3 aria-hidden="true" />
-                Parei na metade
-              </Button>
-              <Button
-                disabled={busy || isDemoLesson}
-                aria-pressed={status === "watching"}
-                variant="outline"
-                onClick={() => setStatus("watching")}
-              >
-                <Play aria-hidden="true" />
-                Assistindo
-              </Button>
-            </div>
-            <div className="mt-4">
-              <ProgressBar value={progressValue} label="Progresso da aula" />
-              <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
+                <Button
+                  disabled={busy}
+                  aria-pressed={status === "completed"}
+                  onClick={() => setStatus("completed")}
+                >
+                  <CheckCircle2 aria-hidden="true" />
+                  Concluída
+                </Button>
+                <Button
+                  disabled={busy}
+                  aria-pressed={status === "half"}
+                  variant="outline"
+                  onClick={() => setStatus("half")}
+                >
+                  <Clock3 aria-hidden="true" />
+                  Parei na metade
+                </Button>
+                <Button
+                  disabled={busy}
+                  aria-pressed={status === "watching"}
+                  variant="outline"
+                  onClick={() => setStatus("watching")}
+                >
+                  <Play aria-hidden="true" />
+                  Assistindo
+                </Button>
+              </div>
+              <div className="mt-4">
+                <ProgressBar value={progressValue} label="Progresso da aula" />
+                <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
               </div>
             </div>
           )}
