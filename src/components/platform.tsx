@@ -1450,8 +1450,8 @@ export function LiveConcursoPage() {
             <p className="font-medium">Conteúdo ilustrativo</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Esta prévia indica uma estrutura de preparação com {demoExam.subjects} disciplinas
-              previstas. A grade real de disciplinas, as aulas e o progresso só serão exibidos quando
-              os dados forem cadastrados no catálogo conectado.
+              previstas. A grade real de disciplinas, as aulas e o progresso só serão exibidos
+              quando os dados forem cadastrados no catálogo conectado.
             </p>
           </div>
           <Button asChild variant="outline" className="mt-5">
