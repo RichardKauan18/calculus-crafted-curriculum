@@ -1376,7 +1376,9 @@ export function LiveConcursosPage() {
                     params={{ slug: c.id }}
                     className="rounded-lg border border-border bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <span className="font-display text-3xl font-semibold text-primary">{c.name}</span>
+                    <span className="font-display text-3xl font-semibold text-primary">
+                      {c.name}
+                    </span>
                     <p className="mt-3 text-sm text-muted-foreground">{c.description}</p>
                     <p className="mt-4 font-mono text-xs text-muted-foreground">
                       {c.category} · {c.subjects?.length ?? 0} disciplinas
@@ -1447,9 +1449,9 @@ export function LiveConcursoPage() {
           <div className="rounded-lg border border-amber/30 bg-amber/5 p-5">
             <p className="font-medium">Conteúdo ilustrativo</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Esta prévia indica uma estrutura de preparação com {demoExam.subjects} disciplinas previstas.
-              A grade real de disciplinas, as aulas e o progresso só serão exibidos quando os dados forem
-              cadastrados no catálogo conectado.
+              Esta prévia indica uma estrutura de preparação com {demoExam.subjects} disciplinas
+              previstas. A grade real de disciplinas, as aulas e o progresso só serão exibidos quando
+              os dados forem cadastrados no catálogo conectado.
             </p>
           </div>
           <Button asChild variant="outline" className="mt-5">
