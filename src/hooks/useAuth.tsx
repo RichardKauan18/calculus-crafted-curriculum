@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.session)
         supabase
           .from("profiles")
-          .select("id,name,role,created_at")
+          .select("id,name:full_name,role,created_at")
           .eq("id", data.session.user.id)
           .maybeSingle()
           .then(({ data: p }) => {
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (next)
         supabase
           .from("profiles")
-          .select("id,name,role,created_at")
+          .select("id,name:full_name,role,created_at")
           .eq("id", next.user.id)
           .maybeSingle()
           .then(({ data: p }) => setProfile(p as Profile | null));
