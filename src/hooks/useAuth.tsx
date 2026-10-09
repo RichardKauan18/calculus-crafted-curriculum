@@ -24,38 +24,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
 
-  const loadProfile = useCallback(async (userId: string | undefined) => {
-    if (!userId || !hasSupabaseConfig) {
-      setProfile(null);
-      setProfileError(null);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setProfileError(null);
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id,name:full_name,role,created_at")
-        .eq("id", userId)
-        .maybeSingle();
-      if (error) {
-        setProfile(null);
-        setProfileError("Não foi possível carregar os dados do perfil. Atualize a página ou tente novamente.");
-      } else if (!data) {
-        setProfile(null);
-        setProfileError("Sua conta foi autenticada, mas o perfil ainda não existe. Entre em contato com o suporte.");
-      } else {
-        setProfile(data as Profile);
-      }
-    } catch {
-      setProfile(null);
-      setProfileError("Ocorreu uma falha ao carregar o perfil. Verifique sua conexão e tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
     if (!hasSupabaseConfig) {
       setLoading(false);
