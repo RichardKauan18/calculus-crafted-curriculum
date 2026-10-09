@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase, hasSupabaseConfig } from "@/lib/supabase";
 
@@ -31,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     let mounted = true;
     let profileRequest = 0;
+    let authEventReceived = false;
     const fetchProfile = async (userId: string | undefined) => {
       const request = ++profileRequest;
       if (!userId) {
@@ -78,8 +79,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
         return;
       }
-      setSession(data.session);
-      void fetchProfile(data.session?.user.id);
+      if (!authEventReceived) {
+        setSession(data.session);
+        void fetchProfile(data.session?.user.id);
+      }
     }).catch(() => {
       if (mounted) {
         setProfileError("Não foi possível verificar sua sessão. Verifique sua conexão.");
@@ -89,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, next) => {
       if (!mounted) return;
+      authEventReceived = true;
       setSession(next);
       // Run the profile request after the auth callback releases Supabase's internal lock.
       queueMicrotask(() => {
