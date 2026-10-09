@@ -955,6 +955,26 @@ export function LiveProfilePage() {
     .filter((lesson) => !progressItems.some((item) => item.lesson_id === lesson.id))
     .slice(0, 4);
   const weeklyGoal = goal?.lessons_per_week ?? 3;
+  // A tabela atual guarda updated_at, não um completed_at imutável.
+  // Por isso, a métrica semanal conta conclusões cujo registro foi atualizado nesta semana.
+  const weekStart = new Date();
+  weekStart.setHours(0, 0, 0, 0);
+  const mondayOffset = (weekStart.getDay() + 6) % 7;
+  weekStart.setDate(weekStart.getDate() - mondayOffset);
+  const weeklyCompleted = progressItems.filter((item) => {
+    if (item.status !== "completed") return false;
+    const updatedAt = new Date(item.updated_at);
+    return !Number.isNaN(updatedAt.getTime()) && updatedAt >= weekStart;
+  }).length;
+  const weeklyProgress = Math.min(100, Math.round((weeklyCompleted / weeklyGoal) * 100));
+  const recentActivity = [...progressItems]
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    .slice(0, 5)
+    .map((item) => ({
+      ...item,
+      lesson: lessons.find((lesson) => lesson.id === item.lesson_id),
+    }))
+    .filter((item) => item.lesson);
 
   return (
     <SiteLayout>
@@ -1049,6 +1069,23 @@ export function LiveProfilePage() {
               <Metric icon={<Clock3 aria-hidden="true" />} value={String(inProgressCount)} label="Aulas em andamento" />
               <Metric icon={<Target aria-hidden="true" />} value={String(weeklyGoal)} label="Meta de aulas por semana" />
             </div>
+            <section aria-labelledby="weekly-progress-title" className="mt-6 rounded-2xl border border-border/80 bg-card p-5 sm:p-6">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <h3 id="weekly-progress-title" className="font-display text-xl font-semibold">Seu ritmo nesta semana</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Acompanhe as aulas concluídas desde segunda-feira.</p>
+                </div>
+                <p className="font-display text-2xl font-semibold tabular-nums">{weeklyCompleted}<span className="text-base font-normal text-muted-foreground"> / {weeklyGoal}</span></p>
+              </div>
+              <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Progresso da meta semanal" aria-valuemin={0} aria-valuemax={weeklyGoal} aria-valuenow={Math.min(weeklyCompleted, weeklyGoal)}>
+                <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${weeklyProgress}%` }} />
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {weeklyCompleted >= weeklyGoal
+                  ? "Meta semanal atingida. Ótimo trabalho!"
+                  : `Faltam ${weeklyGoal - weeklyCompleted} aula(s) para atingir sua meta.`}
+              </p>
+            </section>
             <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
               <div className="min-w-0">
                 <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
@@ -1094,6 +1131,36 @@ export function LiveProfilePage() {
                 {goalStatus && <p role="status" className="mt-3 text-sm text-muted-foreground">{goalStatus}</p>}
               </aside>
             </div>
+            <section aria-labelledby="recent-activity-title" className="mt-7 rounded-2xl border border-border/80 bg-card p-5 sm:p-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 id="recent-activity-title" className="font-display text-xl font-semibold">Atividade recente</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Retome seus estudos e confira a última atualização de cada aula.</p>
+                </div>
+                <Button asChild variant="outline" size="sm" className="rounded-full"><Link to="/aulas">Ver biblioteca</Link></Button>
+              </div>
+              {progressLoading ? (
+                <p role="status" className="mt-4 text-sm text-muted-foreground">Carregando atividade…</p>
+              ) : recentActivity.length ? (
+                <ul className="mt-4 divide-y divide-border">
+                  {recentActivity.map((item) => (
+                    <li key={item.id} className="flex flex-col gap-2 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between">
+                      <Link to="/aulas/$id" params={{ id: item.lesson_id }} className="font-medium hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                        {item.lesson?.title}
+                      </Link>
+                      <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                        {item.status === "completed" ? <CheckCircle2 className="size-4 text-primary" aria-hidden="true" /> : <Clock3 className="size-4" aria-hidden="true" />}
+                        {item.status === "completed" ? "Concluída" : item.status === "half" ? "Parei na metade" : "Em andamento"}
+                        <span aria-hidden="true">·</span>
+                        {new Date(item.updated_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-4 rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">Sua atividade aparecerá aqui assim que você começar uma aula e salvar o progresso.</p>
+              )}
+            </section>
           </>
         )}
       </section>
