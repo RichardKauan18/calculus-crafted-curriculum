@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { FolderPlus, Pencil, Save, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +41,7 @@ export function TeacherConcursosManager() {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
 
-  const ownContests = concursos.filter((contest) => (contest as Concurso & { teacher_id?: string }).teacher_id === user?.id);
+  const ownContests = concursos.filter((contest) => contest.teacher_id === user?.id);
 
   const reset = () => {
     setEditing(null);
@@ -67,7 +67,7 @@ export function TeacherConcursosManager() {
     event.preventDefault();
     if (!user || profile?.role !== "teacher") return;
     const name = form.name.trim();
-    const slug = makeSlug(name);
+    const slug = `${makeSlug(name)}-${user.id.slice(0, 8)}`;
     const subjects = [...new Set(form.subjects.split(",").map((value) => value.trim()).filter(Boolean))];
     if (name.length < 2 || !slug) {
       setStatus("Informe um nome válido para o concurso.");
