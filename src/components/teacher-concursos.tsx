@@ -36,6 +36,7 @@ export function TeacherConcursosManager() {
   const { user, profile, loading: authLoading } = useAuth();
   const { concursos, loading, error: loadError, refetch } = useConcursos();
   const [editing, setEditing] = useState<Concurso | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState<ContestForm>(blankForm);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
@@ -44,12 +45,14 @@ export function TeacherConcursosManager() {
 
   const reset = () => {
     setEditing(null);
+    setFormOpen(false);
     setForm(blankForm);
     setStatus("");
   };
 
   const edit = (contest: Concurso) => {
     setEditing(contest);
+    setFormOpen(true);
     setForm({
       name: contest.name,
       full_name: contest.full_name ?? "",
@@ -93,6 +96,7 @@ export function TeacherConcursosManager() {
       if (result.error) throw result.error;
       setStatus(editing ? "Concurso atualizado." : "Pasta de concurso criada.");
       setEditing(null);
+      setFormOpen(false);
       setForm(blankForm);
       await refetch();
     } catch {
@@ -131,8 +135,8 @@ export function TeacherConcursosManager() {
             Crie pastas militares ou civis, defina as matérias e depois vincule cada aula à pasta correspondente.
           </p>
         </div>
-        {!editing && (
-          <Button type="button" onClick={() => { setForm(blankForm); setStatus(""); }} className="shrink-0 rounded-full">
+        {!formOpen && (
+          <Button type="button" onClick={() => { setForm(blankForm); setFormOpen(true); setStatus(""); }} className="shrink-0 rounded-full">
             <FolderPlus aria-hidden="true" className="mr-2 size-4" /> Nova pasta
           </Button>
         )}
@@ -145,7 +149,7 @@ export function TeacherConcursosManager() {
         </p>
       )}
 
-      <form onSubmit={save} className="mt-5 grid gap-4 rounded-xl border border-border bg-background/60 p-4 sm:grid-cols-2">
+      {formOpen && <form onSubmit={save} className="mt-5 grid gap-4 rounded-xl border border-border bg-background/60 p-4 sm:grid-cols-2">
         <label className="block text-sm font-medium">
           Nome curto do concurso *
           <Input className="mt-1" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={100} placeholder="Ex.: ESA, EsPCEx, Polícia Federal" required />
@@ -180,7 +184,7 @@ export function TeacherConcursosManager() {
             </Button>
           )}
         </div>
-      </form>
+      </form>}
 
       <div className="mt-6 space-y-3">
         <h3 className="font-semibold">Pastas cadastradas</h3>
