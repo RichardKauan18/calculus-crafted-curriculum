@@ -1006,6 +1006,130 @@ function Metric({ icon, value, label }: { icon: React.ReactNode; value: string; 
   );
 }
 
+export function LiveTeacherDashboard() {
+  const { isTeacher, loading: authLoading } = useAuth();
+  const { lessons, loading, error, refetch } = useLessons();
+
+  if (authLoading)
+    return (
+      <SiteLayout>
+        <div role="status" className="mx-auto max-w-7xl px-5 py-20 text-muted-foreground">
+          Verificando acesso…
+        </div>
+      </SiteLayout>
+    );
+
+  if (!isTeacher)
+    return (
+      <SiteLayout>
+        <PageHeader title="Painel do professor" />
+        <section className="mx-auto max-w-7xl px-5">
+          <p className="text-muted-foreground">
+            Acesso restrito a professores. Entre com uma conta autorizada para continuar.
+          </p>
+          <Button asChild className="mt-4">
+            <Link to="/login">Entrar</Link>
+          </Button>
+        </section>
+      </SiteLayout>
+    );
+
+  return (
+    <SiteLayout>
+      <PageHeader
+        eyebrow="Área do professor"
+        title="Painel do professor"
+        description={
+          hasSupabaseConfig
+            ? "Acompanhe o conteúdo cadastrado e acesse rapidamente as ferramentas de ensino."
+            : "Prévia da área do professor. Conecte o catálogo real para exibir métricas e gerenciar aulas."
+        }
+      />
+      <section className="mx-auto max-w-7xl px-5 sm:px-6">
+        {!hasSupabaseConfig ? (
+          <div className="rounded-lg border border-amber/30 bg-amber/5 p-5">
+            <h2 className="font-medium">Catálogo não conectado</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              As métricas e ações de gerenciamento só ficam disponíveis quando o Supabase estiver
+              configurado. Nenhum dado de exemplo é apresentado como atividade real.
+            </p>
+          </div>
+        ) : loading ? (
+          <p role="status" className="py-8 text-muted-foreground">
+            Carregando resumo…
+          </p>
+        ) : error ? (
+          <div role="alert" className="rounded-lg border border-destructive/30 bg-card p-5">
+            <p className="text-sm text-muted-foreground">{error}</p>
+            <Button variant="outline" className="mt-3" onClick={() => void refetch()}>
+              Tentar novamente
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <Metric
+                icon={<BookOpen aria-hidden="true" />}
+                value={String(lessons.length)}
+                label="Aulas cadastradas"
+              />
+              <Metric
+                icon={<Target aria-hidden="true" />}
+                value={String(lessons.filter((lesson) => lesson.level === "medio").length)}
+                label="Ensino Médio"
+              />
+              <Metric
+                icon={<Target aria-hidden="true" />}
+                value={String(lessons.filter((lesson) => lesson.level === "pre-vestibular").length)}
+                label="Pré-vestibular"
+              />
+              <Metric
+                icon={<Target aria-hidden="true" />}
+                value={String(lessons.filter((lesson) => lesson.level === "concursos").length)}
+                label="Concursos"
+              />
+            </div>
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
+              <Link
+                to="/professor/aulas"
+                className="group rounded-lg border border-border bg-card p-5 transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <span className="text-sm font-medium text-primary">Gerenciamento</span>
+                <h2 className="mt-2 font-display text-2xl">Gerenciar aulas</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Cadastre novas aulas, edite os dados e remova conteúdo publicado.
+                </p>
+                <span className="mt-4 inline-block text-sm font-medium">Abrir gerenciamento →</span>
+              </Link>
+              <Link
+                to="/aulas"
+                className="rounded-lg border border-border bg-card p-5 transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <span className="text-sm font-medium text-primary">Experiência do aluno</span>
+                <h2 className="mt-2 font-display text-2xl">Ver biblioteca pública</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Confira como as aulas publicadas aparecem para os estudantes.
+                </p>
+                <span className="mt-4 inline-block text-sm font-medium">Abrir biblioteca →</span>
+              </Link>
+            </div>
+            {!lessons.length && (
+              <div className="mt-6 rounded-lg border border-dashed border-border p-6 text-center">
+                <p className="text-muted-foreground">
+                  Ainda não há aulas cadastradas no catálogo real.
+                </p>
+                <Button asChild className="mt-4">
+                  <Link to="/professor/aulas">Cadastrar a primeira aula</Link>
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </section>
+    </SiteLayout>
+  );
+}
+
 export function LiveTeacherPage() {
   const { isTeacher, loading: authLoading } = useAuth();
   const { lessons, loading: lessonsLoading, error: lessonsError, refetch } = useLessons();

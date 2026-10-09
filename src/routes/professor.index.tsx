@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LiveTeacherPage } from "@/components/platform";
+import { LiveTeacherDashboard } from "@/components/platform";
 export const Route = createFileRoute("/professor/")({
   head: () => ({
     meta: [
       { title: "Painel do professor — Matris" },
-      { name: "description", content: "Gerencie as aulas da plataforma." },
+      {
+        name: "description",
+        content: "Resumo do catálogo e atalhos para as ferramentas de ensino.",
+      },
     ],
   }),
-  component: LiveTeacherPage,
+  component: LiveTeacherDashboard,
 });
