@@ -166,7 +166,9 @@ export function LiveHomePage() {
             Aprenda Matemática de forma <em className="text-primary">simples</em>, clara e objetiva.
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Aulas gravadas, progresso real, avaliações e dúvidas respondidas pelo professor.
+            {hasSupabaseConfig
+              ? "Aulas gravadas, progresso real, avaliações e dúvidas respondidas pelo professor."
+              : "Explore uma prévia da plataforma, com aulas ilustrativas identificadas como demonstração."}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg" className="rounded-full">
@@ -1283,7 +1285,11 @@ export function LiveLevelPage({ level }: { level: string }) {
       <PageHeader
         eyebrow={levelName(level)}
         title={`Aulas de ${levelName(level)}`}
-        description="Trilha organizada por nível, usando o catálogo real da plataforma."
+        description={
+          hasSupabaseConfig
+            ? "Trilha organizada por nível, usando o catálogo da plataforma."
+            : "Prévia ilustrativa da organização das aulas por nível."
+        }
       />
       <section className="mx-auto max-w-7xl px-5 sm:px-6">
         {loading ? (
@@ -1307,7 +1313,7 @@ export function LiveLevelPage({ level }: { level: string }) {
           <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
             {hasSupabaseConfig
               ? "Ainda não há aulas publicadas nesta trilha."
-              : "Configure a conexão com o Supabase para carregar as aulas desta trilha."}
+              : "Ainda não há aulas demonstrativas para esta trilha."}
           </div>
         )}
       </section>
@@ -1323,7 +1329,11 @@ export function LiveConcursosPage() {
       <PageHeader
         eyebrow="Preparação por objetivo"
         title="Concursos Militares"
-        description="Organização por concurso, disciplina e assunto — inspirada na estrutura do Matematicando."
+        description={
+          hasSupabaseConfig
+            ? "Organização por concurso, disciplina e assunto."
+            : "Prévia ilustrativa de como a preparação por concurso pode ser organizada."
+        }
       />
       <section className="mx-auto max-w-7xl px-5 sm:px-6">
         {loading ? (
