@@ -177,8 +177,8 @@ export function SettingsPage() {
         <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm sm:p-7">
           <h2 className="font-display text-2xl">Idioma</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            A preferência fica salva neste navegador. A tradução completa da interface ainda não
-            está disponível.
+            O idioma português está disponível. Os demais idiomas serão liberados quando a tradução
+            completa da interface estiver pronta.
           </p>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {(
@@ -193,13 +193,16 @@ export function SettingsPage() {
                 key={code}
                 type="button"
                 aria-pressed={lang === code}
+                disabled={code !== "pt"}
                 onClick={() => selectLanguage(code)}
-                className={`flex min-h-12 items-center gap-3 rounded-xl border p-3.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${lang === code ? "border-primary bg-primary/10 shadow-sm" : "border-border/80 hover:bg-muted/60"}`}
+                className={`flex min-h-12 items-center gap-3 rounded-xl border p-3.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-55 ${lang === code ? "border-primary bg-primary/10 shadow-sm" : "border-border/80 hover:bg-muted/60"}`}
               >
                 <Flag country={country} />
                 <span>{name}</span>
-                {lang === code && (
+                {lang === code ? (
                   <Check aria-hidden="true" className="ml-auto size-4 text-primary" />
+                ) : (
+                  <span className="ml-auto text-xs text-muted-foreground">Em breve</span>
                 )}
               </button>
             ))}
