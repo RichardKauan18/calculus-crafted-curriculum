@@ -328,8 +328,7 @@ export function LiveLessonsPage() {
           </label>
         </div>
         <p aria-live="polite" className="mt-5 font-mono text-xs text-muted-foreground">
-          {filteredLessons.length}
-          {" "}
+          {filteredLessons.length}{" "}
           {filteredLessons.length === 1 ? "aula encontrada" : "aulas encontradas"}
         </p>
         {loading ? (
@@ -1094,7 +1093,7 @@ export function LiveProfilePage() {
             <h2 className="mt-4 font-display text-2xl">Meta semanal</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Quantas aulas você quer concluir por semana? Nos últimos 7 dias, você concluiu
-              {weeklyCompleted}{" "}{weeklyCompleted === 1 ? "aula" : "aulas"}.
+              {weeklyCompleted} {weeklyCompleted === 1 ? "aula" : "aulas"}.
             </p>
             <div className="mt-4">
               <ProgressBar
