@@ -22,6 +22,7 @@ export type Concurso = {
   subjects: string[];
   description: string;
   created_at: string;
+  teacher_id?: string | null;
 };
 export type Rating = {
   id: string;
