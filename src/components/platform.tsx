@@ -1230,7 +1230,8 @@ function TeacherSupportPanel() {
     setLoading(true);
     const [questionsResult, feedbackResult] = await Promise.all([
       supabase.from("comments")
-        .select("id,lesson_id,user_id,user_name,text,reply,created_at,lessons(title)")
+        .select("id,lesson_id,user_id,user_name,text,reply,created_at,lessons!inner(title,teacher_id)")
+        .eq("lessons.teacher_id", user.id)
         .order("created_at", { ascending: false })
         .limit(100),
       supabase.from("teacher_feedback")
@@ -1243,7 +1244,7 @@ function TeacherSupportPanel() {
     } else {
       setQuestions(((questionsResult.data ?? []) as Array<{
         id: string; lesson_id: string; user_id: string; user_name: string; text: string;
-        reply: string | null; created_at: string; lessons?: { title: string } | null;
+        reply: string | null; created_at: string; lessons?: { title: string; teacher_id: string } | null;
       }>).map((q) => ({ ...q, lesson_title: q.lessons?.title ?? "Aula sem título" })));
     }
     if (feedbackResult.error) {
