@@ -70,7 +70,7 @@ export function Navbar() {
           className="flex min-w-0 items-baseline gap-2"
           aria-label="Matris, página inicial"
         >
-          <strong className="font-display text-xl">Matris</strong>
+          <strong className="font-display text-xl tracking-tight">Matris</strong>
           <span className="font-mono text-xs text-muted-foreground">.mat</span>
         </Link>
         <nav aria-label="Trilhas de estudo" className="ml-4 hidden items-center gap-1 lg:flex">
@@ -192,8 +192,8 @@ export function Navbar() {
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-border bg-surface/40">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-6 py-10 sm:flex-row">
+    <footer className="mt-16 border-t border-border/80 bg-surface/60">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-4 py-10 sm:px-6 sm:flex-row">
         <Link to="/" className="font-display text-lg font-semibold">
           Matris <span className="font-mono text-xs text-muted-foreground">.mat</span>
         </Link>
@@ -226,15 +226,15 @@ export function PageHeader({
   description?: string;
 }) {
   return (
-    <section className="mx-auto max-w-7xl px-5 pb-8 pt-12 sm:px-6 sm:pt-16">
+    <section className="mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6 sm:pt-14">
       {eyebrow && (
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-primary">{eyebrow}</p>
+        <p className="inline-flex rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-primary">{eyebrow}</p>
       )}
-      <h1 className="mt-2 max-w-4xl font-display text-4xl font-semibold leading-tight sm:text-5xl">
+      <h1 className="mt-4 max-w-4xl font-display text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
         {title}
       </h1>
       {description && (
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
           {description}
         </p>
       )}
