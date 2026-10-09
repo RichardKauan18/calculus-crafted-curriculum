@@ -432,6 +432,10 @@ export function LiveLessonPage() {
     if (!error) await refetchProgress();
   };
   const rate = async (value: number) => {
+    if (isDemoLesson) {
+      setMessage("As avaliações não ficam disponíveis na prévia demonstrativa.");
+      return;
+    }
     if (!user) {
       setMessage("Entre na sua conta para avaliar.");
       return;
@@ -446,6 +450,10 @@ export function LiveLessonPage() {
     }
   };
   const sendComment = async () => {
+    if (isDemoLesson) {
+      setMessage("Os comentários não ficam disponíveis na prévia demonstrativa.");
+      return;
+    }
     if (!user || !profile) {
       setMessage("Entre na sua conta para comentar.");
       return;
@@ -503,6 +511,7 @@ export function LiveLessonPage() {
               </div>
             )}
           </div>
+          {!isDemoLesson && (
           <div className="mt-4 rounded-lg border border-border bg-card p-4">
             <div className="flex flex-wrap gap-2">
               <Button
@@ -514,7 +523,7 @@ export function LiveLessonPage() {
                 Concluída
               </Button>
               <Button
-                disabled={busy}
+                disabled={busy || isDemoLesson}
                 aria-pressed={status === "half"}
                 variant="outline"
                 onClick={() => setStatus("half")}
@@ -523,7 +532,7 @@ export function LiveLessonPage() {
                 Parei na metade
               </Button>
               <Button
-                disabled={busy}
+                disabled={busy || isDemoLesson}
                 aria-pressed={status === "watching"}
                 variant="outline"
                 onClick={() => setStatus("watching")}
@@ -537,6 +546,7 @@ export function LiveLessonPage() {
               <p className="mt-2 text-xs text-muted-foreground">{progressValue}% concluído</p>
             </div>
           </div>
+          )}
           {message && (
             <p role="status" className="mt-3 text-sm text-muted-foreground">
               {message}
@@ -572,7 +582,7 @@ export function LiveLessonPage() {
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Professor, poderia explicar novamente esta parte?"
                 />
-                <Button className="mt-3" disabled={busy || !comment.trim()} onClick={sendComment}>
+                <Button className="mt-3" disabled={busy || isDemoLesson || !comment.trim()} onClick={sendComment}>
                   <Send aria-hidden="true" />
                   Enviar comentário
                 </Button>
@@ -641,7 +651,7 @@ export function LiveLessonPage() {
                     <button
                       key={n}
                       type="button"
-                      disabled={busy}
+                      disabled={busy || isDemoLesson}
                       onClick={() => rate(n)}
                       aria-label={`Avaliar com ${n} ${n === 1 ? "estrela" : "estrelas"}`}
                       aria-pressed={n === myRating}
