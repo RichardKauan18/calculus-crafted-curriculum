@@ -295,7 +295,11 @@ export function LiveLessonsPage() {
 export function LiveSearchPage() {
   const [search, setSearch] = useState("");
   const { lessons, loading, error, refetch } = useLessons(undefined, search);
-  const displayedLessons = lessons.length ? lessons : !hasSupabaseConfig ? getDemoLessons(undefined, search) : [];
+  const displayedLessons = lessons.length
+    ? lessons
+    : !hasSupabaseConfig
+      ? getDemoLessons(undefined, search)
+      : [];
   return (
     <SiteLayout>
       <PageHeader
@@ -359,7 +363,12 @@ export function LiveSearchPage() {
 
 export function LiveLessonPage() {
   const { id } = useParams({ strict: false }) as { id?: string };
-  const { lesson: loadedLesson, loading, error: lessonError, refetch: refetchLesson } = useLesson(id);
+  const {
+    lesson: loadedLesson,
+    loading,
+    error: lessonError,
+    refetch: refetchLesson,
+  } = useLesson(id);
   const lesson =
     loadedLesson ??
     (!hasSupabaseConfig ? (demoPlatformLessons.find((item) => item.id === id) ?? null) : null);
