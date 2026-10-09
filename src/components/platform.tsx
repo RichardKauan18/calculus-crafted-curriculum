@@ -2247,6 +2247,7 @@ export function LiveTeacherPage() {
   const { lessons, loading: lessonsLoading, error: lessonsError, refetch } = useLessons();
   const { concursos } = useConcursos();
   const teacherLessons = lessons.filter((lesson) => lesson.teacher_id === user?.id);
+  const teacherConcursos = concursos.filter((contest) => contest.teacher_id === user?.id);
   const [editing, setEditing] = useState<PlatformLesson | null>(null);
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
@@ -2257,6 +2258,7 @@ export function LiveTeacherPage() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const selectedContest = teacherConcursos.find((contest) => contest.id === concursoId);
   const open = (lesson?: PlatformLesson) => {
     setEditing(lesson ?? null);
     setTitle(lesson?.title ?? "");
@@ -2446,13 +2448,27 @@ export function LiveTeacherPage() {
               </label>
               <label className="block text-sm font-medium">
                 Matéria
-                <Input
-                  className="mt-1"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Ex.: Álgebra"
-                  required
-                />
+                {level === "concursos" && selectedContest ? (
+                  <select
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                    required
+                  >
+                    <option value="">Selecione uma matéria</option>
+                    {selectedContest.subjects.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <Input
+                    className="mt-1"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder="Ex.: Álgebra"
+                    required
+                  />
+                )}
               </label>
               <label className="block text-sm font-medium">
                 Duração
@@ -2509,11 +2525,16 @@ export function LiveTeacherPage() {
                   Pasta do concurso
                   <select
                     value={concursoId}
-                    onChange={(e) => setConcursoId(e.target.value)}
+                    onChange={(e) => {
+                      const nextId = e.target.value;
+                      const nextContest = teacherConcursos.find((contest) => contest.id === nextId);
+                      setConcursoId(nextId);
+                      if (subject && nextContest && !nextContest.subjects.includes(subject)) setSubject("");
+                    }}
                     className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
                   >
                     <option value="">Sem pasta específica</option>
-                    {concursos.map((contest) => (
+                    {teacherConcursos.map((contest) => (
                       <option key={contest.id} value={contest.id}>
                         {contest.name} · {contest.category}
                       </option>
@@ -2616,11 +2637,11 @@ export function LiveConcursosPage() {
     <SiteLayout>
       <PageHeader
         eyebrow="Preparação por objetivo"
-        title="Concursos Militares"
+        title="Concursos militares e civis"
         description={
           hasSupabaseConfig
-            ? "Organização por concurso, disciplina e assunto."
-            : "Prévia ilustrativa de como a preparação por concurso pode ser organizada."
+            ? "Cada pasta reúne as matérias e aulas específicas de um concurso."
+            : "Prévia ilustrativa da organização de pastas por concurso."
         }
       />
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
@@ -2664,7 +2685,10 @@ export function LiveConcursosPage() {
                     params={{ slug: c.id }}
                     className="group rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <span className="font-display text-3xl font-semibold tracking-tight text-primary">
+                    <span className="mb-3 inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+                      {c.category || "Concurso"}
+                    </span>
+                    <span className="block font-display text-3xl font-semibold tracking-tight text-primary">
                       {c.name}
                     </span>
                     <p className="mt-3 text-sm text-muted-foreground">{c.description}</p>
@@ -2703,6 +2727,11 @@ export function LiveConcursoPage() {
     refetch: refetchLessons,
   } = useLessons("concursos");
   const filtered = lessons.filter((l) => l.concurso_id === slug);
+  const subjectNames = [...new Set([...(concurso?.subjects ?? []), ...filtered.map((lesson) => lesson.subject)].filter(Boolean))];
+  const groupedLessons = subjectNames.map((subject) => ({
+    subject,
+    lessons: filtered.filter((lesson) => lesson.subject.toLocaleLowerCase("pt-BR") === subject.toLocaleLowerCase("pt-BR")),
+  }));
   if (contestsLoading)
     return (
       <SiteLayout>
@@ -2804,14 +2833,24 @@ export function LiveConcursoPage() {
               </Button>
             </div>
           ) : filtered.length ? (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {filtered.map((l) => (
-                <LiveLessonCard key={l.id} lesson={l} />
+            <div className="space-y-8">
+              {groupedLessons.filter((group) => group.lessons.length > 0).map((group) => (
+                <section key={group.subject} aria-label={`Aulas de ${group.subject}`}>
+                  <div className="mb-4 border-b border-border pb-3">
+                    <h2 className="font-display text-xl font-semibold">{group.subject}</h2>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {group.lessons.length} {group.lessons.length === 1 ? "aula" : "aulas"}
+                    </p>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {group.lessons.map((lesson) => <LiveLessonCard key={lesson.id} lesson={lesson} />)}
+                  </div>
+                </section>
               ))}
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center text-muted-foreground">
-              Ainda não há aulas publicadas para este concurso.
+              Ainda não há aulas publicadas para este concurso. O professor poderá adicioná-las pelo perfil.
             </div>
           )}
         </div>
