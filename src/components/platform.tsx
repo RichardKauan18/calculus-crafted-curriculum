@@ -266,7 +266,7 @@ export function LiveHomePage() {
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-muted-foreground">
             {hasSupabaseConfig
               ? "Nenhuma aula publicada ainda."
               : "O catálogo ficará disponível quando a conexão de dados estiver configurada."}
@@ -804,19 +804,24 @@ export function LiveAuthPage({ signup = false }: { signup?: boolean }) {
   };
   return (
     <SiteLayout>
-      <section className="mx-auto grid min-h-[70vh] max-w-5xl items-center gap-10 px-5 py-14 lg:grid-cols-2">
-        <div className="hidden lg:block">
-          <p className="font-mono text-xs uppercase tracking-[.16em] text-primary">Matris .mat</p>
-          <h1 className="mt-4 font-display text-5xl font-semibold">
+      <section className="mx-auto grid min-h-[70vh] max-w-6xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[.9fr_1.1fr] lg:gap-12">
+        <div className="hidden rounded-3xl bg-primary p-10 text-primary-foreground shadow-xl shadow-foreground/5 lg:block">
+          <p className="font-mono text-xs uppercase tracking-[.16em] text-primary-foreground/70">
+            Matris .mat
+          </p>
+          <h1 className="mt-5 font-display text-4xl font-semibold leading-tight xl:text-5xl">
             Sua evolução começa com uma aula.
           </h1>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-5 leading-relaxed text-primary-foreground/80">
             Conta real com progresso, avaliações, comentários e metas sincronizados.
           </p>
         </div>
-        <form onSubmit={submit} className="rounded-lg border border-border bg-card p-6 sm:p-8">
+        <form
+          onSubmit={submit}
+          className="rounded-3xl border border-border/80 bg-card p-6 shadow-xl shadow-foreground/5 sm:p-8 lg:p-10"
+        >
           <h2 className="font-display text-3xl">{signup ? "Criar conta" : "Entrar"}</h2>
-          <div className="mt-6 space-y-4">
+          <div className="mt-7 space-y-5">
             {signup && (
               <label className="block">
                 <span className="mb-2 block text-sm font-medium">Nome</span>
@@ -968,14 +973,14 @@ export function LiveProfilePage() {
               {inProgressLessons.length ? "Continue de onde parou" : "Sugestões para estudar"}
             </h2>
             {progressError ? (
-              <div role="alert" className="rounded-lg border border-destructive/30 bg-card p-5">
+              <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
                 <p className="text-sm text-muted-foreground">{progressError}</p>
                 <Button variant="outline" className="mt-3" onClick={() => void refetchProgress()}>
                   Tentar novamente
                 </Button>
               </div>
             ) : lessonsError ? (
-              <div role="alert" className="rounded-lg border border-destructive/30 bg-card p-5">
+              <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
                 <p className="text-sm text-muted-foreground">{lessonsError}</p>
                 <Button variant="outline" className="mt-3" onClick={() => void refetchLessons()}>
                   Tentar novamente
@@ -992,13 +997,13 @@ export function LiveProfilePage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
+              <div className="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-muted-foreground">
                 Ainda não há aulas publicadas para exibir. Volte mais tarde para continuar seus
                 estudos.
               </div>
             )}
           </div>
-          <aside className="rounded-lg border border-border bg-card p-6">
+          <aside className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm">
             <Target className="size-7 text-primary" />
             <h2 className="mt-4 font-display text-2xl">Meta semanal</h2>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -1088,7 +1093,7 @@ export function LiveTeacherDashboard() {
       />
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         {!hasSupabaseConfig ? (
-          <div className="rounded-lg border border-amber/30 bg-amber/5 p-5">
+          <div className="rounded-2xl border border-amber/30 bg-amber/5 p-5">
             <h2 className="font-medium">Catálogo não conectado</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               As métricas e ações de gerenciamento só ficam disponíveis quando o Supabase estiver
@@ -1100,7 +1105,7 @@ export function LiveTeacherDashboard() {
             Carregando resumo…
           </p>
         ) : error ? (
-          <div role="alert" className="rounded-lg border border-destructive/30 bg-card p-5">
+          <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
             <p className="text-sm text-muted-foreground">{error}</p>
             <Button variant="outline" className="mt-3" onClick={() => void refetch()}>
               Tentar novamente
@@ -1133,7 +1138,7 @@ export function LiveTeacherDashboard() {
             <div className="mt-8 grid gap-4 md:grid-cols-2">
               <Link
                 to="/professor/aulas"
-                className="group rounded-lg border border-border bg-card p-5 transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="group rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span className="text-sm font-medium text-primary">Gerenciamento</span>
                 <h2 className="mt-2 font-display text-2xl">Gerenciar aulas</h2>
@@ -1144,7 +1149,7 @@ export function LiveTeacherDashboard() {
               </Link>
               <Link
                 to="/aulas"
-                className="rounded-lg border border-border bg-card p-5 transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm transition duration-300 hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span className="text-sm font-medium text-primary">Experiência do aluno</span>
                 <h2 className="mt-2 font-display text-2xl">Ver biblioteca pública</h2>
@@ -1295,7 +1300,7 @@ export function LiveTeacherPage() {
                 Carregando aulas…
               </p>
             ) : lessonsError ? (
-              <div role="alert" className="rounded-lg border border-destructive/30 bg-card p-5">
+              <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
                 <p className="text-sm text-muted-foreground">{lessonsError}</p>
                 <Button variant="outline" className="mt-3" onClick={() => void refetch()}>
                   Tentar novamente
@@ -1305,7 +1310,7 @@ export function LiveTeacherPage() {
               lessons.map((l) => (
                 <article
                   key={l.id}
-                  className="grid gap-4 rounded-lg border border-border bg-card p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+                  className="grid gap-4 rounded-2xl border border-border/80 bg-card p-5 shadow-sm transition-colors hover:border-primary/30 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
                 >
                   <div className="min-w-0">
                     <h2 className="font-medium">{l.title}</h2>
@@ -1332,7 +1337,7 @@ export function LiveTeacherPage() {
                 </article>
               ))
             ) : (
-              <div className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
+              <div className="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-muted-foreground">
                 Nenhuma aula cadastrada. Crie a primeira usando o formulário.
               </div>
             )}
@@ -1611,7 +1616,7 @@ export function LiveConcursoPage() {
           description={demoExam.description}
         />
         <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
-          <div className="rounded-lg border border-amber/30 bg-amber/5 p-5">
+          <div className="rounded-2xl border border-amber/30 bg-amber/5 p-5">
             <p className="font-medium">Conteúdo ilustrativo</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Esta prévia indica uma estrutura de preparação com {demoExam.subjects} disciplinas
@@ -1674,7 +1679,7 @@ export function LiveConcursoPage() {
               Carregando aulas…
             </p>
           ) : lessonsError ? (
-            <div role="alert" className="rounded-lg border border-destructive/30 bg-card p-5">
+            <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
               <p className="text-sm text-muted-foreground">{lessonsError}</p>
               <Button variant="outline" className="mt-3" onClick={() => void refetchLessons()}>
                 Tentar novamente

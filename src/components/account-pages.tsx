@@ -63,7 +63,7 @@ export function ProfilePage() {
 }
 function Metric({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm">
       <span className="text-primary">{icon}</span>
       <strong className="mt-5 block font-display text-3xl">{value}</strong>
       <p className="text-sm text-muted-foreground">{label}</p>
@@ -166,15 +166,15 @@ export function SettingsPage() {
         title="Configurações"
         description="Personalize a aparência e as preferências desta plataforma."
       />
-      <section className="mx-auto max-w-3xl space-y-4 px-5 sm:px-6">
-        <div className="rounded-lg border border-border bg-card p-6">
+      <section className="mx-auto max-w-3xl space-y-5 px-4 pb-16 sm:px-6">
+        <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm sm:p-7">
           <h2 className="font-display text-2xl">Tema</h2>
           <div className="mt-4 flex items-center justify-between gap-4">
             <span className="text-sm text-muted-foreground">Alternar entre claro e escuro</span>
             <ThemeToggle />
           </div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm sm:p-7">
           <h2 className="font-display text-2xl">Idioma</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             A preferência fica salva neste navegador. A tradução completa da interface ainda não
@@ -194,7 +194,7 @@ export function SettingsPage() {
                 type="button"
                 aria-pressed={lang === code}
                 onClick={() => selectLanguage(code)}
-                className={`flex min-h-11 items-center gap-3 rounded-md border p-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${lang === code ? "border-primary bg-primary/5" : "border-border hover:bg-muted/60"}`}
+                className={`flex min-h-12 items-center gap-3 rounded-xl border p-3.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${lang === code ? "border-primary bg-primary/10 shadow-sm" : "border-border/80 hover:bg-muted/60"}`}
               >
                 <Flag country={country} />
                 <span>{name}</span>
@@ -287,13 +287,13 @@ export function AboutPage() {
   return (
     <SiteLayout>
       <PageHeader eyebrow="Sobre mim" title="Clareza antes da complexidade." />
-      <section className="mx-auto grid max-w-6xl items-center gap-8 px-5 sm:px-6 lg:grid-cols-[.7fr_1fr]">
+      <section className="mx-auto grid max-w-6xl items-center gap-8 px-4 pb-16 sm:px-6 lg:grid-cols-[.7fr_1fr]">
         <img
           src={professor}
           alt="Foto provisória do professor"
           width={800}
           height={1008}
-          className="max-h-[560px] w-full rounded-lg object-cover"
+          className="max-h-[560px] w-full rounded-2xl object-cover shadow-xl shadow-foreground/10"
         />
         <div>
           <h2 className="font-display text-3xl">Prof. André Matos</h2>
@@ -301,7 +301,7 @@ export function AboutPage() {
             Doutor em Matemática Aplicada e professor há 15 anos. O propósito das aulas é traduzir
             ideias difíceis em raciocínios visuais, progressivos e objetivos.
           </p>
-          <p className="mt-4 rounded-md border border-border bg-card p-4 font-mono text-xs text-muted-foreground">
+          <p className="mt-5 rounded-xl border border-border/80 bg-card p-5 font-mono text-xs leading-relaxed text-muted-foreground">
             Biografia e imagem demonstrativas. Todo este conteúdo poderá ser substituído
             posteriormente.
           </p>
