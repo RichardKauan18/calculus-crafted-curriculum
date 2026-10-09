@@ -546,15 +546,15 @@ export function LiveLessonPage() {
           {lesson.subject} · {levelName(lesson.level)} · {lesson.duration}
         </p>
       </section>
-      <section className="mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         {isDemoLesson && (
-          <div className="rounded-lg border border-amber/30 bg-amber/5 p-4 text-sm text-muted-foreground lg:col-span-2">
+          <div className="rounded-2xl border border-amber/30 bg-amber/5 p-5 text-sm text-muted-foreground lg:col-span-2">
             <strong className="text-foreground">Aula demonstrativa.</strong> O vídeo, o progresso,
             as avaliações e os comentários não são dados reais nem serão salvos nesta prévia.
           </div>
         )}
         <div>
-          <div className="aspect-video overflow-hidden rounded-lg bg-black">
+          <div className="aspect-video overflow-hidden rounded-2xl bg-black shadow-xl shadow-foreground/10 ring-1 ring-border/50">
             {videoIsValid ? (
               <iframe
                 className="h-full w-full"
@@ -576,7 +576,7 @@ export function LiveLessonPage() {
             )}
           </div>
           {!isDemoLesson && (
-            <div className="mt-4 rounded-lg border border-border bg-card p-4">
+            <div className="mt-4 rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
               <div className="flex flex-wrap gap-2">
                 <Button
                   disabled={busy}
@@ -636,7 +636,7 @@ export function LiveLessonPage() {
           <section className="mt-10">
             <h2 className="font-display text-2xl">Comentários e dúvidas</h2>
             {user ? (
-              <div className="mt-4 rounded-lg border border-border bg-card p-4">
+              <div className="mt-4 rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
                 <label htmlFor="lesson-comment" className="mb-2 block text-sm font-medium">
                   Sua dúvida
                 </label>
@@ -685,7 +685,7 @@ export function LiveLessonPage() {
               </div>
             ) : comments.length ? (
               comments.map((c) => (
-                <article key={c.id} className="mt-4 rounded-lg border border-border bg-card p-4">
+                <article key={c.id} className="mt-4 rounded-xl border border-border/80 bg-card p-5 shadow-sm">
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <MessageSquare className="size-4 text-primary" />
                     {c.user_name}
@@ -707,7 +707,7 @@ export function LiveLessonPage() {
           </section>
         </div>
         <aside className="space-y-5">
-          <div className="rounded-lg border border-border bg-card p-5">
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
             <p className="font-mono text-xs uppercase text-muted-foreground">Avaliação</p>
             <div className="mt-3 flex items-end gap-3">
               <strong className="font-display text-5xl">
@@ -1034,7 +1034,7 @@ export function LiveProfilePage() {
 }
 function Metric({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
       <span className="text-primary">{icon}</span>
       <strong className="mt-5 block font-display text-3xl">{value}</strong>
       <p className="text-sm text-muted-foreground">{label}</p>
@@ -1336,7 +1336,7 @@ export function LiveTeacherPage() {
               Nova aula
             </Button>
           </div>
-          <div className="rounded-lg border border-border bg-card p-5">
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
             <h2 className="font-display text-2xl">{editing ? "Editar aula" : "Nova aula"}</h2>
             <div className="mt-4 space-y-3">
               <label className="block text-sm font-medium">
