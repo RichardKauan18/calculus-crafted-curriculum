@@ -4,7 +4,7 @@ export const Route = createFileRoute("/concursos/")({
   head: () => ({
     meta: [
       { title: "Concursos — Matris" },
-      { name: "description", content: "Preparação por concursos militares." },
+      { name: "description", content: "Preparação organizada por concursos militares e civis, matérias e aulas." },
     ],
   }),
   component: LiveConcursosPage,
